@@ -1,0 +1,2551 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@azure/app-configuration</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">@azure/app-configuration</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> @azure/app-configuration</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Classes</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-class"><a href="classes/appconfigcredential.html" class="tsd-kind-icon">App<wbr>Config<wbr>Credential</a></li>
+								<li class="tsd-kind-class"><a href="classes/appconfigurationclient.html" class="tsd-kind-icon">App<wbr>Configuration<wbr>Client</a></li>
+								<li class="tsd-kind-class"><a href="classes/configurationclientcontext.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Context</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface"><a href="interfaces/configurationclientcreateorupdateconfigurationsettingoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Create<wbr>OrUpdate<wbr>Configuration<wbr>Setting<wbr>Optional<wbr>Params</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/configurationclientdeleteconfigurationsettingoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Delete<wbr>Configuration<wbr>Setting<wbr>Optional<wbr>Params</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/configurationclientgetconfigurationsettingoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Get<wbr>Configuration<wbr>Setting<wbr>Optional<wbr>Params</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/configurationclientlistconfigurationsettingsnextoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>List<wbr>Configuration<wbr>Settings<wbr>Next<wbr>Optional<wbr>Params</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/configurationclientlistconfigurationsettingsoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>List<wbr>Configuration<wbr>Settings<wbr>Optional<wbr>Params</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/configurationclientlistkeysoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>List<wbr>Keys<wbr>Optional<wbr>Params</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/configurationclientlistlabelsoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>List<wbr>Labels<wbr>Optional<wbr>Params</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/configurationclientlistrevisionsnextoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>List<wbr>Revisions<wbr>Next<wbr>Optional<wbr>Params</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/configurationclientlistrevisionsoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>List<wbr>Revisions<wbr>Optional<wbr>Params</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/configurationclientlockconfigurationsettingoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Lock<wbr>Configuration<wbr>Setting<wbr>Optional<wbr>Params</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/configurationclientoptions.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Options</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/configurationclientunlockconfigurationsettingoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Unlock<wbr>Configuration<wbr>Setting<wbr>Optional<wbr>Params</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/configurationsetting.html" class="tsd-kind-icon">Configuration<wbr>Setting</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/configurationsettinglist.html" class="tsd-kind-icon">Configuration<wbr>Setting<wbr>List</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/getconfigurationsettingheaders.html" class="tsd-kind-icon">Get<wbr>Configuration<wbr>Setting<wbr>Headers</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/key.html" class="tsd-kind-icon">Key</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/keylist.html" class="tsd-kind-icon">Key<wbr>List</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/label.html" class="tsd-kind-icon">Label</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/labellist.html" class="tsd-kind-icon">Label<wbr>List</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias"><a href="globals.html#createorupdateconfigurationsettingresponse" class="tsd-kind-icon">Create<wbr>OrUpdate<wbr>Configuration<wbr>Setting<wbr>Response</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#deleteconfigurationsettingresponse" class="tsd-kind-icon">Delete<wbr>Configuration<wbr>Setting<wbr>Response</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#getconfigurationsettingresponse" class="tsd-kind-icon">Get<wbr>Configuration<wbr>Setting<wbr>Response</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#listconfigurationsettingsnextresponse" class="tsd-kind-icon">List<wbr>Configuration<wbr>Settings<wbr>Next<wbr>Response</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#listconfigurationsettingsresponse" class="tsd-kind-icon">List<wbr>Configuration<wbr>Settings<wbr>Response</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#listkeysresponse" class="tsd-kind-icon">List<wbr>Keys<wbr>Response</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#listlabelsresponse" class="tsd-kind-icon">List<wbr>Labels<wbr>Response</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#listrevisionsnextresponse" class="tsd-kind-icon">List<wbr>Revisions<wbr>Next<wbr>Response</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#listrevisionsresponse" class="tsd-kind-icon">List<wbr>Revisions<wbr>Response</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#lockconfigurationsettingresponse" class="tsd-kind-icon">Lock<wbr>Configuration<wbr>Setting<wbr>Response</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#unlockconfigurationsettingresponse" class="tsd-kind-icon">Unlock<wbr>Configuration<wbr>Setting<wbr>Response</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Variables</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-variable"><a href="globals.html#baseresource" class="tsd-kind-icon">Base<wbr>Resource</a></li>
+								<li class="tsd-kind-variable"><a href="globals.html#clouderror" class="tsd-kind-icon">Cloud<wbr>Error</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Object literals</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-object-literal"><a href="globals.html#configurationsetting" class="tsd-kind-icon">Configuration<wbr>Setting</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#configurationsettinglist" class="tsd-kind-icon">Configuration<wbr>Setting<wbr>List</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#getconfigurationsettingheaders" class="tsd-kind-icon">Get<wbr>Configuration<wbr>Setting<wbr>Headers</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#key" class="tsd-kind-icon">Key</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#keylist" class="tsd-kind-icon">Key<wbr>List</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#label" class="tsd-kind-icon">Label</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#labellist" class="tsd-kind-icon">Label<wbr>List</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#acceptdatetime" class="tsd-kind-icon">accept<wbr>Date<wbr>Time</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#acceptlanguage" class="tsd-kind-icon">accept<wbr>Language</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#fields" class="tsd-kind-icon">fields</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#key0" class="tsd-kind-icon">key0</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#key1" class="tsd-kind-icon">key1</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#label0" class="tsd-kind-icon">label0</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#label1" class="tsd-kind-icon">label1</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#label2" class="tsd-kind-icon">label2</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-object-literal"><a href="globals.html#nextpagelink" class="tsd-kind-icon">next<wbr>Page<wbr>Link</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="createorupdateconfigurationsettingresponse" class="tsd-anchor"></a>
+					<h3>Create<wbr>OrUpdate<wbr>Configuration<wbr>Setting<wbr>Response</h3>
+					<div class="tsd-signature tsd-kind-icon">Create<wbr>OrUpdate<wbr>Configuration<wbr>Setting<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="interfaces/configurationsetting.html" class="tsd-signature-type">ConfigurationSetting</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/index.ts#L283">generated/models/index.ts:283</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Contains response data for the createOrUpdateConfigurationSetting operation.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="deleteconfigurationsettingresponse" class="tsd-anchor"></a>
+					<h3>Delete<wbr>Configuration<wbr>Setting<wbr>Response</h3>
+					<div class="tsd-signature tsd-kind-icon">Delete<wbr>Configuration<wbr>Setting<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="interfaces/configurationsetting.html" class="tsd-signature-type">ConfigurationSetting</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/index.ts#L303">generated/models/index.ts:303</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Contains response data for the deleteConfigurationSetting operation.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="getconfigurationsettingresponse" class="tsd-anchor"></a>
+					<h3>Get<wbr>Configuration<wbr>Setting<wbr>Response</h3>
+					<div class="tsd-signature tsd-kind-icon">Get<wbr>Configuration<wbr>Setting<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="interfaces/configurationsetting.html" class="tsd-signature-type">ConfigurationSetting</a><span class="tsd-signature-symbol"> &amp; </span><a href="interfaces/getconfigurationsettingheaders.html" class="tsd-signature-type">GetConfigurationSettingHeaders</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/index.ts#L258">generated/models/index.ts:258</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Contains response data for the getConfigurationSetting operation.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="listconfigurationsettingsnextresponse" class="tsd-anchor"></a>
+					<h3>List<wbr>Configuration<wbr>Settings<wbr>Next<wbr>Response</h3>
+					<div class="tsd-signature tsd-kind-icon">List<wbr>Configuration<wbr>Settings<wbr>Next<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="interfaces/configurationsettinglist.html" class="tsd-signature-type">ConfigurationSettingList</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/index.ts#L423">generated/models/index.ts:423</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Contains response data for the listConfigurationSettingsNext operation.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="listconfigurationsettingsresponse" class="tsd-anchor"></a>
+					<h3>List<wbr>Configuration<wbr>Settings<wbr>Response</h3>
+					<div class="tsd-signature tsd-kind-icon">List<wbr>Configuration<wbr>Settings<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="interfaces/configurationsettinglist.html" class="tsd-signature-type">ConfigurationSettingList</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/index.ts#L238">generated/models/index.ts:238</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Contains response data for the listConfigurationSettings operation.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="listkeysresponse" class="tsd-anchor"></a>
+					<h3>List<wbr>Keys<wbr>Response</h3>
+					<div class="tsd-signature tsd-kind-icon">List<wbr>Keys<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="interfaces/keylist.html" class="tsd-signature-type">KeyList</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/index.ts#L323">generated/models/index.ts:323</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Contains response data for the listKeys operation.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="listlabelsresponse" class="tsd-anchor"></a>
+					<h3>List<wbr>Labels<wbr>Response</h3>
+					<div class="tsd-signature tsd-kind-icon">List<wbr>Labels<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="interfaces/labellist.html" class="tsd-signature-type">LabelList</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/index.ts#L343">generated/models/index.ts:343</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Contains response data for the listLabels operation.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="listrevisionsnextresponse" class="tsd-anchor"></a>
+					<h3>List<wbr>Revisions<wbr>Next<wbr>Response</h3>
+					<div class="tsd-signature tsd-kind-icon">List<wbr>Revisions<wbr>Next<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="interfaces/configurationsettinglist.html" class="tsd-signature-type">ConfigurationSettingList</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/index.ts#L443">generated/models/index.ts:443</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Contains response data for the listRevisionsNext operation.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="listrevisionsresponse" class="tsd-anchor"></a>
+					<h3>List<wbr>Revisions<wbr>Response</h3>
+					<div class="tsd-signature tsd-kind-icon">List<wbr>Revisions<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="interfaces/configurationsettinglist.html" class="tsd-signature-type">ConfigurationSettingList</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/index.ts#L403">generated/models/index.ts:403</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Contains response data for the listRevisions operation.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="lockconfigurationsettingresponse" class="tsd-anchor"></a>
+					<h3>Lock<wbr>Configuration<wbr>Setting<wbr>Response</h3>
+					<div class="tsd-signature tsd-kind-icon">Lock<wbr>Configuration<wbr>Setting<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="interfaces/configurationsetting.html" class="tsd-signature-type">ConfigurationSetting</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/index.ts#L363">generated/models/index.ts:363</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Contains response data for the lockConfigurationSetting operation.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="unlockconfigurationsettingresponse" class="tsd-anchor"></a>
+					<h3>Unlock<wbr>Configuration<wbr>Setting<wbr>Response</h3>
+					<div class="tsd-signature tsd-kind-icon">Unlock<wbr>Configuration<wbr>Setting<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="interfaces/configurationsetting.html" class="tsd-signature-type">ConfigurationSetting</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/index.ts#L383">generated/models/index.ts:383</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Contains response data for the unlockConfigurationSetting operation.</p>
+						</div>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Variables</h2>
+				<section class="tsd-panel tsd-member tsd-kind-variable">
+					<a name="baseresource" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> Base<wbr>Resource</h3>
+					<div class="tsd-signature tsd-kind-icon">Base<wbr>Resource<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">CompositeMapper</span><span class="tsd-signature-symbol"> =&nbsp;BaseResourceMapper</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L13">generated/models/mappers.ts:13</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable">
+					<a name="clouderror" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> Cloud<wbr>Error</h3>
+					<div class="tsd-signature tsd-kind-icon">Cloud<wbr>Error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">CompositeMapper</span><span class="tsd-signature-symbol"> =&nbsp;CloudErrorMapper</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L12">generated/models/mappers.ts:12</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Object literals</h2>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="configurationsetting" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> Configuration<wbr>Setting</h3>
+					<div class="tsd-signature tsd-kind-icon">Configuration<wbr>Setting<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L15">generated/models/mappers.ts:15</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="configurationsetting.serializedname" class="tsd-anchor"></a>
+						<h3>serialized<wbr>Name</h3>
+						<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;ConfigurationSetting&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L16">generated/models/mappers.ts:16</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="configurationsetting.type" class="tsd-anchor"></a>
+						<h3>type</h3>
+						<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L17">generated/models/mappers.ts:17</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="configurationsetting.type.classname" class="tsd-anchor"></a>
+							<h3>class<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">class<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;ConfigurationSetting&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L19">generated/models/mappers.ts:19</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="configurationsetting.type.name" class="tsd-anchor"></a>
+							<h3>name</h3>
+							<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Composite"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Composite&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L18">generated/models/mappers.ts:18</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="configurationsetting.type.modelproperties" class="tsd-anchor"></a>
+							<h3>model<wbr>Properties</h3>
+							<div class="tsd-signature tsd-kind-icon">model<wbr>Properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L20">generated/models/mappers.ts:20</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="configurationsetting.type.modelproperties.contenttype" class="tsd-anchor"></a>
+								<h3>content<wbr>Type</h3>
+								<div class="tsd-signature tsd-kind-icon">content<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L40">generated/models/mappers.ts:40</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.contenttype.serializedname-1" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;content_type&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L41">generated/models/mappers.ts:41</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.contenttype.type-1" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L42">generated/models/mappers.ts:42</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="configurationsetting.type.modelproperties.contenttype.type-1.name-1" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L43">generated/models/mappers.ts:43</a></li>
+											</ul>
+										</aside>
+									</section>
+								</section>
+							</section>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="configurationsetting.type.modelproperties.etag" class="tsd-anchor"></a>
+								<h3>etag</h3>
+								<div class="tsd-signature tsd-kind-icon">etag<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L21">generated/models/mappers.ts:21</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.etag.readonly" class="tsd-anchor"></a>
+									<h3>read<wbr>Only</h3>
+									<div class="tsd-signature tsd-kind-icon">read<wbr>Only<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L22">generated/models/mappers.ts:22</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.etag.serializedname-2" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;etag&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L23">generated/models/mappers.ts:23</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.etag.type-2" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L24">generated/models/mappers.ts:24</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="configurationsetting.type.modelproperties.etag.type-2.name-2" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L25">generated/models/mappers.ts:25</a></li>
+											</ul>
+										</aside>
+									</section>
+								</section>
+							</section>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="configurationsetting.type.modelproperties.key" class="tsd-anchor"></a>
+								<h3>key</h3>
+								<div class="tsd-signature tsd-kind-icon">key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L28">generated/models/mappers.ts:28</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.key.serializedname-3" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;key&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L29">generated/models/mappers.ts:29</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.key.type-3" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L30">generated/models/mappers.ts:30</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="configurationsetting.type.modelproperties.key.type-3.name-3" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L31">generated/models/mappers.ts:31</a></li>
+											</ul>
+										</aside>
+									</section>
+								</section>
+							</section>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="configurationsetting.type.modelproperties.label" class="tsd-anchor"></a>
+								<h3>label</h3>
+								<div class="tsd-signature tsd-kind-icon">label<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L34">generated/models/mappers.ts:34</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.label.serializedname-4" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;label&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L35">generated/models/mappers.ts:35</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.label.type-4" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L36">generated/models/mappers.ts:36</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="configurationsetting.type.modelproperties.label.type-4.name-4" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L37">generated/models/mappers.ts:37</a></li>
+											</ul>
+										</aside>
+									</section>
+								</section>
+							</section>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="configurationsetting.type.modelproperties.lastmodified" class="tsd-anchor"></a>
+								<h3>last<wbr>Modified</h3>
+								<div class="tsd-signature tsd-kind-icon">last<wbr>Modified<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L52">generated/models/mappers.ts:52</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.lastmodified.readonly-1" class="tsd-anchor"></a>
+									<h3>read<wbr>Only</h3>
+									<div class="tsd-signature tsd-kind-icon">read<wbr>Only<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L53">generated/models/mappers.ts:53</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.lastmodified.serializedname-5" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;last_modified&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L54">generated/models/mappers.ts:54</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.lastmodified.type-5" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L55">generated/models/mappers.ts:55</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="configurationsetting.type.modelproperties.lastmodified.type-5.name-5" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"DateTime"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;DateTime&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L56">generated/models/mappers.ts:56</a></li>
+											</ul>
+										</aside>
+									</section>
+								</section>
+							</section>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="configurationsetting.type.modelproperties.locked" class="tsd-anchor"></a>
+								<h3>locked</h3>
+								<div class="tsd-signature tsd-kind-icon">locked<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L59">generated/models/mappers.ts:59</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.locked.readonly-2" class="tsd-anchor"></a>
+									<h3>read<wbr>Only</h3>
+									<div class="tsd-signature tsd-kind-icon">read<wbr>Only<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L60">generated/models/mappers.ts:60</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.locked.serializedname-6" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;locked&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L61">generated/models/mappers.ts:61</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.locked.type-6" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L62">generated/models/mappers.ts:62</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="configurationsetting.type.modelproperties.locked.type-6.name-6" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Boolean"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Boolean&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L63">generated/models/mappers.ts:63</a></li>
+											</ul>
+										</aside>
+									</section>
+								</section>
+							</section>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="configurationsetting.type.modelproperties.tags" class="tsd-anchor"></a>
+								<h3>tags</h3>
+								<div class="tsd-signature tsd-kind-icon">tags<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L66">generated/models/mappers.ts:66</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.tags.serializedname-7" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;tags&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L67">generated/models/mappers.ts:67</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.tags.type-7" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L68">generated/models/mappers.ts:68</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="configurationsetting.type.modelproperties.tags.type-7.name-7" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Dictionary"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Dictionary&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L69">generated/models/mappers.ts:69</a></li>
+											</ul>
+										</aside>
+									</section>
+									<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+										<a name="configurationsetting.type.modelproperties.tags.type-7.value" class="tsd-anchor"></a>
+										<h3>value</h3>
+										<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L70">generated/models/mappers.ts:70</a></li>
+											</ul>
+										</aside>
+										<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+											<a name="configurationsetting.type.modelproperties.tags.type-7.value.type-8" class="tsd-anchor"></a>
+											<h3>type</h3>
+											<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+											<aside class="tsd-sources">
+												<ul>
+													<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L71">generated/models/mappers.ts:71</a></li>
+												</ul>
+											</aside>
+											<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+												<a name="configurationsetting.type.modelproperties.tags.type-7.value.type-8.name-8" class="tsd-anchor"></a>
+												<h3>name</h3>
+												<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+												<aside class="tsd-sources">
+													<ul>
+														<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L72">generated/models/mappers.ts:72</a></li>
+													</ul>
+												</aside>
+											</section>
+										</section>
+									</section>
+								</section>
+							</section>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="configurationsetting.type.modelproperties.value-1" class="tsd-anchor"></a>
+								<h3>value</h3>
+								<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L46">generated/models/mappers.ts:46</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.value-1.serializedname-8" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;value&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L47">generated/models/mappers.ts:47</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="configurationsetting.type.modelproperties.value-1.type-9" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L48">generated/models/mappers.ts:48</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="configurationsetting.type.modelproperties.value-1.type-9.name-9" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L49">generated/models/mappers.ts:49</a></li>
+											</ul>
+										</aside>
+									</section>
+								</section>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="configurationsettinglist" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> Configuration<wbr>Setting<wbr>List</h3>
+					<div class="tsd-signature tsd-kind-icon">Configuration<wbr>Setting<wbr>List<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L131">generated/models/mappers.ts:131</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="configurationsettinglist.serializedname" class="tsd-anchor"></a>
+						<h3>serialized<wbr>Name</h3>
+						<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;ConfigurationSettingList&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L132">generated/models/mappers.ts:132</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="configurationsettinglist.type" class="tsd-anchor"></a>
+						<h3>type</h3>
+						<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L133">generated/models/mappers.ts:133</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="configurationsettinglist.type.classname" class="tsd-anchor"></a>
+							<h3>class<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">class<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;ConfigurationSettingList&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L135">generated/models/mappers.ts:135</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="configurationsettinglist.type.name" class="tsd-anchor"></a>
+							<h3>name</h3>
+							<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Composite"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Composite&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L134">generated/models/mappers.ts:134</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="configurationsettinglist.type.modelproperties" class="tsd-anchor"></a>
+							<h3>model<wbr>Properties</h3>
+							<div class="tsd-signature tsd-kind-icon">model<wbr>Properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L136">generated/models/mappers.ts:136</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="configurationsettinglist.type.modelproperties.items" class="tsd-anchor"></a>
+								<h3>items</h3>
+								<div class="tsd-signature tsd-kind-icon">items<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L137">generated/models/mappers.ts:137</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="configurationsettinglist.type.modelproperties.items.serializedname-1" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L138">generated/models/mappers.ts:138</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="configurationsettinglist.type.modelproperties.items.type-1" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L139">generated/models/mappers.ts:139</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="configurationsettinglist.type.modelproperties.items.type-1.name-1" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Sequence"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Sequence&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L140">generated/models/mappers.ts:140</a></li>
+											</ul>
+										</aside>
+									</section>
+									<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+										<a name="configurationsettinglist.type.modelproperties.items.type-1.element" class="tsd-anchor"></a>
+										<h3>element</h3>
+										<div class="tsd-signature tsd-kind-icon">element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L141">generated/models/mappers.ts:141</a></li>
+											</ul>
+										</aside>
+										<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+											<a name="configurationsettinglist.type.modelproperties.items.type-1.element.type-2" class="tsd-anchor"></a>
+											<h3>type</h3>
+											<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+											<aside class="tsd-sources">
+												<ul>
+													<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L142">generated/models/mappers.ts:142</a></li>
+												</ul>
+											</aside>
+											<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+												<a name="configurationsettinglist.type.modelproperties.items.type-1.element.type-2.classname-1" class="tsd-anchor"></a>
+												<h3>class<wbr>Name</h3>
+												<div class="tsd-signature tsd-kind-icon">class<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;ConfigurationSetting&quot;</span></div>
+												<aside class="tsd-sources">
+													<ul>
+														<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L144">generated/models/mappers.ts:144</a></li>
+													</ul>
+												</aside>
+											</section>
+											<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+												<a name="configurationsettinglist.type.modelproperties.items.type-1.element.type-2.name-2" class="tsd-anchor"></a>
+												<h3>name</h3>
+												<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Composite"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Composite&quot;</span></div>
+												<aside class="tsd-sources">
+													<ul>
+														<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L143">generated/models/mappers.ts:143</a></li>
+													</ul>
+												</aside>
+											</section>
+										</section>
+									</section>
+								</section>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="getconfigurationsettingheaders" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> Get<wbr>Configuration<wbr>Setting<wbr>Headers</h3>
+					<div class="tsd-signature tsd-kind-icon">Get<wbr>Configuration<wbr>Setting<wbr>Headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L115">generated/models/mappers.ts:115</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="getconfigurationsettingheaders.serializedname" class="tsd-anchor"></a>
+						<h3>serialized<wbr>Name</h3>
+						<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;getconfigurationsetting-headers&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L116">generated/models/mappers.ts:116</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="getconfigurationsettingheaders.type" class="tsd-anchor"></a>
+						<h3>type</h3>
+						<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L117">generated/models/mappers.ts:117</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="getconfigurationsettingheaders.type.classname" class="tsd-anchor"></a>
+							<h3>class<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">class<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;GetConfigurationSettingHeaders&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L119">generated/models/mappers.ts:119</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="getconfigurationsettingheaders.type.name" class="tsd-anchor"></a>
+							<h3>name</h3>
+							<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Composite"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Composite&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L118">generated/models/mappers.ts:118</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="getconfigurationsettingheaders.type.modelproperties" class="tsd-anchor"></a>
+							<h3>model<wbr>Properties</h3>
+							<div class="tsd-signature tsd-kind-icon">model<wbr>Properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L120">generated/models/mappers.ts:120</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="getconfigurationsettingheaders.type.modelproperties.lastmodifiedheader" class="tsd-anchor"></a>
+								<h3>last<wbr>Modified<wbr>Header</h3>
+								<div class="tsd-signature tsd-kind-icon">last<wbr>Modified<wbr>Header<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L121">generated/models/mappers.ts:121</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="getconfigurationsettingheaders.type.modelproperties.lastmodifiedheader.serializedname-1" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;last-modified&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L122">generated/models/mappers.ts:122</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="getconfigurationsettingheaders.type.modelproperties.lastmodifiedheader.type-1" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L123">generated/models/mappers.ts:123</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="getconfigurationsettingheaders.type.modelproperties.lastmodifiedheader.type-1.name-1" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L124">generated/models/mappers.ts:124</a></li>
+											</ul>
+										</aside>
+									</section>
+								</section>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="key" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> Key</h3>
+					<div class="tsd-signature tsd-kind-icon">Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L81">generated/models/mappers.ts:81</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="key.serializedname" class="tsd-anchor"></a>
+						<h3>serialized<wbr>Name</h3>
+						<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Key&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L82">generated/models/mappers.ts:82</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="key.type" class="tsd-anchor"></a>
+						<h3>type</h3>
+						<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L83">generated/models/mappers.ts:83</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="key.type.classname" class="tsd-anchor"></a>
+							<h3>class<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">class<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Key&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L85">generated/models/mappers.ts:85</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="key.type.name" class="tsd-anchor"></a>
+							<h3>name</h3>
+							<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Composite"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Composite&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L84">generated/models/mappers.ts:84</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="key.type.modelproperties" class="tsd-anchor"></a>
+							<h3>model<wbr>Properties</h3>
+							<div class="tsd-signature tsd-kind-icon">model<wbr>Properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L86">generated/models/mappers.ts:86</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="key.type.modelproperties.name-1" class="tsd-anchor"></a>
+								<h3>name</h3>
+								<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L87">generated/models/mappers.ts:87</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="key.type.modelproperties.name-1.required" class="tsd-anchor"></a>
+									<h3>required</h3>
+									<div class="tsd-signature tsd-kind-icon">required<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L88">generated/models/mappers.ts:88</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="key.type.modelproperties.name-1.serializedname-1" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;name&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L89">generated/models/mappers.ts:89</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="key.type.modelproperties.name-1.type-1" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L90">generated/models/mappers.ts:90</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="key.type.modelproperties.name-1.type-1.name-2" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L91">generated/models/mappers.ts:91</a></li>
+											</ul>
+										</aside>
+									</section>
+								</section>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="keylist" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> Key<wbr>List</h3>
+					<div class="tsd-signature tsd-kind-icon">Key<wbr>List<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L153">generated/models/mappers.ts:153</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="keylist.serializedname" class="tsd-anchor"></a>
+						<h3>serialized<wbr>Name</h3>
+						<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;KeyList&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L154">generated/models/mappers.ts:154</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="keylist.type" class="tsd-anchor"></a>
+						<h3>type</h3>
+						<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L155">generated/models/mappers.ts:155</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="keylist.type.classname" class="tsd-anchor"></a>
+							<h3>class<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">class<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;KeyList&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L157">generated/models/mappers.ts:157</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="keylist.type.name" class="tsd-anchor"></a>
+							<h3>name</h3>
+							<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Composite"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Composite&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L156">generated/models/mappers.ts:156</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="keylist.type.modelproperties" class="tsd-anchor"></a>
+							<h3>model<wbr>Properties</h3>
+							<div class="tsd-signature tsd-kind-icon">model<wbr>Properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L158">generated/models/mappers.ts:158</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="keylist.type.modelproperties.items" class="tsd-anchor"></a>
+								<h3>items</h3>
+								<div class="tsd-signature tsd-kind-icon">items<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L159">generated/models/mappers.ts:159</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="keylist.type.modelproperties.items.serializedname-1" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L160">generated/models/mappers.ts:160</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="keylist.type.modelproperties.items.type-1" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L161">generated/models/mappers.ts:161</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="keylist.type.modelproperties.items.type-1.name-1" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Sequence"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Sequence&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L162">generated/models/mappers.ts:162</a></li>
+											</ul>
+										</aside>
+									</section>
+									<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+										<a name="keylist.type.modelproperties.items.type-1.element" class="tsd-anchor"></a>
+										<h3>element</h3>
+										<div class="tsd-signature tsd-kind-icon">element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L163">generated/models/mappers.ts:163</a></li>
+											</ul>
+										</aside>
+										<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+											<a name="keylist.type.modelproperties.items.type-1.element.type-2" class="tsd-anchor"></a>
+											<h3>type</h3>
+											<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+											<aside class="tsd-sources">
+												<ul>
+													<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L164">generated/models/mappers.ts:164</a></li>
+												</ul>
+											</aside>
+											<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+												<a name="keylist.type.modelproperties.items.type-1.element.type-2.classname-1" class="tsd-anchor"></a>
+												<h3>class<wbr>Name</h3>
+												<div class="tsd-signature tsd-kind-icon">class<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Key&quot;</span></div>
+												<aside class="tsd-sources">
+													<ul>
+														<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L166">generated/models/mappers.ts:166</a></li>
+													</ul>
+												</aside>
+											</section>
+											<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+												<a name="keylist.type.modelproperties.items.type-1.element.type-2.name-2" class="tsd-anchor"></a>
+												<h3>name</h3>
+												<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Composite"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Composite&quot;</span></div>
+												<aside class="tsd-sources">
+													<ul>
+														<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L165">generated/models/mappers.ts:165</a></li>
+													</ul>
+												</aside>
+											</section>
+										</section>
+									</section>
+								</section>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="label" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> Label</h3>
+					<div class="tsd-signature tsd-kind-icon">Label<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L98">generated/models/mappers.ts:98</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="label.serializedname" class="tsd-anchor"></a>
+						<h3>serialized<wbr>Name</h3>
+						<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Label&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L99">generated/models/mappers.ts:99</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="label.type" class="tsd-anchor"></a>
+						<h3>type</h3>
+						<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L100">generated/models/mappers.ts:100</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="label.type.classname" class="tsd-anchor"></a>
+							<h3>class<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">class<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Label&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L102">generated/models/mappers.ts:102</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="label.type.name" class="tsd-anchor"></a>
+							<h3>name</h3>
+							<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Composite"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Composite&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L101">generated/models/mappers.ts:101</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="label.type.modelproperties" class="tsd-anchor"></a>
+							<h3>model<wbr>Properties</h3>
+							<div class="tsd-signature tsd-kind-icon">model<wbr>Properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L103">generated/models/mappers.ts:103</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="label.type.modelproperties.name-1" class="tsd-anchor"></a>
+								<h3>name</h3>
+								<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L104">generated/models/mappers.ts:104</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="label.type.modelproperties.name-1.required" class="tsd-anchor"></a>
+									<h3>required</h3>
+									<div class="tsd-signature tsd-kind-icon">required<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L105">generated/models/mappers.ts:105</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="label.type.modelproperties.name-1.serializedname-1" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;name&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L106">generated/models/mappers.ts:106</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="label.type.modelproperties.name-1.type-1" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L107">generated/models/mappers.ts:107</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="label.type.modelproperties.name-1.type-1.name-2" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L108">generated/models/mappers.ts:108</a></li>
+											</ul>
+										</aside>
+									</section>
+								</section>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="labellist" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> Label<wbr>List</h3>
+					<div class="tsd-signature tsd-kind-icon">Label<wbr>List<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L175">generated/models/mappers.ts:175</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="labellist.serializedname" class="tsd-anchor"></a>
+						<h3>serialized<wbr>Name</h3>
+						<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;LabelList&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L176">generated/models/mappers.ts:176</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="labellist.type" class="tsd-anchor"></a>
+						<h3>type</h3>
+						<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L177">generated/models/mappers.ts:177</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="labellist.type.classname" class="tsd-anchor"></a>
+							<h3>class<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">class<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;LabelList&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L179">generated/models/mappers.ts:179</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="labellist.type.name" class="tsd-anchor"></a>
+							<h3>name</h3>
+							<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Composite"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Composite&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L178">generated/models/mappers.ts:178</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="labellist.type.modelproperties" class="tsd-anchor"></a>
+							<h3>model<wbr>Properties</h3>
+							<div class="tsd-signature tsd-kind-icon">model<wbr>Properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L180">generated/models/mappers.ts:180</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="labellist.type.modelproperties.items" class="tsd-anchor"></a>
+								<h3>items</h3>
+								<div class="tsd-signature tsd-kind-icon">items<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L181">generated/models/mappers.ts:181</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+									<a name="labellist.type.modelproperties.items.serializedname-1" class="tsd-anchor"></a>
+									<h3>serialized<wbr>Name</h3>
+									<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;&quot;</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L182">generated/models/mappers.ts:182</a></li>
+										</ul>
+									</aside>
+								</section>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="labellist.type.modelproperties.items.type-1" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L183">generated/models/mappers.ts:183</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="labellist.type.modelproperties.items.type-1.name-1" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Sequence"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Sequence&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L184">generated/models/mappers.ts:184</a></li>
+											</ul>
+										</aside>
+									</section>
+									<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+										<a name="labellist.type.modelproperties.items.type-1.element" class="tsd-anchor"></a>
+										<h3>element</h3>
+										<div class="tsd-signature tsd-kind-icon">element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L185">generated/models/mappers.ts:185</a></li>
+											</ul>
+										</aside>
+										<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+											<a name="labellist.type.modelproperties.items.type-1.element.type-2" class="tsd-anchor"></a>
+											<h3>type</h3>
+											<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+											<aside class="tsd-sources">
+												<ul>
+													<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L186">generated/models/mappers.ts:186</a></li>
+												</ul>
+											</aside>
+											<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+												<a name="labellist.type.modelproperties.items.type-1.element.type-2.classname-1" class="tsd-anchor"></a>
+												<h3>class<wbr>Name</h3>
+												<div class="tsd-signature tsd-kind-icon">class<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Label&quot;</span></div>
+												<aside class="tsd-sources">
+													<ul>
+														<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L188">generated/models/mappers.ts:188</a></li>
+													</ul>
+												</aside>
+											</section>
+											<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+												<a name="labellist.type.modelproperties.items.type-1.element.type-2.name-2" class="tsd-anchor"></a>
+												<h3>name</h3>
+												<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Composite"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Composite&quot;</span></div>
+												<aside class="tsd-sources">
+													<ul>
+														<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/mappers.ts#L187">generated/models/mappers.ts:187</a></li>
+													</ul>
+												</aside>
+											</section>
+										</section>
+									</section>
+								</section>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="acceptdatetime" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> accept<wbr>Date<wbr>Time</h3>
+					<div class="tsd-signature tsd-kind-icon">accept<wbr>Date<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L13">generated/models/parameters.ts:13</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="acceptdatetime.parameterpath" class="tsd-anchor"></a>
+						<h3>parameter<wbr>Path</h3>
+						<div class="tsd-signature tsd-kind-icon">parameter<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&quot;options&quot;,&quot;acceptDateTime&quot;]</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L14">generated/models/parameters.ts:14</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="acceptdatetime.mapper" class="tsd-anchor"></a>
+						<h3>mapper</h3>
+						<div class="tsd-signature tsd-kind-icon">mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L18">generated/models/parameters.ts:18</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="acceptdatetime.mapper.serializedname" class="tsd-anchor"></a>
+							<h3>serialized<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Accept-DateTime&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L19">generated/models/parameters.ts:19</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="acceptdatetime.mapper.type" class="tsd-anchor"></a>
+							<h3>type</h3>
+							<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L20">generated/models/parameters.ts:20</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="acceptdatetime.mapper.type.name" class="tsd-anchor"></a>
+								<h3>name</h3>
+								<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"DateTime"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;DateTime&quot;</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L21">generated/models/parameters.ts:21</a></li>
+									</ul>
+								</aside>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="acceptlanguage" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> accept<wbr>Language</h3>
+					<div class="tsd-signature tsd-kind-icon">accept<wbr>Language<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L25">generated/models/parameters.ts:25</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="acceptlanguage.parameterpath" class="tsd-anchor"></a>
+						<h3>parameter<wbr>Path</h3>
+						<div class="tsd-signature tsd-kind-icon">parameter<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;acceptLanguage&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L26">generated/models/parameters.ts:26</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="acceptlanguage.mapper" class="tsd-anchor"></a>
+						<h3>mapper</h3>
+						<div class="tsd-signature tsd-kind-icon">mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L27">generated/models/parameters.ts:27</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="acceptlanguage.mapper.defaultvalue" class="tsd-anchor"></a>
+							<h3>default<wbr>Value</h3>
+							<div class="tsd-signature tsd-kind-icon">default<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;en-US&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L29">generated/models/parameters.ts:29</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="acceptlanguage.mapper.serializedname" class="tsd-anchor"></a>
+							<h3>serialized<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;accept-language&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L28">generated/models/parameters.ts:28</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="acceptlanguage.mapper.type" class="tsd-anchor"></a>
+							<h3>type</h3>
+							<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L30">generated/models/parameters.ts:30</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="acceptlanguage.mapper.type.name" class="tsd-anchor"></a>
+								<h3>name</h3>
+								<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L31">generated/models/parameters.ts:31</a></li>
+									</ul>
+								</aside>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="fields" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> fields</h3>
+					<div class="tsd-signature tsd-kind-icon">fields<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L35">generated/models/parameters.ts:35</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="fields.collectionformat" class="tsd-anchor"></a>
+						<h3>collection<wbr>Format</h3>
+						<div class="tsd-signature tsd-kind-icon">collection<wbr>Format<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Csv</span><span class="tsd-signature-symbol"> =&nbsp;coreHttp.QueryCollectionFormat.Csv</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L51">generated/models/parameters.ts:51</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="fields.parameterpath" class="tsd-anchor"></a>
+						<h3>parameter<wbr>Path</h3>
+						<div class="tsd-signature tsd-kind-icon">parameter<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&quot;options&quot;,&quot;fields&quot;]</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L36">generated/models/parameters.ts:36</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="fields.mapper" class="tsd-anchor"></a>
+						<h3>mapper</h3>
+						<div class="tsd-signature tsd-kind-icon">mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L40">generated/models/parameters.ts:40</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="fields.mapper.serializedname" class="tsd-anchor"></a>
+							<h3>serialized<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;fields&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L41">generated/models/parameters.ts:41</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="fields.mapper.type" class="tsd-anchor"></a>
+							<h3>type</h3>
+							<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L42">generated/models/parameters.ts:42</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="fields.mapper.type.name" class="tsd-anchor"></a>
+								<h3>name</h3>
+								<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Sequence"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Sequence&quot;</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L43">generated/models/parameters.ts:43</a></li>
+									</ul>
+								</aside>
+							</section>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="fields.mapper.type.element" class="tsd-anchor"></a>
+								<h3>element</h3>
+								<div class="tsd-signature tsd-kind-icon">element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L44">generated/models/parameters.ts:44</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="fields.mapper.type.element.type-1" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L45">generated/models/parameters.ts:45</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="fields.mapper.type.element.type-1.name-1" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L46">generated/models/parameters.ts:46</a></li>
+											</ul>
+										</aside>
+									</section>
+								</section>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="key0" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> key0</h3>
+					<div class="tsd-signature tsd-kind-icon">key0<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L53">generated/models/parameters.ts:53</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="key0.collectionformat" class="tsd-anchor"></a>
+						<h3>collection<wbr>Format</h3>
+						<div class="tsd-signature tsd-kind-icon">collection<wbr>Format<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Csv</span><span class="tsd-signature-symbol"> =&nbsp;coreHttp.QueryCollectionFormat.Csv</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L69">generated/models/parameters.ts:69</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="key0.parameterpath" class="tsd-anchor"></a>
+						<h3>parameter<wbr>Path</h3>
+						<div class="tsd-signature tsd-kind-icon">parameter<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&quot;options&quot;,&quot;key&quot;]</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L54">generated/models/parameters.ts:54</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="key0.mapper" class="tsd-anchor"></a>
+						<h3>mapper</h3>
+						<div class="tsd-signature tsd-kind-icon">mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L58">generated/models/parameters.ts:58</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="key0.mapper.serializedname" class="tsd-anchor"></a>
+							<h3>serialized<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;key&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L59">generated/models/parameters.ts:59</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="key0.mapper.type" class="tsd-anchor"></a>
+							<h3>type</h3>
+							<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L60">generated/models/parameters.ts:60</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="key0.mapper.type.name" class="tsd-anchor"></a>
+								<h3>name</h3>
+								<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Sequence"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Sequence&quot;</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L61">generated/models/parameters.ts:61</a></li>
+									</ul>
+								</aside>
+							</section>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="key0.mapper.type.element" class="tsd-anchor"></a>
+								<h3>element</h3>
+								<div class="tsd-signature tsd-kind-icon">element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L62">generated/models/parameters.ts:62</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="key0.mapper.type.element.type-1" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L63">generated/models/parameters.ts:63</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="key0.mapper.type.element.type-1.name-1" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L64">generated/models/parameters.ts:64</a></li>
+											</ul>
+										</aside>
+									</section>
+								</section>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="key1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> key1</h3>
+					<div class="tsd-signature tsd-kind-icon">key1<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L71">generated/models/parameters.ts:71</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="key1.parameterpath" class="tsd-anchor"></a>
+						<h3>parameter<wbr>Path</h3>
+						<div class="tsd-signature tsd-kind-icon">parameter<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;key&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L72">generated/models/parameters.ts:72</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="key1.mapper" class="tsd-anchor"></a>
+						<h3>mapper</h3>
+						<div class="tsd-signature tsd-kind-icon">mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L73">generated/models/parameters.ts:73</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="key1.mapper.required" class="tsd-anchor"></a>
+							<h3>required</h3>
+							<div class="tsd-signature tsd-kind-icon">required<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L74">generated/models/parameters.ts:74</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="key1.mapper.serializedname" class="tsd-anchor"></a>
+							<h3>serialized<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;key&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L75">generated/models/parameters.ts:75</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="key1.mapper.type" class="tsd-anchor"></a>
+							<h3>type</h3>
+							<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L76">generated/models/parameters.ts:76</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="key1.mapper.type.name" class="tsd-anchor"></a>
+								<h3>name</h3>
+								<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L77">generated/models/parameters.ts:77</a></li>
+									</ul>
+								</aside>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="label0" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> label0</h3>
+					<div class="tsd-signature tsd-kind-icon">label0<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L81">generated/models/parameters.ts:81</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="label0.collectionformat" class="tsd-anchor"></a>
+						<h3>collection<wbr>Format</h3>
+						<div class="tsd-signature tsd-kind-icon">collection<wbr>Format<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Csv</span><span class="tsd-signature-symbol"> =&nbsp;coreHttp.QueryCollectionFormat.Csv</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L100">generated/models/parameters.ts:100</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="label0.parameterpath" class="tsd-anchor"></a>
+						<h3>parameter<wbr>Path</h3>
+						<div class="tsd-signature tsd-kind-icon">parameter<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&quot;options&quot;,&quot;label&quot;]</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L82">generated/models/parameters.ts:82</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="label0.mapper" class="tsd-anchor"></a>
+						<h3>mapper</h3>
+						<div class="tsd-signature tsd-kind-icon">mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L86">generated/models/parameters.ts:86</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="label0.mapper.serializedname" class="tsd-anchor"></a>
+							<h3>serialized<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;label&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L87">generated/models/parameters.ts:87</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="label0.mapper.constraints" class="tsd-anchor"></a>
+							<h3>constraints</h3>
+							<div class="tsd-signature tsd-kind-icon">constraints<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L88">generated/models/parameters.ts:88</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="label0.mapper.constraints.maxitems" class="tsd-anchor"></a>
+								<h3>Max<wbr>Items</h3>
+								<div class="tsd-signature tsd-kind-icon">Max<wbr>Items<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;5</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L89">generated/models/parameters.ts:89</a></li>
+									</ul>
+								</aside>
+							</section>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="label0.mapper.type" class="tsd-anchor"></a>
+							<h3>type</h3>
+							<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L91">generated/models/parameters.ts:91</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="label0.mapper.type.name" class="tsd-anchor"></a>
+								<h3>name</h3>
+								<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Sequence"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Sequence&quot;</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L92">generated/models/parameters.ts:92</a></li>
+									</ul>
+								</aside>
+							</section>
+							<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+								<a name="label0.mapper.type.element" class="tsd-anchor"></a>
+								<h3>element</h3>
+								<div class="tsd-signature tsd-kind-icon">element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L93">generated/models/parameters.ts:93</a></li>
+									</ul>
+								</aside>
+								<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+									<a name="label0.mapper.type.element.type-1" class="tsd-anchor"></a>
+									<h3>type</h3>
+									<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+									<aside class="tsd-sources">
+										<ul>
+											<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L94">generated/models/parameters.ts:94</a></li>
+										</ul>
+									</aside>
+									<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+										<a name="label0.mapper.type.element.type-1.name-1" class="tsd-anchor"></a>
+										<h3>name</h3>
+										<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+										<aside class="tsd-sources">
+											<ul>
+												<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L95">generated/models/parameters.ts:95</a></li>
+											</ul>
+										</aside>
+									</section>
+								</section>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="label1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> label1</h3>
+					<div class="tsd-signature tsd-kind-icon">label1<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L102">generated/models/parameters.ts:102</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="label1.parameterpath" class="tsd-anchor"></a>
+						<h3>parameter<wbr>Path</h3>
+						<div class="tsd-signature tsd-kind-icon">parameter<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&quot;options&quot;,&quot;label&quot;]</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L103">generated/models/parameters.ts:103</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="label1.mapper" class="tsd-anchor"></a>
+						<h3>mapper</h3>
+						<div class="tsd-signature tsd-kind-icon">mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L107">generated/models/parameters.ts:107</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="label1.mapper.defaultvalue" class="tsd-anchor"></a>
+							<h3>default<wbr>Value</h3>
+							<div class="tsd-signature tsd-kind-icon">default<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;%00&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L109">generated/models/parameters.ts:109</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="label1.mapper.serializedname" class="tsd-anchor"></a>
+							<h3>serialized<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;label&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L108">generated/models/parameters.ts:108</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="label1.mapper.type" class="tsd-anchor"></a>
+							<h3>type</h3>
+							<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L110">generated/models/parameters.ts:110</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="label1.mapper.type.name" class="tsd-anchor"></a>
+								<h3>name</h3>
+								<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L111">generated/models/parameters.ts:111</a></li>
+									</ul>
+								</aside>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="label2" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> label2</h3>
+					<div class="tsd-signature tsd-kind-icon">label2<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L115">generated/models/parameters.ts:115</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="label2.parameterpath" class="tsd-anchor"></a>
+						<h3>parameter<wbr>Path</h3>
+						<div class="tsd-signature tsd-kind-icon">parameter<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&quot;options&quot;,&quot;label&quot;]</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L116">generated/models/parameters.ts:116</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="label2.mapper" class="tsd-anchor"></a>
+						<h3>mapper</h3>
+						<div class="tsd-signature tsd-kind-icon">mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L120">generated/models/parameters.ts:120</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="label2.mapper.serializedname" class="tsd-anchor"></a>
+							<h3>serialized<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;label&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L121">generated/models/parameters.ts:121</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="label2.mapper.type" class="tsd-anchor"></a>
+							<h3>type</h3>
+							<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L122">generated/models/parameters.ts:122</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="label2.mapper.type.name" class="tsd-anchor"></a>
+								<h3>name</h3>
+								<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L123">generated/models/parameters.ts:123</a></li>
+									</ul>
+								</aside>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="name" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> name</h3>
+					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L127">generated/models/parameters.ts:127</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="name.parameterpath" class="tsd-anchor"></a>
+						<h3>parameter<wbr>Path</h3>
+						<div class="tsd-signature tsd-kind-icon">parameter<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&quot;options&quot;,&quot;name&quot;]</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L128">generated/models/parameters.ts:128</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="name.mapper" class="tsd-anchor"></a>
+						<h3>mapper</h3>
+						<div class="tsd-signature tsd-kind-icon">mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L132">generated/models/parameters.ts:132</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="name.mapper.serializedname" class="tsd-anchor"></a>
+							<h3>serialized<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;name&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L133">generated/models/parameters.ts:133</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="name.mapper.type" class="tsd-anchor"></a>
+							<h3>type</h3>
+							<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L134">generated/models/parameters.ts:134</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="name.mapper.type.name-1" class="tsd-anchor"></a>
+								<h3>name</h3>
+								<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L135">generated/models/parameters.ts:135</a></li>
+									</ul>
+								</aside>
+							</section>
+						</section>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="nextpagelink" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> next<wbr>Page<wbr>Link</h3>
+					<div class="tsd-signature tsd-kind-icon">next<wbr>Page<wbr>Link<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L139">generated/models/parameters.ts:139</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="nextpagelink.parameterpath" class="tsd-anchor"></a>
+						<h3>parameter<wbr>Path</h3>
+						<div class="tsd-signature tsd-kind-icon">parameter<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;nextPageLink&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L140">generated/models/parameters.ts:140</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="nextpagelink.skipencoding" class="tsd-anchor"></a>
+						<h3>skip<wbr>Encoding</h3>
+						<div class="tsd-signature tsd-kind-icon">skip<wbr>Encoding<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L148">generated/models/parameters.ts:148</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+						<a name="nextpagelink.mapper" class="tsd-anchor"></a>
+						<h3>mapper</h3>
+						<div class="tsd-signature tsd-kind-icon">mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L141">generated/models/parameters.ts:141</a></li>
+							</ul>
+						</aside>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="nextpagelink.mapper.required" class="tsd-anchor"></a>
+							<h3>required</h3>
+							<div class="tsd-signature tsd-kind-icon">required<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L142">generated/models/parameters.ts:142</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+							<a name="nextpagelink.mapper.serializedname" class="tsd-anchor"></a>
+							<h3>serialized<wbr>Name</h3>
+							<div class="tsd-signature tsd-kind-icon">serialized<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;nextLink&quot;</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L143">generated/models/parameters.ts:143</a></li>
+								</ul>
+							</aside>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="nextpagelink.mapper.type" class="tsd-anchor"></a>
+							<h3>type</h3>
+							<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L144">generated/models/parameters.ts:144</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="nextpagelink.mapper.type.name" class="tsd-anchor"></a>
+								<h3>name</h3>
+								<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"String"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;String&quot;</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/Azure/azure-sdk-for-js/blob/cd10b47f4/sdk/appconfiguration/app-configuration/src/generated/models/parameters.ts#L145">generated/models/parameters.ts:145</a></li>
+									</ul>
+								</aside>
+							</section>
+						</section>
+					</section>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals current ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-class">
+						<a href="classes/appconfigcredential.html" class="tsd-kind-icon">App<wbr>Config<wbr>Credential</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/appconfigurationclient.html" class="tsd-kind-icon">App<wbr>Configuration<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/configurationclientcontext.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationclientcreateorupdateconfigurationsettingoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Create<wbr>OrUpdate<wbr>Configuration<wbr>Setting<wbr>Optional<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationclientdeleteconfigurationsettingoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Delete<wbr>Configuration<wbr>Setting<wbr>Optional<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationclientgetconfigurationsettingoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Get<wbr>Configuration<wbr>Setting<wbr>Optional<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationclientlistconfigurationsettingsnextoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>List<wbr>Configuration<wbr>Settings<wbr>Next<wbr>Optional<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationclientlistconfigurationsettingsoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>List<wbr>Configuration<wbr>Settings<wbr>Optional<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationclientlistkeysoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>List<wbr>Keys<wbr>Optional<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationclientlistlabelsoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>List<wbr>Labels<wbr>Optional<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationclientlistrevisionsnextoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>List<wbr>Revisions<wbr>Next<wbr>Optional<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationclientlistrevisionsoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>List<wbr>Revisions<wbr>Optional<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationclientlockconfigurationsettingoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Lock<wbr>Configuration<wbr>Setting<wbr>Optional<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationclientoptions.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationclientunlockconfigurationsettingoptionalparams.html" class="tsd-kind-icon">Configuration<wbr>Client<wbr>Unlock<wbr>Configuration<wbr>Setting<wbr>Optional<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationsetting.html" class="tsd-kind-icon">Configuration<wbr>Setting</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configurationsettinglist.html" class="tsd-kind-icon">Configuration<wbr>Setting<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/getconfigurationsettingheaders.html" class="tsd-kind-icon">Get<wbr>Configuration<wbr>Setting<wbr>Headers</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/key.html" class="tsd-kind-icon">Key</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/keylist.html" class="tsd-kind-icon">Key<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/label.html" class="tsd-kind-icon">Label</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/labellist.html" class="tsd-kind-icon">Label<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#createorupdateconfigurationsettingresponse" class="tsd-kind-icon">Create<wbr>OrUpdate<wbr>Configuration<wbr>Setting<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#deleteconfigurationsettingresponse" class="tsd-kind-icon">Delete<wbr>Configuration<wbr>Setting<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#getconfigurationsettingresponse" class="tsd-kind-icon">Get<wbr>Configuration<wbr>Setting<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#listconfigurationsettingsnextresponse" class="tsd-kind-icon">List<wbr>Configuration<wbr>Settings<wbr>Next<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#listconfigurationsettingsresponse" class="tsd-kind-icon">List<wbr>Configuration<wbr>Settings<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#listkeysresponse" class="tsd-kind-icon">List<wbr>Keys<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#listlabelsresponse" class="tsd-kind-icon">List<wbr>Labels<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#listrevisionsnextresponse" class="tsd-kind-icon">List<wbr>Revisions<wbr>Next<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#listrevisionsresponse" class="tsd-kind-icon">List<wbr>Revisions<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#lockconfigurationsettingresponse" class="tsd-kind-icon">Lock<wbr>Configuration<wbr>Setting<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#unlockconfigurationsettingresponse" class="tsd-kind-icon">Unlock<wbr>Configuration<wbr>Setting<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#baseresource" class="tsd-kind-icon">Base<wbr>Resource</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#clouderror" class="tsd-kind-icon">Cloud<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#configurationsetting" class="tsd-kind-icon">Configuration<wbr>Setting</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#configurationsettinglist" class="tsd-kind-icon">Configuration<wbr>Setting<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#getconfigurationsettingheaders" class="tsd-kind-icon">Get<wbr>Configuration<wbr>Setting<wbr>Headers</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#key" class="tsd-kind-icon">Key</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#keylist" class="tsd-kind-icon">Key<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#label" class="tsd-kind-icon">Label</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#labellist" class="tsd-kind-icon">Label<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#acceptdatetime" class="tsd-kind-icon">accept<wbr>Date<wbr>Time</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#acceptlanguage" class="tsd-kind-icon">accept<wbr>Language</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#fields" class="tsd-kind-icon">fields</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#key0" class="tsd-kind-icon">key0</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#key1" class="tsd-kind-icon">key1</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#label0" class="tsd-kind-icon">label0</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#label1" class="tsd-kind-icon">label1</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#label2" class="tsd-kind-icon">label2</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#name" class="tsd-kind-icon">name</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#nextpagelink" class="tsd-kind-icon">next<wbr>Page<wbr>Link</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
