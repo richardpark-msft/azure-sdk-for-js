@@ -267,6 +267,7 @@ export class EventHubClient {
         );
       }
       connectionString = hostOrConnectionString;
+
       if (typeof eventHubNameOrOptions !== "string") {
         // connectionstring and/or options were passed to constructor
         config = EventHubConnectionConfig.create(connectionString);
@@ -302,8 +303,9 @@ export class EventHubClient {
     return ConnectionContext.create(config, credential, options);
   }
 
-  private _createClientSpan(
+  private static _createClientSpan(
     operationName: OperationNames,
+    context: ConnectionContext,
     parentSpan?: Span | SpanContext,
     internal: boolean = false
   ): Span {
@@ -314,8 +316,8 @@ export class EventHubClient {
     });
 
     span.setAttribute("az.namespace", "Microsoft.EventHub");
-    span.setAttribute("message_bus.destination", this.eventHubName);
-    span.setAttribute("peer.address", this.endpoint);
+    span.setAttribute("message_bus.destination", context.config.entityPath);
+    span.setAttribute("peer.address", context.config.endpoint);
 
     return span;
   }
@@ -326,29 +328,29 @@ export class EventHubClient {
    * @returns Promise<void>
    * @throws Error if the underlying connection encounters an error while closing.
    */
-  async close(): Promise<void> {
+  static async close(context: ConnectionContext): Promise<void> {
     try {
-      if (this._context.connection.isOpen()) {
+      if (context.connection.isOpen()) {
         // Close all the senders.
-        for (const senderName of Object.keys(this._context.senders)) {
-          await this._context.senders[senderName].close();
+        for (const senderName of Object.keys(context.senders)) {
+          await context.senders[senderName].close();
         }
         // Close all the receivers.
-        for (const receiverName of Object.keys(this._context.receivers)) {
-          await this._context.receivers[receiverName].close();
+        for (const receiverName of Object.keys(context.receivers)) {
+          await context.receivers[receiverName].close();
         }
         // Close the cbs session;
-        await this._context.cbsSession.close();
+        await context.cbsSession.close();
         // Close the management session
-        await this._context.managementSession!.close();
-        await this._context.connection.close();
-        this._context.wasConnectionCloseCalled = true;
-        logger.info("Closed the amqp connection '%s' on the client.", this._context.connectionId);
+        await context.managementSession!.close();
+        await context.connection.close();
+        context.wasConnectionCloseCalled = true;
+        logger.info("Closed the amqp connection '%s' on the client.", context.connectionId);
       }
     } catch (err) {
       err = err instanceof Error ? err : JSON.stringify(err);
       logger.warning(
-        `An error occurred while closing the connection "${this._context.connectionId}":\n${err}`
+        `An error occurred while closing the connection "${context.connectionId}":\n${err}`
       );
       logErrorStackTrace(err);
       throw err;
@@ -373,20 +375,20 @@ export class EventHubClient {
    * @throws Error if the underlying connection has been closed, create a new EventHubClient.
    * @returns EventHubProducer
    */
-  static createProducer(
-    eventHubName: string,
-    clientOptions: EventHubClientOptions,
-    options?: EventHubProducerOptions
-  ): EventHubProducer {
-    if (!options) {
-      options = {};
-    }
-    if (!options.retryOptions) {
-      options.retryOptions = this._clientOptions.retryOptions;
-    }
-    throwErrorIfConnectionClosed(this._context);
-    return new EventHubProducer(this.eventHubName, this.endpoint, this._context, options);
-  }
+  // static createProducer(
+  //   eventHubName: string,
+  //   clientOptions: EventHubClientOptions,
+  //   options?: EventHubProducerOptions
+  // ): EventHubProducer {
+  //   if (!options) {
+  //     options = {};
+  //   }
+  //   if (!options.retryOptions) {
+  //     options.retryOptions = this._clientOptions.retryOptions;
+  //   }
+  //   throwErrorIfConnectionClosed(this._context);
+  //   return new EventHubProducer(this.eventHubName, this.endpoint, this._context, options);
+  // }
 
   /**
    * Creates an Event Hub consumer that can receive events from a specific Event Hub partition,
@@ -448,18 +450,28 @@ export class EventHubClient {
 
   /**
    * Provides the Event Hub runtime information.
-   * @param [options] The set of options to apply to the operation call.
+   * @param [getEventHubPropertiesOptions] The set of options to apply to the operation call.
    * @returns A promise that resolves with EventHubProperties.
    * @throws Error if the underlying connection has been closed, create a new EventHubClient.
    * @throws AbortError if the operation is cancelled via the abortSignal3.
    */
-  async getProperties(options: GetEventHubPropertiesOptions = {}): Promise<EventHubProperties> {
-    throwErrorIfConnectionClosed(this._context);
-    const clientSpan = this._createClientSpan("getEventHubProperties", getParentSpan(options));
+  static async getProperties(
+    context: ConnectionContext,
+    clientOptions: EventHubClientOptions,
+    getEventHubPropertiesOptions: GetEventHubPropertiesOptions = {}
+  ): Promise<EventHubProperties> {
+    // TODO: centralize? Or make on ever call?
+    throwErrorIfConnectionClosed(context);
+
+    const clientSpan = this._createClientSpan(
+      "getEventHubProperties",
+      context,
+      getParentSpan(getEventHubPropertiesOptions)
+    );
     try {
-      const result = await this._context.managementSession!.getHubRuntimeInformation({
-        retryOptions: this._clientOptions.retryOptions,
-        abortSignal: options.abortSignal
+      const result = await context.managementSession!.getHubRuntimeInformation({
+        retryOptions: clientOptions.retryOptions,
+        abortSignal: getEventHubPropertiesOptions.abortSignal
       });
       clientSpan.setStatus({ code: CanonicalCode.OK });
       return result;
@@ -479,15 +491,26 @@ export class EventHubClient {
   /**
    * Provides an array of partitionIds.
    * @param [options] The set of options to apply to the operation call.
+   * @param context The AMQP connection context.
+   * @param clientOptions The `EventHubClientOptions` for your client.
    * @returns A promise that resolves with an Array of strings.
    * @throws Error if the underlying connection has been closed, create a new EventHubClient.
    * @throws AbortError if the operation is cancelled via the abortSignal.
    */
-  async getPartitionIds(options: GetPartitionIdsOptions): Promise<Array<string>> {
-    throwErrorIfConnectionClosed(this._context);
-    const clientSpan = this._createClientSpan("getPartitionIds", getParentSpan(options), true);
+  static async getPartitionIds(
+    context: ConnectionContext,
+    clientOptions: EventHubClientOptions,
+    options: GetPartitionIdsOptions
+  ): Promise<Array<string>> {
+    throwErrorIfConnectionClosed(context);
+    const clientSpan = this._createClientSpan(
+      "getPartitionIds",
+      context,
+      getParentSpan(options),
+      true
+    );
     try {
-      const runtimeInfo = await this.getProperties({
+      const runtimeInfo = await EventHubClient.getProperties(context, clientOptions, {
         ...options,
         tracingOptions: {
           spanOptions: {
@@ -518,22 +541,29 @@ export class EventHubClient {
    * @throws Error if the underlying connection has been closed, create a new EventHubClient.
    * @throws AbortError if the operation is cancelled via the abortSignal.
    */
-  async getPartitionProperties(
+  static async getPartitionProperties(
     partitionId: string,
+    context: ConnectionContext,
+    clientOptions: EventHubClientOptions,
     options: GetPartitionPropertiesOptions = {}
   ): Promise<PartitionProperties> {
-    throwErrorIfConnectionClosed(this._context);
+    throwErrorIfConnectionClosed(context);
     throwTypeErrorIfParameterMissing(
-      this._context.connectionId,
+      context.connectionId,
       "getPartitionProperties",
       "partitionId",
       partitionId
     );
     partitionId = String(partitionId);
-    const clientSpan = this._createClientSpan("getPartitionProperties", getParentSpan(options));
+    // TODO: can't find this method? why?
+    const clientSpan = EventHubClient._createClientSpan(
+      "getPartitionProperties",
+      context,
+      getParentSpan(options)
+    );
     try {
-      const result = await this._context.managementSession!.getPartitionProperties(partitionId, {
-        retryOptions: this._clientOptions.retryOptions,
+      const result = await context.managementSession!.getPartitionProperties(partitionId, {
+        retryOptions: clientOptions.retryOptions,
         abortSignal: options.abortSignal
       });
       clientSpan.setStatus({ code: CanonicalCode.OK });

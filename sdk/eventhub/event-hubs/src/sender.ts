@@ -95,30 +95,32 @@ export class EventHubProducer {
    * - `abortSignal`   : A signal the request to cancel the send operation.
    * @returns Promise<EventDataBatch>
    */
-  static async createBatch(options?: CreateBatchOptions): Promise<EventDataBatch> {
+  static async createBatch(
+    connectionContext: ConnectionContext,
+    sender: EventHubSender,
+    senderOptions: EventHubProducerOptions,
+    options?: CreateBatchOptions
+  ): Promise<EventDataBatch> {
     this._throwIfSenderOrConnectionClosed();
     if (!options) {
       options = {};
     }
     // throw an error if partition key and partition id are both defined
-    if (
-      typeof options.partitionKey === "string" &&
-      typeof this._senderOptions.partitionId === "string"
-    ) {
+    if (typeof options.partitionKey === "string" && typeof senderOptions.partitionId === "string") {
       const error = new Error(
         "Creating a batch with partition key is not supported when using producers that were created using a partition id."
       );
       logger.warning(
         "[%s] Creating a batch with partition key is not supported when using producers that were created using a partition id. %O",
-        this._context.connectionId,
+        connectionContext.connectionId,
         error
       );
       logErrorStackTrace(error);
       throw error;
     }
 
-    let maxMessageSize = await this._eventHubSender!.getMaxMessageSize({
-      retryOptions: this._senderOptions.retryOptions,
+    let maxMessageSize = await sender.getMaxMessageSize({
+      retryOptions: senderOptions.retryOptions,
       abortSignal: options.abortSignal
     });
     if (options.maxSizeInBytes) {
@@ -127,7 +129,7 @@ export class EventHubProducer {
           `Max message size (${options.maxSizeInBytes} bytes) is greater than maximum message size (${maxMessageSize} bytes) on the AMQP sender link.`
         );
         logger.warning(
-          `[${this._context.connectionId}] Max message size (${options.maxSizeInBytes} bytes) is greater than maximum message size (${maxMessageSize} bytes) on the AMQP sender link. ${error}`
+          `[${connectionContext.connectionId}] Max message size (${options.maxSizeInBytes} bytes) is greater than maximum message size (${maxMessageSize} bytes) on the AMQP sender link. ${error}`
         );
         logErrorStackTrace(error);
         throw error;
@@ -135,7 +137,7 @@ export class EventHubProducer {
       maxMessageSize = options.maxSizeInBytes;
     }
     return new EventDataBatchImpl(
-      this._context,
+      connectionContext,
       maxMessageSize,
       options.partitionKey,
       options.partitionId
@@ -163,17 +165,20 @@ export class EventHubProducer {
    * Create a new producer using the EventHubClient createProducer method.
    */
   static async send(
+    connectionId: string,
     eventData: EventData | EventData[] | EventDataBatch,
+    sender: EventHubSender,
+    producerOptions: EventHubProducerOptions,
     options: SendOptions = {}
   ): Promise<void> {
     this._throwIfSenderOrConnectionClosed();
-    throwTypeErrorIfParameterMissing(this._context.connectionId, "send", "eventData", eventData);
+    throwTypeErrorIfParameterMissing(connectionId, "send", "eventData", eventData);
     if (Array.isArray(eventData) && eventData.length === 0) {
-      logger.info(`[${this._context.connectionId}] Empty array was passed. No events to send.`);
+      logger.info(`[${connectionId}] Empty array was passed. No events to send.`);
       return;
     }
     if (isEventDataBatch(eventData) && eventData.count === 0) {
-      logger.info(`[${this._context.connectionId}] Empty batch was passsed. No events to send.`);
+      logger.info(`[${connectionId}] Empty batch was passsed. No events to send.`);
       return;
     }
     if (!Array.isArray(eventData) && !isEventDataBatch(eventData)) {
@@ -201,8 +206,8 @@ export class EventHubProducer {
     const sendSpan = this._createSendSpan(getParentSpan(options), spanContextsToLink);
 
     try {
-      const result = await this._eventHubSender!.send(eventData, {
-        ...this._senderOptions,
+      const result = await sender.send(eventData, {
+        ...producerOptions,
         ...options
       });
       sendSpan.setStatus({ code: CanonicalCode.OK });
