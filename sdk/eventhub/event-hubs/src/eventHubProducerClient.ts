@@ -14,6 +14,8 @@ import {
   EventHubClientOptions,
   CreateBatchOptions
 } from "./models/public";
+import { EventHubSender } from "./eventHubSender";
+import { ConnectionContext } from './connectionContext';
 
 /**
  * The `EventHubProducerClient` class is used to send events to an Event Hub.
@@ -28,7 +30,10 @@ import {
  *
  */
 export class EventHubProducerClient {
-  private _client: EventHubClient;
+  // private _client: EventHubClient;
+  private _eventHubName: string;
+  private _fullyQualifiedNamespace: string;
+  private _connectionContext: ConnectionContext;
 
   private _producersMap: Map<string, EventHubProducer>;
 
@@ -38,7 +43,8 @@ export class EventHubProducerClient {
    * The name of the Event Hub instance for which this client is created.
    */
   get eventHubName(): string {
-    return this._client.eventHubName;
+    //return this._client.eventHubName;
+    return this._eventHubName;
   }
 
   /**
@@ -48,7 +54,8 @@ export class EventHubProducerClient {
    * This is likely to be similar to <yournamespace>.servicebus.windows.net.
    */
   get fullyQualifiedNamespace(): string {
-    return this._client.fullyQualifiedNamespace;
+    //return this._client.fullyQualifiedNamespace;
+    return this._fullyQualifiedNamespace;
   }
 
   /**
@@ -108,18 +115,18 @@ export class EventHubProducerClient {
     options4?: EventHubClientOptions
   ) {
     if (typeof eventHubNameOrOptions2 !== "string") {
-      this._client = new EventHubClient(
+      this._connectionContext = EventHubClient.createAmqpContext(
         fullyQualifiedNamespaceOrConnectionString1,
         eventHubNameOrOptions2
       );
     } else if (!isTokenCredential(credentialOrOptions3)) {
-      this._client = new EventHubClient(
+      this._connectionContext = EventHubClient.createAmqpContext(
         fullyQualifiedNamespaceOrConnectionString1,
         eventHubNameOrOptions2,
         credentialOrOptions3
       );
     } else {
-      this._client = new EventHubClient(
+      this._connectionContext = EventHubClient.createAmqpContext(
         fullyQualifiedNamespaceOrConnectionString1,
         eventHubNameOrOptions2,
         credentialOrOptions3,
@@ -149,14 +156,14 @@ export class EventHubProducerClient {
       throw new Error("partitionId and partitionKey cannot both be set when creating a batch");
     }
 
-    let producer = this._producersMap.get("");
+    let sender = this._producersMap.get("");
 
-    if (!producer) {
-      producer = this._client.createProducer();
-      this._producersMap.set("", producer);
+    if (!sender) {
+      sender = this._client.createSender();
+      this._producersMap.set("", sender);
     }
 
-    return producer.createBatch(options);
+    return EventHubProducer.createBatch(sender, options);
   }
 
   /**
@@ -179,14 +186,15 @@ export class EventHubProducerClient {
       partitionId = batch.partitionId;
     }
 
-    let producer = this._producersMap.get(partitionId);
-    if (!producer) {
-      producer = this._client.createProducer({
-        partitionId: partitionId === "" ? undefined : partitionId
-      });
-      this._producersMap.set(partitionId, producer);
-    }
-    return producer.send(batch, options);
+    // let producer = this._producersMap.get(partitionId);
+    // if (!producer) {
+    //   producer = this._client.createProducer({
+    //     partitionId: partitionId === "" ? undefined : partitionId
+    //   });
+    //   this._producersMap.set(partitionId, producer);
+    // }
+
+    return EventHubProducer.send(getSender(partitionId), batch, options);
   }
 
   /**
@@ -196,7 +204,7 @@ export class EventHubProducerClient {
    * @throws Error if the underlying connection encounters an error while closing.
    */
   async close(): Promise<void> {
-    await this._client.close();
+    await EventHubClient.close();
 
     for (const pair of this._producersMap) {
       await pair[1].close();
@@ -240,5 +248,40 @@ export class EventHubProducerClient {
     options: GetPartitionPropertiesOptions = {}
   ): Promise<PartitionProperties> {
     return this._client.getPartitionProperties(partitionId, options);
+  }
+
+  private EventHubSender createSender() {
+    // EventHubClient.createProducer()
+    if (!options) {
+      options = {};
+    }
+    if (!options.retryOptions) {
+      options.retryOptions = this._clientOptions.retryOptions;
+    }
+    throwErrorIfConnectionClosed(this._context);
+ 
+    //return new EventHubProducer(this.eventHubName, this.endpoint, this._context, options);
+    this._context = context;
+    this._senderOptions = options || {};
+    const partitionId =
+      this._senderOptions.partitionId != undefined
+        ? String(this._senderOptions.partitionId)
+        : undefined;
+    this._eventHubSender = EventHubSender.create(this._context, partitionId);
+    this._eventHubName = eventHubName;
+    this._endpoint = endpoint;
+  }
+
+  private getCachedSender(partitionId: string): EventHubSender {
+    let sender = this._sendersMap.get(partitionId);
+
+    if (!sender) {
+      sender = this.createSender({
+        partitionId: partitionId === "" ? undefined : partitionId
+      });
+      this._sendersMap.set(partitionId, sender);
+    }
+
+    return sender;
   }
 }

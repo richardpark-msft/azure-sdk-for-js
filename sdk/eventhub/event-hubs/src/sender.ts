@@ -95,7 +95,7 @@ export class EventHubProducer {
    * - `abortSignal`   : A signal the request to cancel the send operation.
    * @returns Promise<EventDataBatch>
    */
-  async createBatch(options?: CreateBatchOptions): Promise<EventDataBatch> {
+  static async createBatch(options?: CreateBatchOptions): Promise<EventDataBatch> {
     this._throwIfSenderOrConnectionClosed();
     if (!options) {
       options = {};
@@ -162,7 +162,7 @@ export class EventHubProducer {
    * @throws Error if batch was created with partitionKey different than the one provided in the options.
    * Create a new producer using the EventHubClient createProducer method.
    */
-  async send(
+  static async send(
     eventData: EventData | EventData[] | EventDataBatch,
     options: SendOptions = {}
   ): Promise<void> {
@@ -226,7 +226,7 @@ export class EventHubProducer {
    * @returns
    * @throws Error if the underlying connection encounters an error while closing.
    */
-  async close(): Promise<void> {
+  static async close(): Promise<void> {
     try {
       if (this._context.connection && this._context.connection.isOpen() && this._eventHubSender) {
         await this._eventHubSender.close();
@@ -245,7 +245,7 @@ export class EventHubProducer {
     }
   }
 
-  private _createSendSpan(
+  private static _createSendSpan(
     parentSpan?: Span | SpanContext,
     spanContextsToLink: SpanContext[] = []
   ): Span {
@@ -268,7 +268,7 @@ export class EventHubProducer {
     return span;
   }
 
-  private _throwIfSenderOrConnectionClosed(): void {
+  private static _throwIfSenderOrConnectionClosed(): void {
     throwErrorIfConnectionClosed(this._context);
     if (this.isClosed) {
       const errorMessage =

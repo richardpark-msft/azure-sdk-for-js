@@ -212,6 +212,96 @@ export class EventHubClient {
     this._context = ConnectionContext.create(config, credential, this._clientOptions);
   }
 
+  // TODO: now we can just use the discriminated union syntax
+  // rather than overloads.
+  static createAmqpContext(
+    connectionString: string,
+    options?: EventHubClientOptions
+  ): ConnectionContext;
+  static createAmqpContext(
+    connectionString: string,
+    eventHubName: string,
+    options?: EventHubClientOptions
+  ): ConnectionContext;
+  static createAmqpContext(
+    host: string,
+    eventHubName: string,
+    credential: TokenCredential,
+    options?: EventHubClientOptions
+  ): ConnectionContext;
+  static createAmqpContext(
+    hostOrConnectionString: string,
+    eventHubNameOrOptions?: string | EventHubClientOptions,
+    credentialOrOptions?: TokenCredential | EventHubClientOptions,
+    // TODO: bug - options is not used in any of the overloads here. This predates the
+    // other overload testing so....proabably just done incorrectly.
+    options?: EventHubClientOptions
+  ): ConnectionContext {
+    let connectionString;
+    let config;
+    let credential: TokenCredential | SharedKeyCredential;
+    hostOrConnectionString = String(hostOrConnectionString);
+
+    if (!isTokenCredential(credentialOrOptions)) {
+      const parsedCS = parseConnectionString<EventHubConnectionStringModel>(hostOrConnectionString);
+      if (
+        !(
+          parsedCS.EntityPath ||
+          (typeof eventHubNameOrOptions === "string" && eventHubNameOrOptions)
+        )
+      ) {
+        throw new TypeError(
+          `Either provide "eventHubName" or the "connectionString": "${hostOrConnectionString}", ` +
+            `must contain "EntityPath=<your-event-hub-name>".`
+        );
+      }
+      if (
+        parsedCS.EntityPath &&
+        typeof eventHubNameOrOptions === "string" &&
+        eventHubNameOrOptions &&
+        parsedCS.EntityPath !== eventHubNameOrOptions
+      ) {
+        throw new TypeError(
+          `The entity path "${parsedCS.EntityPath}" in connectionString: "${hostOrConnectionString}" ` +
+            `doesn't match with eventHubName: "${eventHubNameOrOptions}".`
+        );
+      }
+      connectionString = hostOrConnectionString;
+      if (typeof eventHubNameOrOptions !== "string") {
+        // connectionstring and/or options were passed to constructor
+        config = EventHubConnectionConfig.create(connectionString);
+        options = eventHubNameOrOptions;
+      } else {
+        // connectionstring, eventHubName and/or options were passed to constructor
+        const eventHubName = eventHubNameOrOptions;
+        config = EventHubConnectionConfig.create(connectionString, eventHubName);
+        options = credentialOrOptions;
+      }
+      // Since connectionstring was passed, create a SharedKeyCredential
+      credential = new SharedKeyCredential(config.sharedAccessKeyName, config.sharedAccessKey);
+    } else {
+      // host, eventHubName, a TokenCredential and/or options were passed to constructor
+      const eventHubName = eventHubNameOrOptions;
+      let host = hostOrConnectionString;
+      credential = credentialOrOptions;
+      if (!eventHubName) {
+        throw new TypeError(`"eventHubName" is missing`);
+      }
+
+      if (!host.endsWith("/")) host += "/";
+      connectionString = `Endpoint=sb://${host};SharedAccessKeyName=defaultKeyName;SharedAccessKey=defaultKeyValue;EntityPath=${eventHubName}`;
+      config = EventHubConnectionConfig.create(connectionString);
+    }
+
+    ConnectionConfig.validate(config);
+
+    // TODO: outer clients will store this.
+    // this.endpoint = config.endpoint;
+    // this._clientOptions = options || {};
+
+    return ConnectionContext.create(config, credential, options);
+  }
+
   private _createClientSpan(
     operationName: OperationNames,
     parentSpan?: Span | SpanContext,
@@ -283,7 +373,11 @@ export class EventHubClient {
    * @throws Error if the underlying connection has been closed, create a new EventHubClient.
    * @returns EventHubProducer
    */
-  createProducer(options?: EventHubProducerOptions): EventHubProducer {
+  static createProducer(
+    eventHubName: string,
+    clientOptions: EventHubClientOptions,
+    options?: EventHubProducerOptions
+  ): EventHubProducer {
     if (!options) {
       options = {};
     }
