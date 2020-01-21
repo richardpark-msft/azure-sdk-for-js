@@ -35,7 +35,7 @@ export class EventHubProducerClient {
   private _fullyQualifiedNamespace: string;
   private _connectionContext: ConnectionContext;
 
-  private _producersMap: Map<string, EventHubProducer>;
+  private _sendersMap: Map<string, EventHubSender>;
 
   /**
    * @property
@@ -134,7 +134,7 @@ export class EventHubProducerClient {
       );
     }
 
-    this._producersMap = new Map();
+    this._sendersMap = new Map();
   }
 
   /**
@@ -156,11 +156,11 @@ export class EventHubProducerClient {
       throw new Error("partitionId and partitionKey cannot both be set when creating a batch");
     }
 
-    let sender = this._producersMap.get("");
+    let sender = this._sendersMap.get("");
 
     if (!sender) {
-      sender = this._client.createSender();
-      this._producersMap.set("", sender);
+      sender = this._client.createSender(this._connectionContext);
+      this._sendersMap.set("", sender);
     }
 
     return EventHubProducer.createBatch(sender, options);
@@ -206,10 +206,10 @@ export class EventHubProducerClient {
   async close(): Promise<void> {
     await EventHubClient.close();
 
-    for (const pair of this._producersMap) {
+    for (const pair of this._sendersMap) {
       await pair[1].close();
     }
-    this._producersMap.clear();
+    this._sendersMap.clear();
   }
 
   /**
