@@ -5,7 +5,6 @@ import { isTokenCredential, TokenCredential } from "@azure/core-amqp";
 import { EventDataBatch } from "./eventDataBatch";
 import { EventHubClient } from "./impl/eventHubClient";
 import { EventHubProperties, PartitionProperties } from "./managementClient";
-import { EventHubProducer } from "./sender";
 import {
   SendBatchOptions,
   GetEventHubPropertiesOptions,
@@ -14,9 +13,10 @@ import {
   EventHubClientOptions,
   CreateBatchOptions
 } from "./models/public";
-import { EventHubSender } from "./eventHubSender";
+import { EventHubSender, createBatch } from "./eventHubSender";
 import { ConnectionContext } from "./connectionContext";
 import { throwErrorIfConnectionClosed } from "./util/error";
+import { logger, logErrorStackTrace } from "./log";
 
 /**
  * The `EventHubProducerClient` class is used to send events to an Event Hub.
@@ -159,17 +159,8 @@ export class EventHubProducerClient {
    * @throws AbortError if the operation is cancelled via the abortSignal in the options.
    */
   async createBatch(createBatchOptions?: CreateBatchOptions): Promise<EventDataBatch> {
-    if (createBatchOptions && createBatchOptions.partitionId && createBatchOptions.partitionKey) {
-      throw new Error("partitionId and partitionKey cannot both be set when creating a batch");
-    }
-
     const sender = this.getCachedSenderForPartition("");
-    return EventHubProducer.createBatch(
-      this._connectionContext,
-      sender,
-      this._clientOptions,
-      createBatchOptions
-    );
+    return createBatch(this._connectionContext, sender, this._clientOptions, createBatchOptions);
   }
 
   /**
@@ -193,15 +184,11 @@ export class EventHubProducerClient {
     }
 
     const sender = this.getCachedSenderForPartition(partitionId);
-    // TODO:so it's a _little_ gross to have so many options passed here.
-    // there is some blending occurring with `send` that I'll need to look at.
-    return EventHubProducer.send(
-      this._connectionContext.connectionId,
-      batch,
-      sender,
-      this._clientOptions,
-      sendBatchOptions
-    );
+
+    return sender.send(batch, {
+      ...this._clientOptions,
+      ...sendBatchOptions
+    });
   }
 
   /**
@@ -214,7 +201,20 @@ export class EventHubProducerClient {
     await EventHubClient.close(this._connectionContext);
 
     for (const pair of this._sendersMap) {
-      await pair[1].close();
+      try {
+        if (this._connectionContext.connection && this._connectionContext.connection.isOpen()) {
+          await pair[1].close();
+        }
+      } catch (err) {
+        logger.warning(
+          "[%s] An error occurred while closing the Sender for %s: %O",
+          this._connectionContext.connectionId,
+          this._connectionContext.config.entityPath,
+          err
+        );
+        logErrorStackTrace(err);
+        throw err;
+      }
     }
 
     this._sendersMap.clear();
