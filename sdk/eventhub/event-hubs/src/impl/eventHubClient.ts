@@ -211,87 +211,87 @@ export class EventHubClient {
     this._context = ConnectionContext.create(config, credential, this._clientOptions);
   }
 
-  // TODO: now we can just use the discriminated union syntax
-  // rather than overloads.
-  static createAmqpContext(
-    connectionString: string,
-    options?: EventHubClientOptions
-  ): ConnectionContext;
-  static createAmqpContext(
-    connectionString: string,
-    eventHubName: string,
-    options?: EventHubClientOptions
-  ): ConnectionContext;
-  static createAmqpContext(
+  static createAmqpContextWithTokenCredential(
     host: string,
     eventHubName: string,
     credential: TokenCredential,
     options?: EventHubClientOptions
+  ): ConnectionContext {
+    // host, eventHubName, a TokenCredential and/or options were passed to constructor
+    // const eventHubName = eventHubNameOrOptions;
+    // let host = hostOrConnectionString;
+    // credential = credentialOrOptions;
+    if (!eventHubName) {
+      throw new TypeError(`"eventHubName" is missing`);
+    }
+
+    if (!host.endsWith("/")) host += "/";
+    const connectionString = `Endpoint=sb://${host};SharedAccessKeyName=defaultKeyName;SharedAccessKey=defaultKeyValue;EntityPath=${eventHubName}`;
+    const config = EventHubConnectionConfig.create(connectionString);
+
+    ConnectionConfig.validate(config);
+
+    // TODO: outer clients will store this.
+    // this.endpoint = config.endpoint;
+    // this._clientOptions = options || {};
+
+    return ConnectionContext.create(config, credential, options);
+  }
+
+  // TODO: now we can just use the discriminated union syntax
+  // rather than overloads.
+  static createAmqpContextUsingConnectionString(
+    connectionString: string,
+    options?: EventHubClientOptions
   ): ConnectionContext;
-  static createAmqpContext(
-    hostOrConnectionString: string,
+  static createAmqpContextUsingConnectionString(
+    connectionString: string,
+    eventHubName: string,
+    options?: EventHubClientOptions
+  ): ConnectionContext;
+  static createAmqpContextUsingConnectionString(
+    connectionString: string,
     eventHubNameOrOptions?: string | EventHubClientOptions,
-    credentialOrOptions?: TokenCredential | EventHubClientOptions,
-    // TODO: bug - options is not used in any of the overloads here. This predates the
-    // other overload testing so....proabably just done incorrectly.
     options?: EventHubClientOptions
   ): ConnectionContext {
-    let connectionString;
     let config;
     let credential: TokenCredential | SharedKeyCredential;
-    hostOrConnectionString = String(hostOrConnectionString);
+    connectionString = String(connectionString);
 
-    if (!isTokenCredential(credentialOrOptions)) {
-      const parsedCS = parseConnectionString<EventHubConnectionStringModel>(hostOrConnectionString);
-      if (
-        !(
-          parsedCS.EntityPath ||
-          (typeof eventHubNameOrOptions === "string" && eventHubNameOrOptions)
-        )
-      ) {
-        throw new TypeError(
-          `Either provide "eventHubName" or the "connectionString": "${hostOrConnectionString}", ` +
-            `must contain "EntityPath=<your-event-hub-name>".`
-        );
-      }
-      if (
-        parsedCS.EntityPath &&
-        typeof eventHubNameOrOptions === "string" &&
-        eventHubNameOrOptions &&
-        parsedCS.EntityPath !== eventHubNameOrOptions
-      ) {
-        throw new TypeError(
-          `The entity path "${parsedCS.EntityPath}" in connectionString: "${hostOrConnectionString}" ` +
-            `doesn't match with eventHubName: "${eventHubNameOrOptions}".`
-        );
-      }
-      connectionString = hostOrConnectionString;
-
-      if (typeof eventHubNameOrOptions !== "string") {
-        // connectionstring and/or options were passed to constructor
-        config = EventHubConnectionConfig.create(connectionString);
-        options = eventHubNameOrOptions;
-      } else {
-        // connectionstring, eventHubName and/or options were passed to constructor
-        const eventHubName = eventHubNameOrOptions;
-        config = EventHubConnectionConfig.create(connectionString, eventHubName);
-        options = credentialOrOptions;
-      }
-      // Since connectionstring was passed, create a SharedKeyCredential
-      credential = new SharedKeyCredential(config.sharedAccessKeyName, config.sharedAccessKey);
-    } else {
-      // host, eventHubName, a TokenCredential and/or options were passed to constructor
-      const eventHubName = eventHubNameOrOptions;
-      let host = hostOrConnectionString;
-      credential = credentialOrOptions;
-      if (!eventHubName) {
-        throw new TypeError(`"eventHubName" is missing`);
-      }
-
-      if (!host.endsWith("/")) host += "/";
-      connectionString = `Endpoint=sb://${host};SharedAccessKeyName=defaultKeyName;SharedAccessKey=defaultKeyValue;EntityPath=${eventHubName}`;
-      config = EventHubConnectionConfig.create(connectionString);
+    const parsedCS = parseConnectionString<EventHubConnectionStringModel>(connectionString);
+    if (
+      !(parsedCS.EntityPath || (typeof eventHubNameOrOptions === "string" && eventHubNameOrOptions))
+    ) {
+      throw new TypeError(
+        `Either provide "eventHubName" or the "connectionString": "${connectionString}", ` +
+          `must contain "EntityPath=<your-event-hub-name>".`
+      );
     }
+    if (
+      parsedCS.EntityPath &&
+      typeof eventHubNameOrOptions === "string" &&
+      eventHubNameOrOptions &&
+      parsedCS.EntityPath !== eventHubNameOrOptions
+    ) {
+      throw new TypeError(
+        `The entity path "${parsedCS.EntityPath}" in connectionString: "${connectionString}" ` +
+          `doesn't match with eventHubName: "${eventHubNameOrOptions}".`
+      );
+    }
+    connectionString = connectionString;
+
+    if (typeof eventHubNameOrOptions !== "string") {
+      // connectionstring and/or options were passed to constructor
+      config = EventHubConnectionConfig.create(connectionString);
+      options = eventHubNameOrOptions;
+    } else {
+      // connectionstring, eventHubName and/or options were passed to constructor
+      const eventHubName = eventHubNameOrOptions;
+      config = EventHubConnectionConfig.create(connectionString, eventHubName);
+      options = credentialOrOptions;
+    }
+    // Since connectionstring was passed, create a SharedKeyCredential
+    credential = new SharedKeyCredential(config.sharedAccessKeyName, config.sharedAccessKey);
 
     ConnectionConfig.validate(config);
 
@@ -502,6 +502,10 @@ export class EventHubClient {
     options: GetPartitionIdsOptions
   ): Promise<Array<string>> {
     throwErrorIfConnectionClosed(context);
+
+    // TODO: I guess it's okay to `this.`so long as the method is static and you're static as well?
+    // Not sure if there's a style guideline on this (and also want to test that to make sure it's not just
+    // a fluke)
     const clientSpan = this._createClientSpan(
       "getPartitionIds",
       context,

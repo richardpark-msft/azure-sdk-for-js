@@ -24,6 +24,7 @@ import { PartitionProperties, EventHubProperties } from "./managementClient";
 import { PartitionGate } from "./impl/partitionGate";
 import uuid from "uuid/v4";
 import { validateEventPositions } from "./eventPosition";
+import { ConnectionContext } from "./connectionContext";
 
 const defaultConsumerClientOptions: Required<Pick<
   FullEventProcessorOptions,
@@ -51,8 +52,9 @@ const defaultConsumerClientOptions: Required<Pick<
  * to load balance multiple instances of your application.
  */
 export class EventHubConsumerClient {
-  private _eventHubClient: EventHubClient;
+  // private _eventHubClient: EventHubClient;
   private _partitionGate = new PartitionGate();
+  private _clientOptions: EventHubClientOptions;
   private _id = uuid();
 
   /**
@@ -63,6 +65,7 @@ export class EventHubConsumerClient {
 
   private _checkpointStore: CheckpointStore;
   private _userChoseCheckpointStore: boolean;
+  private _connectionContext: ConnectionContext;
 
   /**
    * @property
@@ -70,7 +73,8 @@ export class EventHubConsumerClient {
    * The name of the Event Hub instance for which this client is created.
    */
   get eventHubName(): string {
-    return this._eventHubClient.eventHubName;
+    //return this._client.eventHubName;
+    return this._connectionContext.config.entityPath;
   }
 
   /**
@@ -80,7 +84,9 @@ export class EventHubConsumerClient {
    * This is likely to be similar to <yournamespace>.servicebus.windows.net.
    */
   get fullyQualifiedNamespace(): string {
-    return this._eventHubClient.fullyQualifiedNamespace;
+    //return this._client.fullyQualifiedNamespace;
+    // return this._fullyQualifiedNamespace;
+    return this._connectionContext.config.host;
   }
 
   /**
@@ -228,79 +234,93 @@ export class EventHubConsumerClient {
     checkpointStoreOrOptions5?: CheckpointStore | EventHubClientOptions,
     options6?: EventHubClientOptions
   ) {
+    let clientOptions: EventHubClientOptions | undefined;
+
     if (isTokenCredential(checkpointStoreOrCredentialOrOptions4)) {
       // #3 or 3.1
       logger.info("Creating EventHubConsumerClient with TokenCredential.");
-
-      let eventHubClientOptions: EventHubClientOptions | undefined;
 
       if (isCheckpointStore(checkpointStoreOrOptions5)) {
         // 3.1
         this._checkpointStore = checkpointStoreOrOptions5;
         this._userChoseCheckpointStore = true;
-        eventHubClientOptions = options6;
+        clientOptions = options6;
       } else {
         this._checkpointStore = new InMemoryCheckpointStore();
         this._userChoseCheckpointStore = false;
-        eventHubClientOptions = checkpointStoreOrOptions5;
+        clientOptions = checkpointStoreOrOptions5;
       }
 
-      this._eventHubClient = new EventHubClient(
+      this._connectionContext = EventHubClient.createAmqpContextWithTokenCredential(
         connectionStringOrFullyQualifiedNamespace2,
         checkpointStoreOrEventHubNameOrOptions3 as string,
         checkpointStoreOrCredentialOrOptions4,
-        eventHubClientOptions
+        clientOptions
       );
+
+      // this._eventHubClient = new EventHubClient(
+      //   connectionStringOrFullyQualifiedNamespace2,
+      //   checkpointStoreOrEventHubNameOrOptions3 as string,
+      //   checkpointStoreOrCredentialOrOptions4,
+      //   eventHubClientOptions
+      // );
     } else if (typeof checkpointStoreOrEventHubNameOrOptions3 === "string") {
       // #2 or 2.1
       logger.info("Creating EventHubConsumerClient with connection string and event hub name.");
-
-      let eventHubClientOptions: EventHubClientOptions | undefined;
 
       if (isCheckpointStore(checkpointStoreOrCredentialOrOptions4)) {
         // 2.1
         this._checkpointStore = checkpointStoreOrCredentialOrOptions4;
         this._userChoseCheckpointStore = true;
-        eventHubClientOptions = checkpointStoreOrOptions5 as EventHubClientOptions | undefined;
+        clientOptions = checkpointStoreOrOptions5 as EventHubClientOptions | undefined;
       } else {
         // 2
         this._checkpointStore = new InMemoryCheckpointStore();
         this._userChoseCheckpointStore = false;
-        eventHubClientOptions = checkpointStoreOrCredentialOrOptions4;
+        clientOptions = checkpointStoreOrCredentialOrOptions4;
       }
 
-      this._eventHubClient = new EventHubClient(
+      // this._eventHubClient = new EventHubClient(
+      //   connectionStringOrFullyQualifiedNamespace2,
+      //   checkpointStoreOrEventHubNameOrOptions3,
+      //   eventHubClientOptions as EventHubClientOptions
+      // );
+
+      this._connectionContext = EventHubClient.createAmqpContextUsingConnectionString(
         connectionStringOrFullyQualifiedNamespace2,
-        checkpointStoreOrEventHubNameOrOptions3,
-        eventHubClientOptions as EventHubClientOptions
+        checkpointStoreOrEventHubNameOrOptions3 as string,
+        clientOptions
       );
     } else {
       // #1 or 1.1
       logger.info("Creating EventHubConsumerClient with connection string.");
 
-      let eventHubClientOptions: EventHubClientOptions | undefined;
-
       if (isCheckpointStore(checkpointStoreOrEventHubNameOrOptions3)) {
         // 1.1
         this._checkpointStore = checkpointStoreOrEventHubNameOrOptions3;
         this._userChoseCheckpointStore = true;
-        eventHubClientOptions = checkpointStoreOrCredentialOrOptions4 as
-          | EventHubClientOptions
-          | undefined;
+        clientOptions = checkpointStoreOrCredentialOrOptions4 as EventHubClientOptions | undefined;
       } else {
         // 1
         this._checkpointStore = new InMemoryCheckpointStore();
         this._userChoseCheckpointStore = false;
-        eventHubClientOptions = checkpointStoreOrEventHubNameOrOptions3 as
+        clientOptions = checkpointStoreOrEventHubNameOrOptions3 as
           | EventHubClientOptions
           | undefined;
       }
 
-      this._eventHubClient = new EventHubClient(
+      this._connectionContext = EventHubClient.createAmqpContextUsingConnectionString(
         connectionStringOrFullyQualifiedNamespace2,
-        eventHubClientOptions
+        clientOptions
       );
+
+      // this._eventHubClient = new EventHubClient(
+      //   connectionStringOrFullyQualifiedNamespace2,
+      //   eventHubClientOptions
+      // );
     }
+
+    this._clientOptions = clientOptions || {};
   }
 
   /**
@@ -310,7 +330,8 @@ export class EventHubConsumerClient {
    * @throws Error if the underlying connection encounters an error while closing.
    */
   close(): Promise<void> {
-    return this._eventHubClient.close();
+    return EventHubClient.close(this._connectionContext);
+    //return this._eventHubClient.close();
   }
 
   /**
@@ -322,33 +343,44 @@ export class EventHubConsumerClient {
    * @throws AbortError if the operation is cancelled via the abortSignal.
    */
   getPartitionIds(options: GetPartitionIdsOptions = {}): Promise<string[]> {
-    return this._eventHubClient.getPartitionIds(options);
+    return EventHubClient.getPartitionIds(this._connectionContext, this._clientOptions, options);
   }
 
   /**
    * Provides information about the state of the specified partition.
    * @param partitionId The id of the partition for which information is required.
-   * @param options The set of options to apply to the operation call.
+   * @param getPartitionPropertiesOptions The set of options to apply to the operation call.
    * @returns A promise that resolves with information about the state of the partition .
    * @throws Error if the underlying connection has been closed, create a new EventHubConsumerClient.
    * @throws AbortError if the operation is cancelled via the abortSignal.
    */
   getPartitionProperties(
     partitionId: string,
-    options: GetPartitionPropertiesOptions = {}
+    getPartitionPropertiesOptions: GetPartitionPropertiesOptions = {}
   ): Promise<PartitionProperties> {
-    return this._eventHubClient.getPartitionProperties(partitionId, options);
+    return EventHubClient.getPartitionProperties(
+      partitionId,
+      this._connectionContext,
+      this._clientOptions,
+      getPartitionPropertiesOptions
+    );
   }
 
   /**
    * Provides the Event Hub runtime information.
-   * @param options The set of options to apply to the operation call.
+   * @param getEventHubPropertiesOptions The set of options to apply to the operation call.
    * @returns A promise that resolves with information about the Event Hub instance.
    * @throws Error if the underlying connection has been closed, create a new EventHubConsumerClient.
    * @throws AbortError if the operation is cancelled via the abortSignal.
    */
-  getEventHubProperties(options: GetEventHubPropertiesOptions = {}): Promise<EventHubProperties> {
-    return this._eventHubClient.getProperties(options);
+  getEventHubProperties(
+    getEventHubPropertiesOptions: GetEventHubPropertiesOptions = {}
+  ): Promise<EventHubProperties> {
+    return EventHubClient.getProperties(
+      this._connectionContext,
+      this._clientOptions,
+      getEventHubPropertiesOptions
+    );
   }
 
   /**

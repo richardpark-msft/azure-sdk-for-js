@@ -115,39 +115,27 @@ export class EventHubProducerClient {
     credentialOrOptions3?: TokenCredential | EventHubClientOptions,
     options4?: EventHubClientOptions
   ) {
-    let actualOptions: EventHubClientOptions | undefined;
+    let actualClientOptions: EventHubClientOptions | undefined;
 
     if (typeof eventHubNameOrOptions2 !== "string") {
-      // TODO: correctness of these assignments?
-      // this._eventHubName = "";
-      // this._fullyQualifiedNamespace = fullyQualifiedNamespaceOrConnectionString1;
+      actualClientOptions = eventHubNameOrOptions2;
 
-      actualOptions = eventHubNameOrOptions2;
-
-      this._connectionContext = EventHubClient.createAmqpContext(
+      this._connectionContext = EventHubClient.createAmqpContextUsingConnectionString(
         fullyQualifiedNamespaceOrConnectionString1,
         eventHubNameOrOptions2
       );
     } else if (!isTokenCredential(credentialOrOptions3)) {
-      // TODO: correctness of these assignments?
-      // this._eventHubName = "";
-      // this._fullyQualifiedNamespace = fullyQualifiedNamespaceOrConnectionString1;
+      actualClientOptions = credentialOrOptions3;
 
-      actualOptions = credentialOrOptions3;
-
-      this._connectionContext = EventHubClient.createAmqpContext(
+      this._connectionContext = EventHubClient.createAmqpContextUsingConnectionString(
         fullyQualifiedNamespaceOrConnectionString1,
         eventHubNameOrOptions2,
         credentialOrOptions3
       );
     } else {
-      // TODO: correctness of these assignments?
-      // this._eventHubName = "";
-      // this._fullyQualifiedNamespace = fullyQualifiedNamespaceOrConnectionString1;
+      actualClientOptions = options4;
 
-      actualOptions = options4;
-
-      this._connectionContext = EventHubClient.createAmqpContext(
+      this._connectionContext = EventHubClient.createAmqpContextWithTokenCredential(
         fullyQualifiedNamespaceOrConnectionString1,
         eventHubNameOrOptions2,
         credentialOrOptions3,
@@ -156,7 +144,7 @@ export class EventHubProducerClient {
     }
 
     this._sendersMap = new Map();
-    this._clientOptions = actualOptions || {};
+    this._clientOptions = actualClientOptions || {};
   }
 
   /**
