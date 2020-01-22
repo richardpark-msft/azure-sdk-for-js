@@ -242,21 +242,23 @@ export class EventHubClient {
   // rather than overloads.
   static createAmqpContextUsingConnectionString(
     connectionString: string,
-    options?: EventHubClientOptions
+    options: EventHubClientOptions
   ): ConnectionContext;
   static createAmqpContextUsingConnectionString(
     connectionString: string,
     eventHubName: string,
-    options?: EventHubClientOptions
+    options: EventHubClientOptions
   ): ConnectionContext;
   static createAmqpContextUsingConnectionString(
     connectionString: string,
-    eventHubNameOrOptions?: string | EventHubClientOptions,
-    options?: EventHubClientOptions
+    eventHubNameOrOptions: string | EventHubClientOptions,
+    optionsArg?: EventHubClientOptions
   ): ConnectionContext {
     let config;
     let credential: TokenCredential | SharedKeyCredential;
     connectionString = String(connectionString);
+
+    let actualEventHubClientOptions: EventHubClientOptions;
 
     const parsedCS = parseConnectionString<EventHubConnectionStringModel>(connectionString);
     if (
@@ -283,12 +285,12 @@ export class EventHubClient {
     if (typeof eventHubNameOrOptions !== "string") {
       // connectionstring and/or options were passed to constructor
       config = EventHubConnectionConfig.create(connectionString);
-      options = eventHubNameOrOptions;
+      actualEventHubClientOptions = eventHubNameOrOptions;
     } else {
       // connectionstring, eventHubName and/or options were passed to constructor
       const eventHubName = eventHubNameOrOptions;
       config = EventHubConnectionConfig.create(connectionString, eventHubName);
-      options = credentialOrOptions;
+      actualEventHubClientOptions = optionsArg!;
     }
     // Since connectionstring was passed, create a SharedKeyCredential
     credential = new SharedKeyCredential(config.sharedAccessKeyName, config.sharedAccessKey);
@@ -298,8 +300,7 @@ export class EventHubClient {
     // TODO: outer clients will store this.
     // this.endpoint = config.endpoint;
     // this._clientOptions = options || {};
-
-    return ConnectionContext.create(config, credential, options);
+    return ConnectionContext.create(config, credential, actualEventHubClientOptions);
   }
 
   private static _createClientSpan(

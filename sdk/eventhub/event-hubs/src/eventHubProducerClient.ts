@@ -115,36 +115,33 @@ export class EventHubProducerClient {
     credentialOrOptions3?: TokenCredential | EventHubClientOptions,
     options4?: EventHubClientOptions
   ) {
-    let actualClientOptions: EventHubClientOptions | undefined;
-
     if (typeof eventHubNameOrOptions2 !== "string") {
-      actualClientOptions = eventHubNameOrOptions2;
+      this._clientOptions = eventHubNameOrOptions2 || {};
 
       this._connectionContext = EventHubClient.createAmqpContextUsingConnectionString(
         fullyQualifiedNamespaceOrConnectionString1,
-        eventHubNameOrOptions2
+        this._clientOptions
       );
     } else if (!isTokenCredential(credentialOrOptions3)) {
-      actualClientOptions = credentialOrOptions3;
+      this._clientOptions = credentialOrOptions3 || {};
 
       this._connectionContext = EventHubClient.createAmqpContextUsingConnectionString(
         fullyQualifiedNamespaceOrConnectionString1,
         eventHubNameOrOptions2,
-        credentialOrOptions3
+        this._clientOptions
       );
     } else {
-      actualClientOptions = options4;
+      this._clientOptions = options4 || {};
 
       this._connectionContext = EventHubClient.createAmqpContextWithTokenCredential(
         fullyQualifiedNamespaceOrConnectionString1,
         eventHubNameOrOptions2,
         credentialOrOptions3,
-        options4
+        this._clientOptions
       );
     }
 
     this._sendersMap = new Map();
-    this._clientOptions = actualClientOptions || {};
   }
 
   /**
