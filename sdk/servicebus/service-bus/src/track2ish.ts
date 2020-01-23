@@ -1,7 +1,5 @@
-import { ConnectionConfig, TokenCredential, SharedKeyCredential } from "@azure/core-amqp";
 import { ServiceBusClientOptions, ServiceBusClient } from "./serviceBusClient";
 import { QueueClient } from "./queueClient";
-import { Receiver } from "./receiver";
 import { Sender } from "./sender";
 import { ReceiveMode, ServiceBusMessage } from "./serviceBusMessage";
 import { MessagingError } from ".";
@@ -25,19 +23,6 @@ export interface CloseableThing {
 }
 
 export class QueueReceiverClient {
-  private _sbClient: ServiceBusClient;
-  private _queueClient: QueueClient;
-  constructor(connectionString: string, queueName: string, options?: ServiceBusClientOptions) {
-    this._sbClient = ServiceBusClient.createFromConnectionString(connectionString, options);
-    this._queueClient = this._sbClient.createQueueClient(queueName);
-  }
-
-  createSender(): Sender {
-    return this._queueClient.createSender();
-  }
-}
-
-export class QueueSenderClient {
   private _sbClient: ServiceBusClient;
   private _queueClient: QueueClient;
   constructor(connectionString: string, queueName: string, options?: ServiceBusClientOptions) {
@@ -103,5 +88,18 @@ export class QueueSenderClient {
         return receiver.close();
       }
     };
+  }
+}
+
+export class QueueSenderClient {
+  private _sbClient: ServiceBusClient;
+  private _queueClient: QueueClient;
+  constructor(connectionString: string, queueName: string, options?: ServiceBusClientOptions) {
+    this._sbClient = ServiceBusClient.createFromConnectionString(connectionString, options);
+    this._queueClient = this._sbClient.createQueueClient(queueName);
+  }
+
+  createSender(): Sender {
+    return this._queueClient.createSender();
   }
 }
