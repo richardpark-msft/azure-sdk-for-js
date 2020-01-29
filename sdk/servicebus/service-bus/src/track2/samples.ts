@@ -52,8 +52,8 @@ export async function demoReceiveAndDelete(): Promise<void> {
 export async function demoSessionUsage(): Promise<void> {
   const consumerClient = new track2.QueueConsumerClient("connection string", "queue name", {});
 
-  consumerClient.consumeSession("sessionId", {
-    async processEvents(messages: SessionMessage[], context: SessionContext) {
+  consumerClient.consumeSession("sessionId", "PeekLock", {
+    async processEvents(messages: SessionMessage[], context: SessionContext & SettleableContext) {
       // TODO: there are more methods, but this is an example of one
       // you'd expect to use when handling messages in a session.
 

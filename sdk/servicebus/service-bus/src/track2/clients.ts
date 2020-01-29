@@ -46,6 +46,17 @@ export class QueueConsumerClient {
   // TODO: can you specify a mode when listening to a session?
   consumeSession(
     sessionId: string,
+    mode: "PeekLock",
+    handlers: ReceiverHandlers<SessionMessage, SessionContext & SettleableContext>
+  ): CloseableThing;
+  consumeSession(
+    sessionId: string,
+    mode: "ReceiveAndDelete",
+    handlers: ReceiverHandlers<SessionMessage, SessionContext>
+  ): CloseableThing;
+  consumeSession(
+    sessionId: string,
+    mode: "PeekLock" | "ReceiveAndDelete",
     handlers: ReceiverHandlers<SessionMessage, SessionContext>
   ): CloseableThing {
     console.log(sessionId, handlers);
