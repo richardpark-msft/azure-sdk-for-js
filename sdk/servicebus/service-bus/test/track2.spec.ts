@@ -1,5 +1,5 @@
-import { QueueProducerClient } from "../src/track2/producerClients";
-import { QueueConsumerClient } from "../src/track2/consumerClients";
+import { QueueProducerClient } from "../src/track2/queueProducerClient";
+import { QueueConsumerClient } from "../src/track2/queueConsumerClient";
 import {
   SettleableContext,
   Message,
@@ -19,11 +19,12 @@ chai.should();
 dotenv.config();
 
 describe.only("queues", () => {
-  describe("sessionless", () => {
+  describe("no sessions", () => {
     let testClients: TestClients;
 
     before(async () => {
-      testClients = await createTestClients();
+      testClients = await createTestClients("nosessions");
+      await drainQueue(testClients.consumer);
     });
 
     after(async () => {
@@ -77,17 +78,13 @@ describe.only("queues", () => {
       testHandler.errors.should.deep.equal([]);
       testHandler.messages.should.deep.equal(["hello from the world of receive and delete"]);
     });
-
-    describe("$management", () => {
-      it("peek", async () => {});
-    });
   });
 
   describe("sessions", () => {
     let testClients: TestClients;
 
     before(async () => {
-      testClients = await createTestClients();
+      testClients = await createTestClients("sessions");
     });
 
     after(async () => {
@@ -97,24 +94,24 @@ describe.only("queues", () => {
     it("peeklock", async () => {
       const sessionId = getUniqueName("sessions-peeklock");
 
-      await testClients.producerForSession.send({
+      await testClients.producer.send({
         body: "hello from the world of peeklock with sessions",
         sessionId
       });
 
-      let peekedMessages = (await testClients.consumerForSession.peekWithoutLock(sessionId)).map(
-        (m) => m.body.toString()
+      let peekedMessages = (await testClients.consumer.peekWithoutLock(sessionId)).map((m) =>
+        m.body.toString()
       );
 
       peekedMessages.should.deep.equal(["hello from the world of peeklock with sessions"]);
 
       const testHandler = createPeekAndLockHandler();
-      const consumer = testClients.consumerForSession.consume(sessionId, "PeekLock", testHandler);
+      const consumer = testClients.consumer.consume(sessionId, "PeekLock", testHandler);
 
       await delay(1000 * 5);
       await consumer.close();
 
-      peekedMessages = await testClients.consumerForSession.peekWithoutLock(sessionId, 1);
+      peekedMessages = await testClients.consumer.peekWithoutLock(sessionId, 1);
       peekedMessages.should.be.empty;
 
       testHandler.errors.should.deep.equal([], "should be no errors");
@@ -123,11 +120,13 @@ describe.only("queues", () => {
         "expected all messages to arrive"
       );
     });
-    describe("receiveAndDelete", async () => {
+
+    it("receiveAndDelete", async () => {
       const sessionId = getUniqueName("sessions-receiveAndDelete");
 
       await testClients.producer.send({
-        body: "hello from the world of receive and delete with sessions"
+        body: "hello from the world of receive and delete with sessions",
+        sessionId
       });
 
       let peekedMessages = await testClients.consumer.peekWithoutLock(sessionId, 1);
@@ -149,9 +148,6 @@ describe.only("queues", () => {
       testHandler.messages.should.deep.equal([
         "hello from the world of receive and delete with sessions"
       ]);
-    });
-    describe("$management", () => {
-      it("peek session while receiving from it", async () => {});
     });
   });
 });
@@ -291,40 +287,38 @@ export async function demoSessionUsage(): Promise<void> {
 
 interface TestClients {
   consumer: QueueConsumerClient;
-  consumerForSession: QueueConsumerClient;
   producer: QueueProducerClient;
-  producerForSession: QueueProducerClient;
   close(): Promise<void>;
 }
 
-export async function createTestClients(): Promise<TestClients> {
-  // consumers
+async function createTestClients(mode: "sessions" | "nosessions"): Promise<TestClients> {
+  const queueName =
+    mode === "nosessions" ? env[EnvVarKeys.QUEUE_NAME]! : env[EnvVarKeys.QUEUE_NAME_SESSION]!;
   const consumer = new QueueConsumerClient(
     env[EnvVarKeys.SERVICEBUS_CONNECTION_STRING]!,
-    env[EnvVarKeys.QUEUE_NAME_NO_PARTITION_SESSION]!
+    queueName
   );
-  const consumerForSession = new QueueConsumerClient(
-    env[EnvVarKeys.SERVICEBUS_CONNECTION_STRING]!,
-    env[EnvVarKeys.QUEUE_NAME_SESSION]!
-  );
-  // producers
   const producer = new QueueProducerClient(
     env[EnvVarKeys.SERVICEBUS_CONNECTION_STRING]!,
-    env[EnvVarKeys.QUEUE_NAME_NO_PARTITION_SESSION]!
-  );
-  const producerForSession = new QueueProducerClient(
-    env[EnvVarKeys.SERVICEBUS_CONNECTION_STRING]!,
-    env[EnvVarKeys.QUEUE_NAME_SESSION]!
+    queueName
   );
 
   return {
     consumer,
     producer,
-    consumerForSession,
-    producerForSession,
     async close() {
       await consumer.close();
       await producer.close();
     }
   };
+}
+
+async function drainQueue(queueClient: QueueConsumerClient): Promise<void> {
+  const result = queueClient.fetch("ReceiveAndDelete", { maxWaitTimeInSeconds: 1 });
+  for await (let message of result.iterator) {
+    if (message == null) {
+      result.close();
+      break;
+    }
+  }
 }

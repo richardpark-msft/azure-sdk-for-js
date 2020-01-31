@@ -1,4 +1,4 @@
-import { QueueConsumerClient } from "./consumerClients";
+import { QueueConsumerClient } from "./queueConsumerClient";
 import { SettleableContext, Message, PlainContext, SessionMessage, SessionContext } from "./models";
 
 // Interesting stuff:

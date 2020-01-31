@@ -739,9 +739,11 @@ export class SessionReceiver {
    *
    * If the iterator is not able to fetch a new message in over a minute, `undefined` will be returned
    */
-  async *getMessageIterator(): AsyncIterableIterator<ServiceBusMessage> {
+  async *getMessageIterator(
+    maxWaitTimeInSeconds?: number
+  ): AsyncIterableIterator<ServiceBusMessage> {
     while (true) {
-      const currentBatch = await this.receiveMessages(1);
+      const currentBatch = await this.receiveMessages(1, maxWaitTimeInSeconds);
       yield currentBatch[0];
     }
   }

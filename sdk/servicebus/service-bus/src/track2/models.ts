@@ -1,4 +1,5 @@
 import { ServiceBusMessage, ReceivedMessageInfo, SendableMessageInfo } from "../serviceBusMessage";
+import { ServiceBusClientOptions } from "../serviceBusClient";
 
 // message with a body and any basic fields that exist in all message types
 // basically a `ServiceBusMessage` w/o the "settlement" methods
@@ -40,4 +41,19 @@ export interface SettleableContext {
   complete(message: Message): Promise<void>;
   deadLetter(message: Message): Promise<void>;
   defer(message: Message): Promise<void>;
+}
+
+export interface QueueConsumerClientOptions extends ServiceBusClientOptions {}
+
+export interface CloseableAsyncIterator<MessageT> extends AsyncIterableIterator<MessageT> {
+  close(): Promise<void>;
+}
+
+export interface FetchResult<MessageT, ContextT> extends CloseableThing {
+  iterator: AsyncIterableIterator<MessageT>;
+  context: ContextT;
+}
+
+export interface FetchOptions {
+  maxWaitTimeInSeconds?: number;
 }

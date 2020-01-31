@@ -34,3 +34,42 @@ export {
   ReceiveMode
 } from "./serviceBusMessage";
 export { Delivery, WebSocketImpl } from "rhea-promise";
+
+import { QueueConsumerClient as Track2QueueConsumerClient } from "./track2/queueConsumerClient";
+import { QueueProducerClient as Track2QueueProducerClient } from "./track2/queueProducerClient";
+
+import {
+  Message as Track2Message,
+  SendableMessage as Track2SendableMessage,
+  PeekedMessage as Track2PeekedMessage,
+  SessionMessage as Track2SessionMessage,
+  MessageBatch as Track2MessageBatch,
+  ReceiverHandlers as Track2ReceiverHandlers,
+  CloseableThing as Track2CloseableThing,
+  SessionContext as Track2SessionContext,
+  PlainContext as Track2PlainContext,
+  SettleableContext as Track2SettleableContext,
+  QueueConsumerClientOptions as Track2QueueConsumerClientOptions,
+  CloseableAsyncIterator as Track2CloseableAsyncIterator,
+  FetchResult as Track2FetchResult,
+  FetchOptions as Track2FetchOptions
+} from "./track2/models";
+
+export {
+  Track2QueueConsumerClient,
+  Track2QueueProducerClient,
+  Track2Message,
+  Track2SendableMessage,
+  Track2PeekedMessage,
+  Track2SessionMessage,
+  Track2MessageBatch,
+  Track2ReceiverHandlers,
+  Track2CloseableThing,
+  Track2SessionContext,
+  Track2PlainContext,
+  Track2SettleableContext,
+  Track2QueueConsumerClientOptions,
+  Track2CloseableAsyncIterator,
+  Track2FetchResult,
+  Track2FetchOptions
+};

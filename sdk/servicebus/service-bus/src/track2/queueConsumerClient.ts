@@ -1,4 +1,4 @@
-import { ServiceBusClientOptions, ServiceBusClient } from "../serviceBusClient";
+import { ServiceBusClient } from "../serviceBusClient";
 import { QueueClient } from "../queueClient";
 import { ReceiveMode, ServiceBusMessage } from "../serviceBusMessage";
 import { MessagingError } from "@azure/core-amqp";
@@ -11,11 +11,12 @@ import {
   CloseableThing,
   Message,
   PlainContext,
-  PeekedMessage
+  PeekedMessage,
+  QueueConsumerClientOptions,
+  FetchResult,
+  FetchOptions
 } from "./models";
 import { peekBySequenceNumber, peek } from "./utils/peekHelpers";
-
-interface QueueConsumerClientOptions extends ServiceBusClientOptions {}
 
 export class QueueConsumerClient {
   private _sbClient: ServiceBusClient;
@@ -23,6 +24,66 @@ export class QueueConsumerClient {
   constructor(connectionString: string, queueName: string, options?: QueueConsumerClientOptions) {
     this._sbClient = ServiceBusClient.createFromConnectionString(connectionString, options);
     this._queueClient = this._sbClient.createQueueClient(queueName);
+  }
+
+  fetch(
+    sessionId: string,
+    mode: "PeekLock",
+    options?: FetchOptions
+  ): FetchResult<Message, SettleableContext>;
+  fetch(
+    sessionId: string,
+    mode: "ReceiveAndDelete",
+    options?: FetchOptions
+  ): FetchResult<Message, PlainContext>;
+  fetch(mode: "PeekLock", options?: FetchOptions): FetchResult<Message, SettleableContext>;
+  fetch(mode: "ReceiveAndDelete", options?: FetchOptions): FetchResult<Message, PlainContext>;
+  fetch(
+    sessionIdOrMode1: "PeekLock" | "ReceiveAndDelete",
+    modeOrOptions2?: "PeekLock" | "ReceiveAndDelete" | FetchOptions,
+    options3?: FetchOptions
+  ): FetchResult<Message, SettleableContext> | FetchResult<Message, PlainContext> {
+    let sessionId: string | undefined;
+    let mode: string;
+    let options: FetchOptions | undefined;
+
+    if (
+      typeof sessionIdOrMode1 === "string" &&
+      modeOrOptions2 != null &&
+      typeof modeOrOptions2 === "string"
+    ) {
+      sessionId = sessionIdOrMode1;
+      mode = modeOrOptions2;
+      options = options3;
+    } else {
+      mode = sessionIdOrMode1;
+      options = modeOrOptions2 as FetchOptions | undefined;
+      sessionId = undefined;
+    }
+
+    if (options == null) {
+      options = {};
+    }
+
+    let receiver: Receiver | SessionReceiver;
+    const receiveMode = mode === "PeekLock" ? ReceiveMode.peekLock : ReceiveMode.receiveAndDelete;
+
+    if (sessionId != null) {
+      receiver = this._queueClient.createReceiver(receiveMode, { sessionId });
+    } else {
+      receiver = this._queueClient.createReceiver(receiveMode);
+    }
+
+    // TODO: this thing needs to be way more configurable than it is.
+    const iterator = receiver.getMessageIterator(options.maxWaitTimeInSeconds);
+
+    return {
+      async close(): Promise<void> {
+        receiver.close();
+      },
+      iterator,
+      context: mode === "PeekLock" ? settleableContext : {}
+    };
   }
 
   consume(
