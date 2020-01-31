@@ -1,4 +1,4 @@
-import * as track2 from "./clients";
+import { QueueConsumerClient } from "./consumerClients";
 import { SettleableContext, Message, PlainContext, SessionMessage, SessionContext } from "./models";
 
 // Interesting stuff:
@@ -7,7 +7,7 @@ import { SettleableContext, Message, PlainContext, SessionMessage, SessionContex
 //   context when they do a ReceiveAndDelete since that wouldn't
 //   make sense.
 export async function demoPeekLock(): Promise<void> {
-  const consumerClient = new track2.QueueConsumerClient("connection string", "queue name", {});
+  const consumerClient = new QueueConsumerClient("connection string", "queue name", {});
 
   const consumer = consumerClient.consume("PeekLock", {
     async processEvents(messages: Message[], context: SettleableContext) {
@@ -32,7 +32,7 @@ export async function demoPeekLock(): Promise<void> {
 }
 
 export async function demoReceiveAndDelete(): Promise<void> {
-  const consumerClient = new track2.QueueConsumerClient("connection string", "queue name", {});
+  const consumerClient = new QueueConsumerClient("connection string", "queue name", {});
 
   consumerClient.consume("ReceiveAndDelete", {
     async processEvents(messages: Message[], context: PlainContext) {
@@ -41,6 +41,7 @@ export async function demoReceiveAndDelete(): Promise<void> {
         //
         // NOTE that it makes no sense to complete() a message
         // in ReceiveAndDelete mode - it's already been removed from the queue.
+        console.log(`Message = ${message}`);
       }
     },
     async processError(err: Error, context: PlainContext) {
@@ -50,9 +51,9 @@ export async function demoReceiveAndDelete(): Promise<void> {
 }
 
 export async function demoSessionUsage(): Promise<void> {
-  const consumerClient = new track2.QueueConsumerClient("connection string", "queue name", {});
+  const consumerClient = new QueueConsumerClient("connection string", "queue name", {});
 
-  consumerClient.consumeSession("sessionId", "PeekLock", {
+  consumerClient.consume("sessionId", "PeekLock", {
     async processEvents(messages: SessionMessage[], context: SessionContext & SettleableContext) {
       // TODO: there are more methods, but this is an example of one
       // you'd expect to use when handling messages in a session.

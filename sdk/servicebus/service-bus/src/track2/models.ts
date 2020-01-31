@@ -1,9 +1,11 @@
-import { ServiceBusMessage, ReceivedMessageInfo } from "../serviceBusMessage";
+import { ServiceBusMessage, ReceivedMessageInfo, SendableMessageInfo } from "../serviceBusMessage";
 
 // message with a body and any basic fields that exist in all message types
 // basically a `ServiceBusMessage` w/o the "settlement" methods
 export interface Message
   extends Omit<ServiceBusMessage, "abandon" | "complete" | "defer" | "deadLetter"> {}
+
+export interface SendableMessage extends SendableMessageInfo {}
 
 export interface PeekedMessage extends ReceivedMessageInfo {}
 
@@ -19,7 +21,7 @@ export interface MessageBatch {
 export interface ReceiverHandlers<MessageType, ContextType> {
   processEvents(messages: MessageType[], context: ContextType): Promise<void>;
   // TODO: needs to be async underneath.
-  processError(err: Error, context: ContextType): Promise<void>;
+  processError(err: Error, context: PlainContext): Promise<void>;
 }
 
 export interface CloseableThing {
