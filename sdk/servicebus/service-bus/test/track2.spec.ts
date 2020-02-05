@@ -18,101 +18,40 @@ chai.should();
 
 dotenv.config();
 
-describe.only("queues", () => {
-  describe("no sessions", () => {
-    let testClients: TestClients;
-
-    before(async () => {
-      testClients = await createTestClients("nosessions");
-      await drainQueue(testClients.consumer);
-    });
-
-    after(async () => {
-      await testClients.close();
-    });
-
-    it("peeklock", async () => {
-      await testClients.producer.send({
-        body: "hello from the world of peeklock"
-      });
-
-      let peekedMessages = await testClients.consumer.peekWithoutLock(1);
-      peekedMessages
-        .map((m) => m.body.toString())
-        .should.deep.equal(["hello from the world of peeklock"]);
-
-      const testHandler = createPeekAndLockHandler();
-      const consumer = testClients.consumer.consume("PeekLock", testHandler);
-
-      // TODO: need ye-olde loopUntil()
-      await delay(1000 * 5);
-      await consumer.close();
-
-      peekedMessages = await testClients.consumer.peekWithoutLock(1);
-
-      peekedMessages.should.be.empty;
-      testHandler.errors.should.deep.equal([]);
-      testHandler.messages.should.deep.equal(["hello from the world of peeklock"]);
-    });
-
-    it("receiveAndDelete", async () => {
-      await testClients.producer.send({
-        body: "hello from the world of receive and delete"
-      });
-
-      let peekedMessages = await testClients.consumer.peekWithoutLock(1);
-      peekedMessages
-        .map((m) => m.body.toString())
-        .should.deep.equal(["hello from the world of receive and delete"]);
-
-      const testHandler = createReceiveAndDeleteHandler();
-      const consumer = testClients.consumer.consume("ReceiveAndDelete", testHandler);
-
-      // TODO: need ye-olde loopUntil()
-      await delay(1000 * 5);
-      await consumer.close();
-
-      peekedMessages = await testClients.consumer.peekWithoutLock(1);
-
-      peekedMessages.should.be.empty;
-      testHandler.errors.should.deep.equal([]);
-      testHandler.messages.should.deep.equal(["hello from the world of receive and delete"]);
-    });
-  });
-
+describe("queue", () => {
   describe("sessions", () => {
-    let testClients: TestClients;
+    let testClientsForSession: TestClients;
 
     before(async () => {
-      testClients = await createTestClients("sessions");
+      testClientsForSession = await createTestClients("sessions");
     });
 
     after(async () => {
-      await testClients.close();
+      await testClientsForSession.close();
     });
 
-    it("peeklock", async () => {
+    it("push, peeklock", async () => {
       const sessionId = getUniqueName("sessions-peeklock");
 
-      await testClients.producer.send({
+      await testClientsForSession.producer.send({
         body: "hello from the world of peeklock with sessions",
         sessionId
       });
 
-      let peekedMessages = (await testClients.consumer.peekWithoutLock(sessionId)).map((m) =>
-        m.body.toString()
-      );
-
-      peekedMessages.should.deep.equal(["hello from the world of peeklock with sessions"]);
-
       const testHandler = createPeekAndLockHandler();
-      const consumer = testClients.consumer.consume(sessionId, "PeekLock", testHandler);
+      const consumer = testClientsForSession.consumer.consume(sessionId, "PeekLock", testHandler);
 
-      await delay(1000 * 5);
+      await loopUntil({
+        maxTimes: 50,
+        name: "loop until messages are received",
+        timeBetweenRunsMs: 200,
+        until: async () => {
+          const peekedMessages = await testClientsForSession.consumer.peekWithoutLock(1);
+          return peekedMessages.length === 0 && testHandler.messages.length >= 1;
+        }
+      });
+
       await consumer.close();
-
-      peekedMessages = await testClients.consumer.peekWithoutLock(sessionId, 1);
-      peekedMessages.should.be.empty;
 
       testHandler.errors.should.deep.equal([], "should be no errors");
       testHandler.messages.should.deep.equal(
@@ -121,33 +60,179 @@ describe.only("queues", () => {
       );
     });
 
-    it("receiveAndDelete", async () => {
+    it("push, receiveAndDelete", async () => {
       const sessionId = getUniqueName("sessions-receiveAndDelete");
 
-      await testClients.producer.send({
+      await testClientsForSession.producer.send({
         body: "hello from the world of receive and delete with sessions",
         sessionId
       });
 
-      let peekedMessages = await testClients.consumer.peekWithoutLock(sessionId, 1);
-      peekedMessages
-        .map((m) => m.body.toString())
-        .should.deep.equal(["hello from the world of receive and delete with sessions"]);
-
       const testHandler = createReceiveAndDeleteHandler();
-      const consumer = testClients.consumer.consume(sessionId, "ReceiveAndDelete", testHandler);
+      const consumer = testClientsForSession.consumer.consume(
+        sessionId,
+        "ReceiveAndDelete",
+        testHandler
+      );
 
-      // TODO: need ye-olde loopUntil()
-      await delay(1000 * 5);
+      await loopUntil({
+        maxTimes: 50,
+        name: "loop until messages are received",
+        timeBetweenRunsMs: 200,
+        until: async () => {
+          const peekedMessages = await testClientsForSession.consumer.peekWithoutLock(1);
+          return peekedMessages.length === 0 && testHandler.messages.length >= 1;
+        }
+      });
+
       await consumer.close();
 
-      peekedMessages = await testClients.consumer.peekWithoutLock(1);
-
-      peekedMessages.should.be.empty;
       testHandler.errors.should.deep.equal([]);
       testHandler.messages.should.deep.equal([
         "hello from the world of receive and delete with sessions"
       ]);
+    });
+
+    it("pull", async () => {
+      const sessionId = getUniqueName("sessions-peeklock");
+
+      await testClientsForSession.producer.send({
+        body: "queues, pull, sessions",
+        sessionId
+      });
+
+      const closeableIterator = testClientsForSession.consumer.fetch(
+        sessionId,
+        "ReceiveAndDelete",
+        {
+          maxWaitTimeInMs: 100
+        }
+      );
+
+      let receivedMessage = "";
+
+      for await (let message of closeableIterator) {
+        if (message != null) {
+          receivedMessage = message.body;
+        }
+
+        break;
+      }
+
+      await closeableIterator.close();
+      receivedMessage.should.equal("queues, pull, sessions");
+    });
+  });
+  describe("without sessions", () => {
+    let testClients: TestClients;
+
+    before(async () => {
+      testClients = await createTestClients("nosessions");
+    });
+
+    beforeEach(async () => {
+      // TODO: for some reason drain is HORRENDOUSLY slow
+      // await drainQueue(testClients.consumer);
+    });
+
+    after(async () => {
+      await testClients.close();
+    });
+
+    it("push, peeklock", async () => {
+      await testClients.producer.send({
+        body: "hello from the world of peeklock"
+      });
+
+      const testHandler = createPeekAndLockHandler();
+      const consumer = testClients.consumer.consume("PeekLock", testHandler);
+
+      await loopUntil({
+        maxTimes: 50,
+        name: "loop until messages are received",
+        timeBetweenRunsMs: 200,
+        until: async () => {
+          const peekedMessages = await testClients.consumer.peekWithoutLock(1);
+          return peekedMessages.length === 0 && testHandler.messages.length >= 1;
+        }
+      });
+
+      await consumer.close();
+
+      testHandler.errors.should.deep.equal([]);
+      testHandler.messages.should.deep.equal(["hello from the world of peeklock"]);
+    });
+
+    it("push, receiveAndDelete", async () => {
+      await testClients.producer.send({
+        body: "hello from the world of receive and delete"
+      });
+
+      const testHandler = createReceiveAndDeleteHandler();
+      const consumer = testClients.consumer.consume("ReceiveAndDelete", testHandler);
+
+      await loopUntil({
+        maxTimes: 50,
+        name: "loop until messages are received",
+        timeBetweenRunsMs: 200,
+        until: async () => {
+          const peekedMessages = await testClients.consumer.peekWithoutLock(1);
+          return peekedMessages.length === 0 && testHandler.messages.length >= 1;
+        }
+      });
+
+      await consumer.close();
+
+      testHandler.errors.should.deep.equal([]);
+      testHandler.messages.should.deep.equal(["hello from the world of receive and delete"]);
+    });
+
+    it.skip("pull, no messages", async function() {
+      const closeableIterator = testClients.consumer.fetch("ReceiveAndDelete", {
+        maxWaitTimeInMs: 100
+      });
+
+      let gotNullMessage = false;
+
+      for await (const message of closeableIterator) {
+        if (message === null) {
+          // when there are no messages in the queue
+          // the iterator will return an undefined message
+          // when the pump runs.
+          gotNullMessage = true;
+        }
+
+        break;
+      }
+
+      await closeableIterator.close();
+      gotNullMessage.should.be.true;
+
+      // this test is HORRIBLY slow - our iterator takes forever to realize there's
+      // no message and just return.
+    });
+
+    it("pull", async () => {
+      await testClients.producer.send({
+        body: "queues, pull, no sessions"
+      });
+
+      const closeableIterator = testClients.consumer.fetch("ReceiveAndDelete", {
+        maxWaitTimeInMs: 100
+      });
+
+      let receivedMessage = "";
+
+      for await (let message of closeableIterator) {
+        if (message != null) {
+          receivedMessage = message.body;
+        }
+
+        break;
+      }
+
+      await closeableIterator.close();
+      receivedMessage.should.equal("queues, pull, no sessions");
     });
   });
 });
@@ -166,16 +251,14 @@ function createPeekAndLockHandler<MessageT extends Message>(): ReceiverHandlers<
   const allReceivedBodies: string[] = [];
 
   return {
-    async processEvents(messages: MessageT[], context: SettleableContext) {
-      for (const message of messages) {
-        try {
-          // TODO: body being 'any' is still unclear to me.
-          allReceivedBodies.push(message.body.toString());
-          await context.complete(message);
-        } catch (err) {
-          errors.push(err);
-          await context.abandon(message);
-        }
+    async processMessage(message: MessageT, context: SettleableContext) {
+      try {
+        // TODO: body being 'any' is still unclear to me.
+        allReceivedBodies.push(message.body.toString());
+        await context.complete(message);
+      } catch (err) {
+        errors.push(err);
+        await context.abandon(message);
       }
     },
     async processError(err: Error, context: PlainContext) {
@@ -195,14 +278,12 @@ function createReceiveAndDeleteHandler<MessageT extends Message>(): ReceiverHand
   const allReceivedBodies: string[] = [];
 
   return {
-    async processEvents(messages: MessageT[], context: PlainContext) {
-      for (const message of messages) {
-        try {
-          // TODO: body being 'any' is still unclear to me.
-          allReceivedBodies.push(message.body.toString());
-        } catch (err) {
-          errors.push(err);
-        }
+    async processMessage(message: MessageT, context: PlainContext) {
+      try {
+        // TODO: body being 'any' is still unclear to me.
+        allReceivedBodies.push(message.body.toString());
+      } catch (err) {
+        errors.push(err);
       }
     },
     async processError(err: Error, context: PlainContext) {
@@ -226,17 +307,15 @@ export async function demoPeekLock(): Promise<void> {
   );
 
   const consumer = consumerClient.consume("PeekLock", {
-    async processEvents(messages: Message[], context: SettleableContext) {
-      for (const message of messages) {
-        try {
-          // handle message in some way...
+    async processMessage(message: Message, context: SettleableContext) {
+      try {
+        // handle message in some way...
 
-          // ...and now complete it so nobody else
-          // attemps to process it.
-          await context.complete(message);
-        } catch (err) {
-          await context.abandon(message);
-        }
+        // ...and now complete it so nobody else
+        // attemps to process it.
+        await context.complete(message);
+      } catch (err) {
+        await context.abandon(message);
       }
     },
     async processError(err: Error, context: SettleableContext) {
@@ -251,14 +330,12 @@ export async function demoReceiveAndDelete(): Promise<void> {
   const consumerClient = new QueueConsumerClient("connection string", "queue name", {});
 
   consumerClient.consume("ReceiveAndDelete", {
-    async processEvents(messages: Message[], context: PlainContext) {
-      for (const message of messages) {
-        // handle message in some way...
-        //
-        // NOTE that it makes no sense to complete() a message
-        // in ReceiveAndDelete mode - it's already been removed from the queue.
-        console.log(`Message = ${message}`);
-      }
+    async processMessage(message: Message, context: PlainContext) {
+      // handle message in some way...
+      //
+      // NOTE that it makes no sense to complete() a message
+      // in ReceiveAndDelete mode - it's already been removed from the queue.
+      console.log(`Message = ${message}`);
     },
     async processError(err: Error, context: PlainContext) {
       console.log(`Error was thrown : ${err}`);
@@ -270,7 +347,7 @@ export async function demoSessionUsage(): Promise<void> {
   const consumerClient = new QueueConsumerClient("connection string", "queue name", {});
 
   consumerClient.consume("sessionId", "PeekLock", {
-    async processEvents(messages: SessionMessage[], context: SessionContext & SettleableContext) {
+    async processMessage(message: SessionMessage, context: SessionContext & SettleableContext) {
       // TODO: there are more methods, but this is an example of one
       // you'd expect to use when handling messages in a session.
 
@@ -313,12 +390,37 @@ async function createTestClients(mode: "sessions" | "nosessions"): Promise<TestC
   };
 }
 
-async function drainQueue(queueClient: QueueConsumerClient): Promise<void> {
-  const result = queueClient.fetch("ReceiveAndDelete", { maxWaitTimeInSeconds: 1 });
-  for await (let message of result.iterator) {
+export async function drainQueue(queueClient: QueueConsumerClient): Promise<void> {
+  const result = queueClient.fetch("ReceiveAndDelete", { maxWaitTimeInMs: 100 });
+
+  for await (let message of result) {
     if (message == null) {
-      result.close();
       break;
     }
   }
+
+  await result.close();
+}
+
+export async function loopUntil(args: {
+  name: string;
+  timeBetweenRunsMs: number;
+  maxTimes: number;
+  until: () => Promise<boolean>;
+  errorMessageFn?: () => string;
+}): Promise<void> {
+  for (let i = 0; i < args.maxTimes + 1; ++i) {
+    const finished = await args.until();
+
+    if (finished) {
+      return;
+    }
+
+    // loggerForTest(`[${args.name}: delaying for ${args.timeBetweenRunsMs}ms]`);
+    await delay(args.timeBetweenRunsMs);
+  }
+
+  throw new Error(
+    `Waited way too long for ${args.name}: ${args.errorMessageFn ? args.errorMessageFn() : ""}`
+  );
 }

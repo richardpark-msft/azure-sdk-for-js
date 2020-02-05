@@ -10,17 +10,15 @@ export async function demoPeekLock(): Promise<void> {
   const consumerClient = new QueueConsumerClient("connection string", "queue name", {});
 
   const consumer = consumerClient.consume("PeekLock", {
-    async processEvents(messages: Message[], context: SettleableContext) {
-      for (const message of messages) {
-        try {
-          // handle message in some way...
+    async processMessage(message: Message, context: SettleableContext) {
+      try {
+        // handle message in some way...
 
-          // ...and now complete it so nobody else
-          // attemps to process it.
-          await context.complete(message);
-        } catch (err) {
-          await context.abandon(message);
-        }
+        // ...and now complete it so nobody else
+        // attemps to process it.
+        await context.complete(message);
+      } catch (err) {
+        await context.abandon(message);
       }
     },
     async processError(err: Error, context: SettleableContext) {
@@ -35,14 +33,12 @@ export async function demoReceiveAndDelete(): Promise<void> {
   const consumerClient = new QueueConsumerClient("connection string", "queue name", {});
 
   consumerClient.consume("ReceiveAndDelete", {
-    async processEvents(messages: Message[], context: PlainContext) {
-      for (const message of messages) {
-        // handle message in some way...
-        //
-        // NOTE that it makes no sense to complete() a message
-        // in ReceiveAndDelete mode - it's already been removed from the queue.
-        console.log(`Message = ${message}`);
-      }
+    async processMessage(message: Message, context: PlainContext) {
+      // handle message in some way...
+      //
+      // NOTE that it makes no sense to complete() a message
+      // in ReceiveAndDelete mode - it's already been removed from the queue.
+      console.log(`Message = ${message}`);
     },
     async processError(err: Error, context: PlainContext) {
       console.log(`Error was thrown : ${err}`);
@@ -54,7 +50,7 @@ export async function demoSessionUsage(): Promise<void> {
   const consumerClient = new QueueConsumerClient("connection string", "queue name", {});
 
   consumerClient.consume("sessionId", "PeekLock", {
-    async processEvents(messages: SessionMessage[], context: SessionContext & SettleableContext) {
+    async processMessage(message: SessionMessage, context: SessionContext & SettleableContext) {
       // TODO: there are more methods, but this is an example of one
       // you'd expect to use when handling messages in a session.
 

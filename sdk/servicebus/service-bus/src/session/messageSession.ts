@@ -177,7 +177,7 @@ export class MessageSession extends LinkEntity {
    * reaceiver will wait ater a message has been received. If no messages are received in that
    * time frame then the session will be closed.
    */
-  newMessageWaitTimeoutInSeconds?: number;
+  newMessageWaitTimeoutInMs?: number;
   /**
    * @property {boolean} autoRenewLock Should lock renewal happen automatically.
    */
@@ -556,9 +556,7 @@ export class MessageSession extends LinkEntity {
         const sbError = translate(receiverError);
         if (sbError.name === "SessionLockLostError") {
           this._context.expiredMessageSessions[this.sessionId!] = true;
-          sbError.message = `The session lock has expired on the session with id ${
-            this.sessionId
-          }.`;
+          sbError.message = `The session lock has expired on the session with id ${this.sessionId}.`;
         }
         log.error(
           "[%s] An error occurred for Receiver '%s': %O.",
@@ -777,13 +775,11 @@ export class MessageSession extends LinkEntity {
      */
     const resetTimerOnNewMessageReceived = (): void => {
       if (this._newMessageReceivedTimer) clearTimeout(this._newMessageReceivedTimer);
-      if (this.newMessageWaitTimeoutInSeconds) {
+      if (this.newMessageWaitTimeoutInMs) {
         this._newMessageReceivedTimer = setTimeout(async () => {
           const msg =
             `MessageSession '${this.sessionId}' with name '${this.name}' did not receive ` +
-            `any messages in the last ${
-              this.newMessageWaitTimeoutInSeconds
-            } seconds. Hence closing it.`;
+            `any messages in the last ${this.newMessageWaitTimeoutInMs} seconds. Hence closing it.`;
           log.error("[%s] %s", this._context.namespace.connectionId, msg);
 
           if (this.callee === SessionCallee.sessionManager) {
@@ -796,7 +792,7 @@ export class MessageSession extends LinkEntity {
             this._notifyError(translate(error));
           }
           await this.close();
-        }, this.newMessageWaitTimeoutInSeconds * 1000);
+        }, this.newMessageWaitTimeoutInMs);
       }
     };
 
@@ -925,7 +921,7 @@ export class MessageSession extends LinkEntity {
    * from a Queue/Subscription.
    *
    * @param maxMessageCount      The maximum number of messages to receive from Queue/Subscription.
-   * @param idleTimeoutInSeconds The maximum wait time in seconds for which the Receiver
+   * @param idleTimeoutInMs The maximum wait time in seconds for which the Receiver
    * should wait to receive the first message. If no message is received by this time,
    * the returned promise gets resolved to an empty array.
    * - **Default**: `60` seconds.
@@ -933,10 +929,10 @@ export class MessageSession extends LinkEntity {
    */
   async receiveMessages(
     maxMessageCount: number,
-    idleTimeoutInSeconds?: number
+    idleTimeoutInMs?: number
   ): Promise<ServiceBusMessage[]> {
-    if (idleTimeoutInSeconds == null) {
-      idleTimeoutInSeconds = Constants.defaultOperationTimeoutInSeconds;
+    if (idleTimeoutInMs == null) {
+      idleTimeoutInMs = Constants.defaultOperationTimeoutInSeconds * 1000;
     }
 
     const brokeredMessages: ServiceBusMessage[] = [];
@@ -945,11 +941,12 @@ export class MessageSession extends LinkEntity {
     return new Promise<ServiceBusMessage[]>((resolve, reject) => {
       let firstMessageWaitTimer: any;
 
-      const setnewMessageWaitTimeoutInSeconds = (value?: number): void => {
-        this.newMessageWaitTimeoutInSeconds = value;
+      const setnewMessageWaitTimeoutInMs = (value?: number): void => {
+        this.newMessageWaitTimeoutInMs = value;
       };
 
-      setnewMessageWaitTimeoutInSeconds(1);
+      // TODO: why is this hardcoded?
+      setnewMessageWaitTimeoutInMs(1000);
 
       // Action to be performed on the "receiver_drained" event.
       const onReceiveDrain: OnAmqpEvent = () => {
@@ -971,10 +968,10 @@ export class MessageSession extends LinkEntity {
       // Action to be performed after the max wait time is over.
       const actionAfterWaitTimeout: Func<void, void> = (): void => {
         log.batching(
-          "[%s] Batching Receiver '%s'  max wait time in seconds %d over.",
+          "[%s] Batching Receiver '%s'  max wait time in milliseconds %d over.",
           this._context.namespace.connectionId,
           this.name,
-          idleTimeoutInSeconds
+          idleTimeoutInMs
         );
         return finalAction();
       };
@@ -1020,7 +1017,7 @@ export class MessageSession extends LinkEntity {
         this.isReceivingMessages = false;
         // Resetting the newMessageWaitTimeoutInSeconds to undefined since we are done receiving
         // a batch of messages.
-        setnewMessageWaitTimeoutInSeconds();
+        setnewMessageWaitTimeoutInMs();
         if (firstMessageWaitTimer) {
           clearTimeout(firstMessageWaitTimer);
         }
@@ -1043,7 +1040,7 @@ export class MessageSession extends LinkEntity {
 
         // Unsetting the newMessageWaitTimeoutInSeconds to undefined since we are done receiving
         // a batch of messages.
-        setnewMessageWaitTimeoutInSeconds();
+        setnewMessageWaitTimeoutInMs();
 
         // Removing listeners, so that the next receiveMessages() call can set them again.
         if (this._receiver) {
@@ -1084,19 +1081,17 @@ export class MessageSession extends LinkEntity {
        */
       const resetTimerOnNewMessageReceived = (): void => {
         if (this._newMessageReceivedTimer) clearTimeout(this._newMessageReceivedTimer);
-        if (this.newMessageWaitTimeoutInSeconds) {
+        if (this.newMessageWaitTimeoutInMs) {
           this._newMessageReceivedTimer = setTimeout(async () => {
             const msg =
               `MessageSession '${this.sessionId}' with name '${this.name}' did not receive ` +
-              `any messages in the last ${
-                this.newMessageWaitTimeoutInSeconds
-              } seconds. Hence closing it.`;
+              `any messages in the last ${this.newMessageWaitTimeoutInMs} milliseconds. Hence closing it.`;
             log.error("[%s] %s", this._context.namespace.connectionId, msg);
             finalAction();
             if (this.callee === SessionCallee.sessionManager) {
               await this.close();
             }
-          }, this.newMessageWaitTimeoutInSeconds * 1000);
+          }, this.newMessageWaitTimeoutInMs);
         }
       };
 
@@ -1114,11 +1109,8 @@ export class MessageSession extends LinkEntity {
         this._receiver!.addCredit(maxMessageCount);
         let msg: string = "[%s] Setting the wait timer for %d seconds for receiver '%s'.";
         if (reuse) msg += " Receiver link already present, hence reusing it.";
-        log.batching(msg, this._context.namespace.connectionId, idleTimeoutInSeconds, this.name);
-        firstMessageWaitTimer = setTimeout(
-          actionAfterWaitTimeout,
-          (idleTimeoutInSeconds as number) * 1000
-        );
+        log.batching(msg, this._context.namespace.connectionId, idleTimeoutInMs, this.name);
+        firstMessageWaitTimer = setTimeout(actionAfterWaitTimeout, idleTimeoutInMs as number);
       };
 
       if (this.isOpen()) {

@@ -221,7 +221,7 @@ export class SessionReceiver {
     peekBySequenceNumber(fromSequenceNumber: Long, maxMessageCount?: number): Promise<ReceivedMessageInfo[]>;
     receiveDeferredMessage(sequenceNumber: Long): Promise<ServiceBusMessage | undefined>;
     receiveDeferredMessages(sequenceNumbers: Long[]): Promise<ServiceBusMessage[]>;
-    receiveMessages(maxMessageCount: number, maxWaitTimeInSeconds?: number): Promise<ServiceBusMessage[]>;
+    receiveMessages(maxMessageCount: number, maxWaitTimeInMs?: number): Promise<ServiceBusMessage[]>;
     readonly receiveMode: ReceiveMode;
     registerMessageHandler(onMessage: OnMessage, onError: OnError, options?: SessionMessageHandlerOptions): void;
     renewSessionLock(): Promise<Date>;
@@ -281,15 +281,13 @@ export interface Track2CloseableThing {
 // @public (undocumented)
 export interface Track2FetchOptions {
     // (undocumented)
-    maxWaitTimeInSeconds?: number;
+    maxWaitTimeInMs?: number;
 }
 
 // @public (undocumented)
-export interface Track2FetchResult<MessageT, ContextT> extends Track2CloseableThing {
+export interface Track2FetchResult<MessageT, ContextT> extends AsyncIterableIterator<MessageT>, Track2CloseableThing {
     // (undocumented)
     context: ContextT;
-    // (undocumented)
-    iterator: AsyncIterableIterator<MessageT>;
 }
 
 // @public (undocumented)
@@ -328,9 +326,11 @@ export class Track2QueueConsumerClient {
     // (undocumented)
     fetch(sessionId: string, mode: "ReceiveAndDelete", options?: Track2FetchOptions): Track2FetchResult<Track2Message, Track2PlainContext>;
     // (undocumented)
-    fetch(mode: "PeekLock", options?: Track2FetchOptions): Track2FetchResult<Track2Message, Track2SettleableContext>;
+    fetch(mode: "ReceiveAndDelete", options?: Track2FetchOptions): Track2FetchResult<Track2Message | undefined, Track2PlainContext>;
     // (undocumented)
-    fetch(mode: "ReceiveAndDelete", options?: Track2FetchOptions): Track2FetchResult<Track2Message, Track2PlainContext>;
+    fetch(mode: "PeekLock", options?: Track2FetchOptions): Track2FetchResult<Track2Message | undefined, Track2SettleableContext>;
+    // (undocumented)
+    fetch(mode: "ReceiveAndDelete", options?: Track2FetchOptions): Track2FetchResult<Track2Message | undefined, Track2PlainContext>;
     // (undocumented)
     peekWithoutLock(sessionId: string, messageCount?: number): Promise<Track2PeekedMessage[]>;
     // Warning: (ae-forgotten-export) The symbol "Long" needs to be exported by the entry point index.d.ts
@@ -365,7 +365,7 @@ export interface Track2ReceiverHandlers<MessageType, ContextType> {
     // (undocumented)
     processError(err: Error, context: Track2PlainContext): Promise<void>;
     // (undocumented)
-    processEvents(messages: MessageType[], context: ContextType): Promise<void>;
+    processMessage(message: MessageType, context: ContextType): Promise<void>;
 }
 
 // @public (undocumented)

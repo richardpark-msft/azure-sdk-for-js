@@ -8,7 +8,7 @@ import {
   SessionMessage,
   SettleableContext,
   SessionContext,
-  CloseableThing,
+  CloseableThingThatNeedsABetterNameThatIsKindOfLikeAnActiveSubscriptionButToTopicsOrQueues,
   Message,
   PlainContext,
   PeekedMessage,
@@ -36,13 +36,25 @@ export class QueueConsumerClient {
     mode: "ReceiveAndDelete",
     options?: FetchOptions
   ): FetchResult<Message, PlainContext>;
-  fetch(mode: "PeekLock", options?: FetchOptions): FetchResult<Message, SettleableContext>;
-  fetch(mode: "ReceiveAndDelete", options?: FetchOptions): FetchResult<Message, PlainContext>;
+  fetch(
+    mode: "ReceiveAndDelete",
+    options?: FetchOptions
+  ): FetchResult<Message | undefined, PlainContext>;
+  fetch(
+    mode: "PeekLock",
+    options?: FetchOptions
+  ): FetchResult<Message | undefined, SettleableContext>;
+  fetch(
+    mode: "ReceiveAndDelete",
+    options?: FetchOptions
+  ): FetchResult<Message | undefined, PlainContext>;
   fetch(
     sessionIdOrMode1: "PeekLock" | "ReceiveAndDelete",
     modeOrOptions2?: "PeekLock" | "ReceiveAndDelete" | FetchOptions,
     options3?: FetchOptions
-  ): FetchResult<Message, SettleableContext> | FetchResult<Message, PlainContext> {
+  ):
+    | FetchResult<Message | undefined, SettleableContext>
+    | FetchResult<Message | undefined, PlainContext> {
     let sessionId: string | undefined;
     let mode: string;
     let options: FetchOptions | undefined;
@@ -75,13 +87,18 @@ export class QueueConsumerClient {
     }
 
     // TODO: this thing needs to be way more configurable than it is.
-    const iterator = receiver.getMessageIterator(options.maxWaitTimeInSeconds);
+    const iterator = receiver.getMessageIterator(options.maxWaitTimeInMs);
 
     return {
-      async close(): Promise<void> {
-        receiver.close();
+      [Symbol.asyncIterator](): AsyncIterableIterator<Message> {
+        return iterator;
       },
-      iterator,
+      next(): Promise<IteratorResult<Message>> {
+        return iterator.next();
+      },
+      async close(): Promise<void> {
+        return receiver.close();
+      },
       context: mode === "PeekLock" ? settleableContext : {}
     };
   }
@@ -90,17 +107,20 @@ export class QueueConsumerClient {
     sessionId: string,
     mode: "PeekLock",
     handlers: ReceiverHandlers<SessionMessage, SessionContext & SettleableContext>
-  ): CloseableThing;
+  ): CloseableThingThatNeedsABetterNameThatIsKindOfLikeAnActiveSubscriptionButToTopicsOrQueues;
   consume(
     sessionId: string,
     mode: "ReceiveAndDelete",
     handlers: ReceiverHandlers<SessionMessage, SessionContext>
-  ): CloseableThing;
-  consume(mode: "PeekLock", handlers: ReceiverHandlers<Message, SettleableContext>): CloseableThing;
+  ): CloseableThingThatNeedsABetterNameThatIsKindOfLikeAnActiveSubscriptionButToTopicsOrQueues;
+  consume(
+    mode: "PeekLock",
+    handlers: ReceiverHandlers<Message, SettleableContext>
+  ): CloseableThingThatNeedsABetterNameThatIsKindOfLikeAnActiveSubscriptionButToTopicsOrQueues;
   consume(
     mode: "ReceiveAndDelete",
     handlers: ReceiverHandlers<Message, PlainContext>
-  ): CloseableThing;
+  ): CloseableThingThatNeedsABetterNameThatIsKindOfLikeAnActiveSubscriptionButToTopicsOrQueues;
   consume(
     sessionIdOrMode: "PeekLock" | "ReceiveAndDelete" | string,
     modeOrHandlers:
@@ -111,7 +131,7 @@ export class QueueConsumerClient {
     handlers?:
       | ReceiverHandlers<SessionMessage, SessionContext>
       | ReceiverHandlers<SessionMessage, SessionContext & SettleableContext>
-  ): CloseableThing {
+  ): CloseableThingThatNeedsABetterNameThatIsKindOfLikeAnActiveSubscriptionButToTopicsOrQueues {
     if (
       typeof sessionIdOrMode === "string" &&
       typeof modeOrHandlers === "string" &&
@@ -139,7 +159,9 @@ export class QueueConsumerClient {
     } else {
       throw new Error("Unhandled argument combination");
     }
-    return <CloseableThing>{
+    return <
+      CloseableThingThatNeedsABetterNameThatIsKindOfLikeAnActiveSubscriptionButToTopicsOrQueues
+    >{
       async close() {
         return receiver.close();
       }
@@ -159,7 +181,9 @@ export class QueueConsumerClient {
     } else {
       throw new Error("Unhandled argument combination");
     }
-    return <CloseableThing>{
+    return <
+      CloseableThingThatNeedsABetterNameThatIsKindOfLikeAnActiveSubscriptionButToTopicsOrQueues
+    >{
       async close() {
         return receiver.close();
       }
@@ -223,7 +247,7 @@ export class QueueConsumerClient {
     receiver.registerMessageHandler(
       async (message: ServiceBusMessage) => {
         // TODO: do real batching - right not we're just doing "batch" size of 1
-        return actualHandlers.processEvents([message], context);
+        return actualHandlers.processMessage(message, context);
       },
       (error: MessagingError | Error) => {
         // TODO: I'm not sure why processError's equivalent
@@ -251,7 +275,7 @@ export class QueueConsumerClient {
     receiver.registerMessageHandler(
       async (message: ServiceBusMessage) => {
         // TODO: do real batching - right not we're just doing "batch" size of 1
-        return actualHandlers.processEvents([message], context);
+        return actualHandlers.processMessage(message, context);
       },
       (error: MessagingError | Error) => {
         // TODO: I'm not sure why processError's equivalent
@@ -277,7 +301,7 @@ export class QueueConsumerClient {
         // TODO: batching.
         // TODO: technically the underlying object still has the settle() and other
         // related methods. We should remove them.
-        return actualHandlers.processEvents([message], settleableContext);
+        return actualHandlers.processMessage(message, settleableContext);
       },
       (error: MessagingError | Error) => {
         // TODO: I'm not sure why processError's equivalent
@@ -305,7 +329,7 @@ export class QueueConsumerClient {
         // TODO: batching.
         // TODO: technically the underlying object still has the settle() and other
         // related methods. We should remove them.
-        return actualHandlers.processEvents([message], settleableContext);
+        return actualHandlers.processMessage(message, settleableContext);
       },
       (error: MessagingError | Error) => {
         // TODO: I'm not sure why processError's equivalent

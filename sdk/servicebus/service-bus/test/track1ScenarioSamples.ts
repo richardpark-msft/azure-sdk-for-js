@@ -1,5 +1,5 @@
 import { ServiceBusClient } from "../src/serviceBusClient";
-import { ReceiveMode, ServiceBusMessage, ReceivedMessageInfo } from "../src/serviceBusMessage";
+import { ReceiveMode, ServiceBusMessage } from "../src/serviceBusMessage";
 import { QueueClient } from "../src/queueClient";
 import { Receiver, SessionReceiver } from "../src/receiver";
 import Long from "long";

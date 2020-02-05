@@ -45,7 +45,7 @@ import {
   SessionMessage as Track2SessionMessage,
   MessageBatch as Track2MessageBatch,
   ReceiverHandlers as Track2ReceiverHandlers,
-  CloseableThing as Track2CloseableThing,
+  CloseableThingThatNeedsABetterNameThatIsKindOfLikeAnActiveSubscriptionButToTopicsOrQueues as Track2CloseableThing,
   SessionContext as Track2SessionContext,
   PlainContext as Track2PlainContext,
   SettleableContext as Track2SettleableContext,

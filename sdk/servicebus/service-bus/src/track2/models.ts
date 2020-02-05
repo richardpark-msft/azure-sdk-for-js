@@ -20,12 +20,12 @@ export interface MessageBatch {
 }
 
 export interface ReceiverHandlers<MessageType, ContextType> {
-  processEvents(messages: MessageType[], context: ContextType): Promise<void>;
+  processMessage(message: MessageType, context: ContextType): Promise<void>;
   // TODO: needs to be async underneath.
   processError(err: Error, context: PlainContext): Promise<void>;
 }
 
-export interface CloseableThing {
+export interface CloseableThingThatNeedsABetterNameThatIsKindOfLikeAnActiveSubscriptionButToTopicsOrQueues {
   close(): Promise<void>;
 }
 
@@ -49,11 +49,18 @@ export interface CloseableAsyncIterator<MessageT> extends AsyncIterableIterator<
   close(): Promise<void>;
 }
 
-export interface FetchResult<MessageT, ContextT> extends CloseableThing {
-  iterator: AsyncIterableIterator<MessageT>;
+// TODO: storage has async iterators, they have an
+// iterator that returns some extra metadata alongside
+// the entity (not directly attached)
+export interface FetchResult<MessageT, ContextT>
+  extends AsyncIterableIterator<MessageT>,
+    CloseableThingThatNeedsABetterNameThatIsKindOfLikeAnActiveSubscriptionButToTopicsOrQueues {
+  // Make it directly iterator.
+  // iterator: AsyncIterableIterator<MessageT>;
+  // [Symbol.iterator]();
   context: ContextT;
 }
 
 export interface FetchOptions {
-  maxWaitTimeInSeconds?: number;
+  maxWaitTimeInMs?: number;
 }
