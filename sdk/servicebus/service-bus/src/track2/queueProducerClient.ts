@@ -18,7 +18,7 @@ export class QueueProducerClient {
     return this._sender.send(message);
   }
 
-  async schedule(scheduledEnqueueTimeUtc: Date, message: SendableMessage): Promise<Long> {
+  async scheduleMessage(scheduledEnqueueTimeUtc: Date, message: SendableMessage): Promise<Long> {
     return this._sender.scheduleMessage(scheduledEnqueueTimeUtc, message);
   }
 
