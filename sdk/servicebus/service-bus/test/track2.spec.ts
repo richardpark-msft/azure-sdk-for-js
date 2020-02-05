@@ -259,6 +259,7 @@ describe.only("queue", () => {
       message!.value!.scheduledEnqueueTimeUtc!.should.equal(scheduledDate);
     });
 
+    // TODO: which of these is more intuitive? Using a method or setting a property on the message?
     it("scheduling via the .scheduleEnqueueTimeUtc property", async () => {
       const futureIncrementInMs = 10;
       let scheduledDate = Date.now() + futureIncrementInMs;
