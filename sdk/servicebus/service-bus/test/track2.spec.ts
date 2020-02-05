@@ -1,24 +1,19 @@
-import { QueueProducerClient } from "../src/track2/queueProducerClient";
-import { QueueConsumerClient } from "../src/track2/queueConsumerClient";
-import {
-  SettleableContext,
-  Message,
-  PlainContext,
-  SessionMessage,
-  SessionContext,
-  ReceiverHandlers
-} from "../src/track2/models";
-import { env } from "process";
-import { EnvVarKeys } from "./utils/envVarUtils";
-import { delay } from "../src";
 import chai from "chai";
 import * as dotenv from "dotenv";
 import { getUniqueName } from "../src/util/utils";
-chai.should();
+import {
+  TestClients,
+  createTestClients,
+  createHandlerThatCompletesEveryMessage,
+  loopUntil,
+  createReceiveAndDeleteHandler
+} from "./track2/track2helpers";
+import { delay } from "../src";
+const should = chai.should();
 
 dotenv.config();
 
-describe("queue", () => {
+describe.only("queue", () => {
   describe("sessions", () => {
     let testClientsForSession: TestClients;
 
@@ -38,7 +33,7 @@ describe("queue", () => {
         sessionId
       });
 
-      const testHandler = createPeekAndLockHandler();
+      const testHandler = createHandlerThatCompletesEveryMessage();
       const consumer = testClientsForSession.consumer.consume(sessionId, "PeekLock", testHandler);
 
       await loopUntil({
@@ -123,6 +118,7 @@ describe("queue", () => {
       receivedMessage.should.equal("queues, pull, sessions");
     });
   });
+
   describe("without sessions", () => {
     let testClients: TestClients;
 
@@ -144,7 +140,7 @@ describe("queue", () => {
         body: "hello from the world of peeklock"
       });
 
-      const testHandler = createPeekAndLockHandler();
+      const testHandler = createHandlerThatCompletesEveryMessage();
       const consumer = testClients.consumer.consume("PeekLock", testHandler);
 
       await loopUntil({
@@ -234,193 +230,58 @@ describe("queue", () => {
       await closeableIterator.close();
       receivedMessage.should.equal("queues, pull, no sessions");
     });
+
+    it("scheduling via scheduleMessage()", async () => {
+      const futureIncrementInMs = 10;
+      let scheduledDate = Date.now() + futureIncrementInMs;
+
+      const scheduledMessageId = await testClients.producer.scheduleMessage(
+        new Date(scheduledDate),
+        {
+          body: "hello world!"
+        }
+      );
+
+      scheduledMessageId.toNumber().should.be.greaterThan(0);
+
+      await delay(futureIncrementInMs);
+
+      let fetchResult = await testClients.consumer.fetch("ReceiveAndDelete", {
+        maxWaitTimeInMs: 1000
+      });
+
+      const message = await fetchResult.next();
+
+      // TODO: this is going to be easy to forget to do.
+      await fetchResult.close();
+
+      should.exist(message && message.value && message.value.scheduledEnqueueTimeUtc);
+      message!.value!.scheduledEnqueueTimeUtc!.should.equal(scheduledDate);
+    });
+
+    it("scheduling via the .scheduleEnqueueTimeUtc property", async () => {
+      const futureIncrementInMs = 10;
+      let scheduledDate = Date.now() + futureIncrementInMs;
+
+      // or you can just set the time on the message you send and use the normal path
+      scheduledDate = Date.now() + 10;
+
+      await testClients.producer.send({
+        body: "this message is _also_ scheduled",
+        scheduledEnqueueTimeUtc: new Date(scheduledDate)
+      });
+
+      await delay(futureIncrementInMs);
+
+      const fetchResult = await testClients.consumer.fetch("ReceiveAndDelete", {
+        maxWaitTimeInMs: 1000
+      });
+
+      const message = await fetchResult.next();
+      await fetchResult.close();
+
+      should.exist(message && message.value && message.value.scheduledEnqueueTimeUtc);
+      message!.value!.scheduledEnqueueTimeUtc!.should.equal(scheduledDate);
+    });
   });
 });
-
-interface RecordedData {
-  messages: string[];
-  errors: Error[];
-}
-
-function createPeekAndLockHandler<MessageT extends Message>(): ReceiverHandlers<
-  MessageT,
-  SettleableContext
-> &
-  RecordedData {
-  const errors: Error[] = [];
-  const allReceivedBodies: string[] = [];
-
-  return {
-    async processMessage(message: MessageT, context: SettleableContext) {
-      try {
-        // TODO: body being 'any' is still unclear to me.
-        allReceivedBodies.push(message.body.toString());
-        await context.complete(message);
-      } catch (err) {
-        errors.push(err);
-        await context.abandon(message);
-      }
-    },
-    async processError(err: Error, context: PlainContext) {
-      errors.push(err);
-    },
-    errors,
-    messages: allReceivedBodies
-  };
-}
-
-function createReceiveAndDeleteHandler<MessageT extends Message>(): ReceiverHandlers<
-  MessageT,
-  PlainContext
-> &
-  RecordedData {
-  const errors: Error[] = [];
-  const allReceivedBodies: string[] = [];
-
-  return {
-    async processMessage(message: MessageT, context: PlainContext) {
-      try {
-        // TODO: body being 'any' is still unclear to me.
-        allReceivedBodies.push(message.body.toString());
-      } catch (err) {
-        errors.push(err);
-      }
-    },
-    async processError(err: Error, context: PlainContext) {
-      errors.push(err);
-    },
-    errors,
-    messages: allReceivedBodies
-  };
-}
-
-// Interesting stuff:
-// * We use a special Context (`SettleableContext`) when they peek
-//   lock that allows them to settle messages. We do NOT pass this
-//   context when they do a ReceiveAndDelete since that wouldn't
-//   make sense.
-export async function demoPeekLock(): Promise<void> {
-  const consumerClient = new QueueConsumerClient(
-    env[EnvVarKeys.SERVICEBUS_CONNECTION_STRING]!,
-    env[EnvVarKeys.QUEUE_NAME_NO_PARTITION_SESSION]!,
-    {}
-  );
-
-  const consumer = consumerClient.consume("PeekLock", {
-    async processMessage(message: Message, context: SettleableContext) {
-      try {
-        // handle message in some way...
-
-        // ...and now complete it so nobody else
-        // attemps to process it.
-        await context.complete(message);
-      } catch (err) {
-        await context.abandon(message);
-      }
-    },
-    async processError(err: Error, context: SettleableContext) {
-      console.log(`Error was thrown : ${err}`);
-    }
-  });
-
-  await consumer.close();
-}
-
-export async function demoReceiveAndDelete(): Promise<void> {
-  const consumerClient = new QueueConsumerClient("connection string", "queue name", {});
-
-  consumerClient.consume("ReceiveAndDelete", {
-    async processMessage(message: Message, context: PlainContext) {
-      // handle message in some way...
-      //
-      // NOTE that it makes no sense to complete() a message
-      // in ReceiveAndDelete mode - it's already been removed from the queue.
-      console.log(`Message = ${message}`);
-    },
-    async processError(err: Error, context: PlainContext) {
-      console.log(`Error was thrown : ${err}`);
-    }
-  });
-}
-
-export async function demoSessionUsage(): Promise<void> {
-  const consumerClient = new QueueConsumerClient("connection string", "queue name", {});
-
-  consumerClient.consume("sessionId", "PeekLock", {
-    async processMessage(message: SessionMessage, context: SessionContext & SettleableContext) {
-      // TODO: there are more methods, but this is an example of one
-      // you'd expect to use when handling messages in a session.
-
-      // TODO: another idea - have a ShutdownReason thing like we do in
-      // EventHubs to indicate session expiration Or make it specific to the session
-      // event handler.
-      await context.renewSessionLock();
-    },
-    async processError(err: Error, context: PlainContext) {
-      console.log(`Error was thrown : ${err}`);
-    }
-  });
-}
-
-interface TestClients {
-  consumer: QueueConsumerClient;
-  producer: QueueProducerClient;
-  close(): Promise<void>;
-}
-
-async function createTestClients(mode: "sessions" | "nosessions"): Promise<TestClients> {
-  const queueName =
-    mode === "nosessions" ? env[EnvVarKeys.QUEUE_NAME]! : env[EnvVarKeys.QUEUE_NAME_SESSION]!;
-  const consumer = new QueueConsumerClient(
-    env[EnvVarKeys.SERVICEBUS_CONNECTION_STRING]!,
-    queueName
-  );
-  const producer = new QueueProducerClient(
-    env[EnvVarKeys.SERVICEBUS_CONNECTION_STRING]!,
-    queueName
-  );
-
-  return {
-    consumer,
-    producer,
-    async close() {
-      await consumer.close();
-      await producer.close();
-    }
-  };
-}
-
-export async function drainQueue(queueClient: QueueConsumerClient): Promise<void> {
-  const result = queueClient.fetch("ReceiveAndDelete", { maxWaitTimeInMs: 100 });
-
-  for await (let message of result) {
-    if (message == null) {
-      break;
-    }
-  }
-
-  await result.close();
-}
-
-export async function loopUntil(args: {
-  name: string;
-  timeBetweenRunsMs: number;
-  maxTimes: number;
-  until: () => Promise<boolean>;
-  errorMessageFn?: () => string;
-}): Promise<void> {
-  for (let i = 0; i < args.maxTimes + 1; ++i) {
-    const finished = await args.until();
-
-    if (finished) {
-      return;
-    }
-
-    // loggerForTest(`[${args.name}: delaying for ${args.timeBetweenRunsMs}ms]`);
-    await delay(args.timeBetweenRunsMs);
-  }
-
-  throw new Error(
-    `Waited way too long for ${args.name}: ${args.errorMessageFn ? args.errorMessageFn() : ""}`
-  );
-}

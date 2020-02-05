@@ -355,7 +355,7 @@ export class Track2QueueProducerClient {
     // (undocumented)
     close(): Promise<void>;
     // (undocumented)
-    schedule(scheduledEnqueueTimeUtc: Date, message: Track2SendableMessage): Promise<Long_2>;
+    scheduleMessage(scheduledEnqueueTimeUtc: Date, message: Track2SendableMessage): Promise<Long_2>;
     // (undocumented)
     send(message: Track2SendableMessage): Promise<void>;
     }
