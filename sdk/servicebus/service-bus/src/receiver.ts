@@ -661,7 +661,7 @@ export class SessionReceiver {
    * property on the receiver.
    *
    * @param maxMessageCount      The maximum number of messages to receive from Queue/Subscription.
-   * @param maxWaitTimeInSeconds The maximum wait time in seconds for which the Receiver
+   * @param maxWaitTimeInMs The maximum wait time in seconds for which the Receiver
    * should wait to receive the first message. If no message is received by this time,
    * the returned promise gets resolved to an empty array.
    * - **Default**: `60` seconds.
@@ -669,12 +669,14 @@ export class SessionReceiver {
    */
   async receiveMessages(
     maxMessageCount: number,
-    maxWaitTimeInSeconds?: number
+    maxWaitTimeInMs?: number
   ): Promise<ServiceBusMessage[]> {
     this._throwIfReceiverOrConnectionClosed();
     this._throwIfAlreadyReceiving();
     await this._createMessageSessionIfDoesntExist();
-    return this._messageSession!.receiveMessages(maxMessageCount, maxWaitTimeInSeconds);
+
+    console.log(`maxWaitTimeInSeconds: ${maxWaitTimeInMs}`);
+    return this._messageSession!.receiveMessages(maxMessageCount, maxWaitTimeInMs);
   }
 
   /**
@@ -739,9 +741,11 @@ export class SessionReceiver {
    *
    * If the iterator is not able to fetch a new message in over a minute, `undefined` will be returned
    */
-  async *getMessageIterator(): AsyncIterableIterator<ServiceBusMessage> {
+  async *getMessageIterator(
+    maxWaitTimeInSeconds?: number
+  ): AsyncIterableIterator<ServiceBusMessage> {
     while (true) {
-      const currentBatch = await this.receiveMessages(1);
+      const currentBatch = await this.receiveMessages(1, maxWaitTimeInSeconds);
       yield currentBatch[0];
     }
   }

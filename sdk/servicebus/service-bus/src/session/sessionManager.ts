@@ -129,7 +129,7 @@ export class SessionManager {
           ...options
         });
 
-        messageSession.newMessageWaitTimeoutInSeconds = options.newMessageWaitTimeoutInSeconds;
+        messageSession.newMessageWaitTimeoutInMs = options.newMessageWaitTimeoutInSeconds;
 
         if (this._isCancelRequested) {
           log.sessionManager(
