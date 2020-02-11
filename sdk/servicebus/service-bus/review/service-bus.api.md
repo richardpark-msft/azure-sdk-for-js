@@ -314,7 +314,7 @@ export interface SessionMessageHandlerOptions {
 // @public
 export class SessionReceiver {
     close(): Promise<void>;
-    getMessageIterator(): AsyncIterableIterator<ServiceBusMessage>;
+    getMessageIterator(maxWaitTimeInSeconds?: number): AsyncIterableIterator<ServiceBusMessage>;
     getState(): Promise<any>;
     get isClosed(): boolean;
     isReceivingMessages(): boolean;
@@ -322,8 +322,8 @@ export class SessionReceiver {
     peekBySequenceNumber(fromSequenceNumber: Long, maxMessageCount?: number): Promise<ReceivedMessageInfo[]>;
     receiveDeferredMessage(sequenceNumber: Long): Promise<ServiceBusMessage | undefined>;
     receiveDeferredMessages(sequenceNumbers: Long[]): Promise<ServiceBusMessage[]>;
-    receiveMessages(maxMessageCount: number, maxWaitTimeInSeconds?: number): Promise<ServiceBusMessage[]>;
-    get receiveMode(): ReceiveMode;
+    receiveMessages(maxMessageCount: number, maxWaitTimeInMs?: number): Promise<ServiceBusMessage[]>;
+    readonly receiveMode: ReceiveMode;
     registerMessageHandler(onMessage: OnMessage, onError: OnError, options?: SessionMessageHandlerOptions): void;
     renewSessionLock(): Promise<Date>;
     get sessionId(): string | undefined;
@@ -429,49 +429,162 @@ export class TopicClient implements Client {
     readonly id: string;
 }
 
-// @public
-export interface TopicDetails {
-    accessedOn?: string;
-    authorizationRules?: AuthorizationRule[];
-    autoDeleteOnIdle?: string;
-    createdOn?: string;
-    defaultMessageTtl: string;
-    duplicateDetectionHistoryTimeWindow: string;
-    enableBatchedOperations: boolean;
-    enableExpress?: boolean;
-    enablePartitioning: boolean;
-    enableSubscriptionPartitioning?: boolean;
-    entityAvailabilityStatus?: string;
-    filteringMessagesBeforePublishing?: boolean;
-    isAnonymousAccessible?: boolean;
-    isExpress?: boolean;
-    maxDeliveryCount?: number;
-    maxSizeInMegabytes: number;
-    messageCount?: number;
-    messageCountDetails?: MessageCountDetails;
-    requiresDuplicateDetection: boolean;
-    sizeInBytes?: number;
-    status?: EntityStatus;
-    subscriptionCount?: number;
-    supportOrdering: boolean;
-    topicName: string;
-    updatedOn?: string;
-    userMetadata?: string;
+// @public (undocumented)
+export interface Track2Closeable {
+    // (undocumented)
+    close(): Promise<void>;
 }
 
-// @public
-export interface TopicOptions {
-    authorizationRules?: AuthorizationRule[];
-    autoDeleteOnIdle?: string;
-    defaultMessageTtl?: string;
-    duplicateDetectionHistoryTimeWindow?: string;
-    enableBatchedOperations?: boolean;
-    enablePartitioning?: boolean;
-    maxSizeInMegabytes?: number;
-    requiresDuplicateDetection?: boolean;
-    status?: EntityStatus;
-    supportOrdering?: boolean;
-    userMetadata?: string;
+// @public (undocumented)
+export interface Track2CloseableAsyncIterator<MessageT> extends AsyncIterableIterator<MessageT> {
+    // (undocumented)
+    close(): Promise<void>;
+}
+
+// @public (undocumented)
+export interface Track2FetchOptions {
+    // (undocumented)
+    maxWaitTimeInMs?: number;
+}
+
+// @public (undocumented)
+export interface Track2FetchResult<MessageT, ContextT> extends AsyncIterableIterator<MessageT>, Track2Closeable {
+    // (undocumented)
+    context: ContextT;
+}
+
+// @public (undocumented)
+export interface Track2Message extends Omit<ServiceBusMessage, "abandon" | "complete" | "defer" | "deadLetter"> {
+}
+
+// @public (undocumented)
+export interface Track2MessageBatch {
+    // (undocumented)
+    tryAdd(message: Track2Message): boolean;
+}
+
+// @public (undocumented)
+export interface Track2PeekedMessage extends ReceivedMessageInfo {
+}
+
+// @public (undocumented)
+export interface Track2PlainContext {
+}
+
+// @public (undocumented)
+export class Track2QueueConsumerClient {
+    constructor(queueConnectionString: string, options?: Track2QueueReceiverClientOptions);
+    constructor(serviceBusConnectionString: string, queueName: string, options?: Track2QueueReceiverClientOptions);
+    // (undocumented)
+    close(): Promise<void>;
+    // (undocumented)
+    consume(sessionId: string, mode: "PeekLock", handlers: Track2ReceiverHandlers<Track2SessionMessage, Track2SessionContext & Track2SettleableContext>): Track2Closeable;
+    // (undocumented)
+    consume(sessionId: string, mode: "ReceiveAndDelete", handlers: Track2ReceiverHandlers<Track2SessionMessage, Track2SessionContext>): Track2Closeable;
+    // (undocumented)
+    consume(mode: "PeekLock", handlers: Track2ReceiverHandlers<Track2Message, Track2SettleableContext>): Track2Closeable;
+    // (undocumented)
+    consume(mode: "ReceiveAndDelete", handlers: Track2ReceiverHandlers<Track2Message, Track2PlainContext>): Track2Closeable;
+    // (undocumented)
+    fetch(sessionId: string, mode: "PeekLock", options?: Track2FetchOptions): Track2FetchResult<Track2Message, Track2SettleableContext>;
+    // (undocumented)
+    fetch(sessionId: string, mode: "ReceiveAndDelete", options?: Track2FetchOptions): Track2FetchResult<Track2Message, Track2PlainContext>;
+    // (undocumented)
+    fetch(mode: "ReceiveAndDelete", options?: Track2FetchOptions): Track2FetchResult<Track2Message | undefined, Track2PlainContext>;
+    // (undocumented)
+    fetch(mode: "PeekLock", options?: Track2FetchOptions): Track2FetchResult<Track2Message | undefined, Track2SettleableContext>;
+    // (undocumented)
+    fetch(mode: "ReceiveAndDelete", options?: Track2FetchOptions): Track2FetchResult<Track2Message | undefined, Track2PlainContext>;
+    // (undocumented)
+    peekWithoutLock(sessionId: string, messageCount?: number): Promise<Track2PeekedMessage[]>;
+    // Warning: (ae-forgotten-export) The symbol "Long" needs to be exported by the entry point index.d.ts
+    // 
+    // (undocumented)
+    peekWithoutLock(sessionId: string, fromSequenceNumber: Long_2, maxMessageCount?: number): Promise<Track2PeekedMessage[]>;
+    // (undocumented)
+    peekWithoutLock(messageCount?: number): Promise<Track2PeekedMessage[]>;
+    // (undocumented)
+    peekWithoutLock(fromSequenceNumber: Long_2, maxMessageCount?: number): Promise<Track2PeekedMessage[]>;
+    }
+
+// Warning: (ae-forgotten-export) The symbol "SenderClient" needs to be exported by the entry point index.d.ts
+// 
+// @public (undocumented)
+export class Track2QueueProducerClient implements SenderClient {
+    constructor(queueConnectionString: string, options?: Track2QueueSenderClientOptions);
+    constructor(serviceBusConnectionString: string, queueName: string, options?: Track2QueueSenderClientOptions);
+    // (undocumented)
+    cancelScheduledMessage(sequenceNumber: Long_2): Promise<void>;
+    // (undocumented)
+    close(): Promise<void>;
+    // (undocumented)
+    scheduleMessage(scheduledEnqueueTimeUtc: Date, message: Track2SendableMessage): Promise<Long_2>;
+    // (undocumented)
+    send(message: Track2SendableMessage): Promise<void>;
+    }
+
+// @public (undocumented)
+export interface Track2QueueReceiverClientOptions extends ServiceBusClientOptions {
+    // Warning: (ae-forgotten-export) The symbol "ConnectionCache" needs to be exported by the entry point index.d.ts
+    // 
+    // (undocumented)
+    connectionCache?: ConnectionCache;
+}
+
+// @public (undocumented)
+export interface Track2QueueSenderClientOptions extends ServiceBusClientOptions {
+    // (undocumented)
+    connectionCache?: ConnectionCache;
+}
+
+// @public (undocumented)
+export interface Track2ReceiverHandlers<MessageType, ContextType> {
+    // (undocumented)
+    processError(err: Error, context: Track2PlainContext): Promise<void>;
+    // (undocumented)
+    processMessage(message: MessageType, context: ContextType): Promise<void>;
+}
+
+// @public (undocumented)
+export interface Track2SendableMessage extends SendableMessageInfo {
+}
+
+// @public (undocumented)
+export interface Track2SessionContext {
+    // (undocumented)
+    renewSessionLock(): Promise<void>;
+    // (undocumented)
+    sessionId: string;
+}
+
+// @public (undocumented)
+export interface Track2SessionMessage extends Track2Message {
+    // (undocumented)
+    sessionId: string;
+}
+
+// @public (undocumented)
+export interface Track2SettleableContext {
+    // (undocumented)
+    abandon(message: Track2Message): Promise<void>;
+    // (undocumented)
+    complete(message: Track2Message): Promise<void>;
+    // (undocumented)
+    deadLetter(message: Track2Message): Promise<void>;
+    // (undocumented)
+    defer(message: Track2Message): Promise<void>;
+}
+
+// @public (undocumented)
+export interface Track2SubscriptionReceiverClientOptions extends ServiceBusClientOptions {
+    // (undocumented)
+    connectionCache?: ConnectionCache;
+}
+
+// @public (undocumented)
+export interface Track2TopicSenderClientOptions extends ServiceBusClientOptions {
+    // (undocumented)
+    connectionCache?: ConnectionCache;
 }
 
 export { WebSocketImpl }
