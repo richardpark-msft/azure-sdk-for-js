@@ -16,7 +16,7 @@ export class TopicSenderClient implements SenderClient {
       const topicName = topicOrOptions2;
       const options: undefined | TopicSenderClientOptions = options3;
 
-      this._sbClient = ServiceBusClient.createFromConnectionString(serviceBusConnectionString, options);
+      this._sbClient = new ServiceBusClient(serviceBusConnectionString, options);
       this._topicClient = this._sbClient.createTopicClient(topicName);
     } else {
       const topicConnectionString = topicConnectionStringOrServiceBusConnectionString1;
@@ -29,7 +29,7 @@ export class TopicSenderClient implements SenderClient {
         throw new Error("Invalid topic connection string - no EntityPath");
       }
 
-      this._sbClient = ServiceBusClient.createFromConnectionString(topicConnectionString, options);
+      this._sbClient = new ServiceBusClient(topicConnectionString, options);
       this._topicClient = this._sbClient.createTopicClient(entityPathMatch![1]);
     }
 

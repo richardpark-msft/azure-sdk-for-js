@@ -19,7 +19,7 @@ export class SubscriptionReceiverClient {
       const subscriptionName: string = optionsOrSubscriptionName3;
       const options: undefined | SubscriptionReceiverClientOptions = options4;
 
-      this._sbClient = ServiceBusClient.createFromConnectionString(serviceBusConnectionString, options);
+      this._sbClient = new ServiceBusClient(serviceBusConnectionString, options);
       this._subscriptionClient = this._sbClient.createSubscriptionClient(topicName, subscriptionName);
     } else {
       const topicConnectionString = topicConnectionStringOrServiceBusConnectionString1;
@@ -33,7 +33,7 @@ export class SubscriptionReceiverClient {
         throw new Error("Invalid topic connection string - no EntityPath");
       }
 
-      this._sbClient = ServiceBusClient.createFromConnectionString(topicConnectionString, options);
+      this._sbClient = new ServiceBusClient(topicConnectionString, options);
       this._subscriptionClient = this._sbClient.createSubscriptionClient(entityPathMatch![1], subscriptionName);
     }
   }
@@ -99,7 +99,8 @@ export class SubscriptionReceiverClient {
     }
 
     // TODO: this thing needs to be way more configurable than it is.
-    const iterator = receiver.getMessageIterator(options.maxWaitTimeInMs);
+    // options.maxWaitTimeInMs
+    const iterator = receiver.getMessageIterator();
 
     return {
       [Symbol.asyncIterator](): AsyncIterableIterator<Message> {

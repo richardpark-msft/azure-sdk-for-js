@@ -16,7 +16,6 @@ export async function peekMessagesBySession(
 ): Promise<PeekedMessage[]> {
   return clientEntityContext.managementClient!.peekMessagesBySession(
     sessionId,
-    clientEntityContext.managementClient!.name,
     messageCount
   );
 }
@@ -32,6 +31,7 @@ export async function peekBySequenceNumber(
     fromSequenceNumber,
     maxMessageCount,
     sessionId,
-    associatedLinkName
+    // TODO: Hm...I don't think this was intended to not be here.
+    // associatedLinkName
   );
 }

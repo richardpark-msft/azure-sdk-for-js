@@ -29,7 +29,7 @@ export class QueueReceiverClient {
       const queueName = queueNameOrOptions2;
       const options: undefined | QueueReceiverClientOptions = options3;
 
-      this._sbClient = ServiceBusClient.createFromConnectionString(serviceBusConnectionString, options);
+      this._sbClient = new ServiceBusClient(serviceBusConnectionString, options);
       this._queueClient = this._sbClient.createQueueClient(queueName);
     } else {
       const queueConnectionString = queueOrServiceBusConnectionString1;
@@ -42,7 +42,7 @@ export class QueueReceiverClient {
         throw new Error("Invalid queue connection string - no EntityPath");
       }
 
-      this._sbClient = ServiceBusClient.createFromConnectionString(queueConnectionString, options);
+      this._sbClient = new ServiceBusClient(queueConnectionString, options);
       this._queueClient = this._sbClient.createQueueClient(entityPathMatch![1]);
     }
   }
@@ -108,7 +108,8 @@ export class QueueReceiverClient {
     }
 
     // TODO: this thing needs to be way more configurable than it is.
-    const iterator = receiver.getMessageIterator(options.maxWaitTimeInMs);
+    // options.maxWaitTimeInMs
+    const iterator = receiver.getMessageIterator();
 
     return {
       [Symbol.asyncIterator](): AsyncIterableIterator<Message> {

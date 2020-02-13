@@ -314,7 +314,7 @@ export interface SessionMessageHandlerOptions {
 // @public
 export class SessionReceiver {
     close(): Promise<void>;
-    getMessageIterator(maxWaitTimeInSeconds?: number): AsyncIterableIterator<ServiceBusMessage>;
+    getMessageIterator(): AsyncIterableIterator<ServiceBusMessage>;
     getState(): Promise<any>;
     get isClosed(): boolean;
     isReceivingMessages(): boolean;
@@ -322,8 +322,8 @@ export class SessionReceiver {
     peekBySequenceNumber(fromSequenceNumber: Long, maxMessageCount?: number): Promise<ReceivedMessageInfo[]>;
     receiveDeferredMessage(sequenceNumber: Long): Promise<ServiceBusMessage | undefined>;
     receiveDeferredMessages(sequenceNumbers: Long[]): Promise<ServiceBusMessage[]>;
-    receiveMessages(maxMessageCount: number, maxWaitTimeInMs?: number): Promise<ServiceBusMessage[]>;
-    readonly receiveMode: ReceiveMode;
+    receiveMessages(maxMessageCount: number, maxWaitTimeInSeconds?: number): Promise<ServiceBusMessage[]>;
+    get receiveMode(): ReceiveMode;
     registerMessageHandler(onMessage: OnMessage, onError: OnError, options?: SessionMessageHandlerOptions): void;
     renewSessionLock(): Promise<Date>;
     get sessionId(): string | undefined;
@@ -429,6 +429,51 @@ export class TopicClient implements Client {
     readonly id: string;
 }
 
+// @public
+export interface TopicDetails {
+    accessedOn?: string;
+    authorizationRules?: AuthorizationRule[];
+    autoDeleteOnIdle?: string;
+    createdOn?: string;
+    defaultMessageTtl: string;
+    duplicateDetectionHistoryTimeWindow: string;
+    enableBatchedOperations: boolean;
+    enableExpress?: boolean;
+    enablePartitioning: boolean;
+    enableSubscriptionPartitioning?: boolean;
+    entityAvailabilityStatus?: string;
+    filteringMessagesBeforePublishing?: boolean;
+    isAnonymousAccessible?: boolean;
+    isExpress?: boolean;
+    maxDeliveryCount?: number;
+    maxSizeInMegabytes: number;
+    messageCount?: number;
+    messageCountDetails?: MessageCountDetails;
+    requiresDuplicateDetection: boolean;
+    sizeInBytes?: number;
+    status?: EntityStatus;
+    subscriptionCount?: number;
+    supportOrdering: boolean;
+    topicName: string;
+    updatedOn?: string;
+    userMetadata?: string;
+}
+
+// @public
+export interface TopicOptions {
+    authorizationRules?: AuthorizationRule[];
+    autoDeleteOnIdle?: string;
+    defaultMessageTtl?: string;
+    duplicateDetectionHistoryTimeWindow?: string;
+    enableBatchedOperations?: boolean;
+    enablePartitioning?: boolean;
+    maxSizeInMegabytes?: number;
+    requiresDuplicateDetection?: boolean;
+    status?: EntityStatus;
+    supportOrdering?: boolean;
+    userMetadata?: string;
+}
+
 // @public (undocumented)
 export interface Track2Closeable {
     // (undocumented)
@@ -498,7 +543,7 @@ export class Track2QueueConsumerClient {
     // (undocumented)
     peekWithoutLock(sessionId: string, messageCount?: number): Promise<Track2PeekedMessage[]>;
     // Warning: (ae-forgotten-export) The symbol "Long" needs to be exported by the entry point index.d.ts
-    // 
+    //
     // (undocumented)
     peekWithoutLock(sessionId: string, fromSequenceNumber: Long_2, maxMessageCount?: number): Promise<Track2PeekedMessage[]>;
     // (undocumented)
@@ -508,7 +553,7 @@ export class Track2QueueConsumerClient {
     }
 
 // Warning: (ae-forgotten-export) The symbol "SenderClient" needs to be exported by the entry point index.d.ts
-// 
+//
 // @public (undocumented)
 export class Track2QueueProducerClient implements SenderClient {
     constructor(queueConnectionString: string, options?: Track2QueueSenderClientOptions);
@@ -526,7 +571,7 @@ export class Track2QueueProducerClient implements SenderClient {
 // @public (undocumented)
 export interface Track2QueueReceiverClientOptions extends ServiceBusClientOptions {
     // Warning: (ae-forgotten-export) The symbol "ConnectionCache" needs to be exported by the entry point index.d.ts
-    // 
+    //
     // (undocumented)
     connectionCache?: ConnectionCache;
 }

@@ -16,7 +16,7 @@ export class QueueSenderClient implements SenderClient {
       const queueName = queueNameOrOptions2;
       const options: undefined | QueueSenderClientOptions = options3;
 
-      this._sbClient = ServiceBusClient.createFromConnectionString(serviceBusConnectionString, options);
+      this._sbClient = new ServiceBusClient(serviceBusConnectionString, options);
       this._queueClient = this._sbClient.createQueueClient(queueName);
     } else {
       const queueConnectionString = queueOrServiceBusConnectionString1;
@@ -29,7 +29,7 @@ export class QueueSenderClient implements SenderClient {
         throw new Error("Invalid queue connection string - no EntityPath");
       }
 
-      this._sbClient = ServiceBusClient.createFromConnectionString(queueConnectionString, options);
+      this._sbClient = new ServiceBusClient(queueConnectionString, options);
       this._queueClient = this._sbClient.createQueueClient(entityPathMatch![1]);
     }
 
