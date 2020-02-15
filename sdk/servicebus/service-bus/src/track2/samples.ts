@@ -1,5 +1,7 @@
-import { QueueReceiverClient } from "./queueReceiverClient";
+import { QueueReceiverClientImpl } from "./queueReceiverClientImpl";
 import { SettleableContext, Message, PlainContext, SessionMessage, SessionContext } from "./models";
+import { QueueSessionReceiverClientImpl } from './queueSessionReceiverClientImpl';
+import { SessionConnectionCache } from './connectionCache';
 
 // Interesting stuff:
 // * We use a special Context (`SettleableContext`) when they peek
@@ -7,9 +9,9 @@ import { SettleableContext, Message, PlainContext, SessionMessage, SessionContex
 //   context when they do a ReceiveAndDelete since that wouldn't
 //   make sense.
 export async function demoPeekLock(): Promise<void> {
-  const consumerClient = new QueueReceiverClient("connection string", "queue name", {});
+  const consumerClient = new QueueReceiverClientImpl("connection string", "queue name", {});
 
-  const consumer = consumerClient.consume("PeekLock", {
+  const consumer = consumerClient.streamMessagesToHandler("PeekLock", {
     async processMessage(message: Message, context: SettleableContext) {
       try {
         // handle message in some way...
@@ -30,9 +32,9 @@ export async function demoPeekLock(): Promise<void> {
 }
 
 export async function demoReceiveAndDelete(): Promise<void> {
-  const consumerClient = new QueueReceiverClient("connection string", "queue name", {});
+  const consumerClient = new QueueReceiverClientImpl("connection string", "queue name", {});
 
-  consumerClient.consume("ReceiveAndDelete", {
+  consumerClient.streamMessagesToHandler("ReceiveAndDelete", {
     async processMessage(message: Message, context: PlainContext) {
       // handle message in some way...
       //
@@ -47,9 +49,15 @@ export async function demoReceiveAndDelete(): Promise<void> {
 }
 
 export async function demoSessionUsage(): Promise<void> {
-  const consumerClient = new QueueReceiverClient("connection string", "queue name", {});
+  const cache = new SessionConnectionCache();
+  const consumerClient = new QueueSessionReceiverClientImpl("connection string", "queue name", {
+    session: {
+      id: "session-id-g0es-here",
+      cache
+    }
+  });
 
-  consumerClient.consume("sessionId", "PeekLock", {
+  consumerClient.streamMessagesToHandler("PeekLock", {
     async processMessage(message: SessionMessage, context: SessionContext & SettleableContext) {
       // TODO: there are more methods, but this is an example of one
       // you'd expect to use when handling messages in a session.

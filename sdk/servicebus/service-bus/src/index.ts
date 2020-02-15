@@ -54,7 +54,7 @@ export {
 } from "./serializers/ruleResourceSerializer";
 
 export { MessageCountDetails, AuthorizationRule, EntityStatus } from "./util/utils";
-import { QueueReceiverClient as Track2QueueConsumerClient } from "./track2/queueReceiverClient";
+import { QueueReceiverClientImpl as Track2QueueConsumerClient } from "./track2/queueReceiverClientImpl";
 import { QueueSenderClient as Track2QueueProducerClient } from "./track2/queueSenderClient";
 
 import {

@@ -523,23 +523,9 @@ export class Track2QueueConsumerClient {
     // (undocumented)
     close(): Promise<void>;
     // (undocumented)
-    consume(sessionId: string, mode: "PeekLock", handlers: Track2ReceiverHandlers<Track2SessionMessage, Track2SessionContext & Track2SettleableContext>): Track2Closeable;
+    createMessageIterator(mode: "ReceiveAndDelete", options?: Track2FetchOptions): Track2FetchResult<Track2Message | undefined, Track2PlainContext>;
     // (undocumented)
-    consume(sessionId: string, mode: "ReceiveAndDelete", handlers: Track2ReceiverHandlers<Track2SessionMessage, Track2SessionContext>): Track2Closeable;
-    // (undocumented)
-    consume(mode: "PeekLock", handlers: Track2ReceiverHandlers<Track2Message, Track2SettleableContext>): Track2Closeable;
-    // (undocumented)
-    consume(mode: "ReceiveAndDelete", handlers: Track2ReceiverHandlers<Track2Message, Track2PlainContext>): Track2Closeable;
-    // (undocumented)
-    fetch(sessionId: string, mode: "PeekLock", options?: Track2FetchOptions): Track2FetchResult<Track2Message, Track2SettleableContext>;
-    // (undocumented)
-    fetch(sessionId: string, mode: "ReceiveAndDelete", options?: Track2FetchOptions): Track2FetchResult<Track2Message, Track2PlainContext>;
-    // (undocumented)
-    fetch(mode: "ReceiveAndDelete", options?: Track2FetchOptions): Track2FetchResult<Track2Message | undefined, Track2PlainContext>;
-    // (undocumented)
-    fetch(mode: "PeekLock", options?: Track2FetchOptions): Track2FetchResult<Track2Message | undefined, Track2SettleableContext>;
-    // (undocumented)
-    fetch(mode: "ReceiveAndDelete", options?: Track2FetchOptions): Track2FetchResult<Track2Message | undefined, Track2PlainContext>;
+    createMessageIterator(mode: "PeekLock", options?: Track2FetchOptions): Track2FetchResult<Track2Message | undefined, Track2SettleableContext>;
     // (undocumented)
     peekWithoutLock(sessionId: string, messageCount?: number): Promise<Track2PeekedMessage[]>;
     // Warning: (ae-forgotten-export) The symbol "Long" needs to be exported by the entry point index.d.ts
@@ -550,7 +536,11 @@ export class Track2QueueConsumerClient {
     peekWithoutLock(messageCount?: number): Promise<Track2PeekedMessage[]>;
     // (undocumented)
     peekWithoutLock(fromSequenceNumber: Long_2, maxMessageCount?: number): Promise<Track2PeekedMessage[]>;
-    }
+    // (undocumented)
+    streamMessagesToHandler(mode: "PeekLock", handlers: Track2ReceiverHandlers<Track2Message, Track2SettleableContext>): Track2Closeable;
+    // (undocumented)
+    streamMessagesToHandler(mode: "ReceiveAndDelete", handlers: Track2ReceiverHandlers<Track2Message, Track2PlainContext>): Track2Closeable;
+}
 
 // Warning: (ae-forgotten-export) The symbol "SenderClient" needs to be exported by the entry point index.d.ts
 //
@@ -570,16 +560,10 @@ export class Track2QueueProducerClient implements SenderClient {
 
 // @public (undocumented)
 export interface Track2QueueReceiverClientOptions extends ServiceBusClientOptions {
-    // Warning: (ae-forgotten-export) The symbol "ConnectionCache" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    connectionCache?: ConnectionCache;
 }
 
 // @public (undocumented)
 export interface Track2QueueSenderClientOptions extends ServiceBusClientOptions {
-    // (undocumented)
-    connectionCache?: ConnectionCache;
 }
 
 // @public (undocumented)
@@ -622,14 +606,10 @@ export interface Track2SettleableContext {
 
 // @public (undocumented)
 export interface Track2SubscriptionReceiverClientOptions extends ServiceBusClientOptions {
-    // (undocumented)
-    connectionCache?: ConnectionCache;
 }
 
 // @public (undocumented)
 export interface Track2TopicSenderClientOptions extends ServiceBusClientOptions {
-    // (undocumented)
-    connectionCache?: ConnectionCache;
 }
 
 export { WebSocketImpl }
