@@ -53,4 +53,5 @@ export class QueueSenderClient implements SenderClient {
     await this._queueClient.close();
     await this._sender.close();
   }
+
 }

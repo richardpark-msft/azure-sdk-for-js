@@ -3,7 +3,7 @@ import { ConnectionContext } from "../connectionContext";
 /**
  * Opaque class that
  */
-export class ConnectionCache {
+export class SessionConnectionCache {
   // constructor() {
   //     this.queueConnections = new Map<string, ConnectionContext>();
   //     this.topicConnections = new Map<string, ConnectionContext>();
@@ -18,7 +18,7 @@ export class ConnectionCache {
  * @internal
  * @ignore
  */
-export interface ConnectionCacheInternal {
+export interface SessionConnectionCacheInternal {
   queueConnections: Map<string, ConnectionContext>;
   topicConnections: Map<string, ConnectionContext>;
   subscriptionConnections: Map<string, ConnectionContext>;

@@ -14,9 +14,82 @@ import {
   QueueReceiverClientOptions,
   FetchResult,
   FetchOptions,
-  Closeable
+  Closeable,
+  QueueSessionReceiverClientOptions
 } from "./models";
 import { peekBySequenceNumber, peek } from "./utils/peekHelpers";
+
+export interface QueueReceiverClientConstructors {
+  // non-sessions
+  new(queueConnectionString: string, options?: QueueReceiverClientOptions) : QueueReceiverClient;
+  new(serviceBusConnectionString: string, queueName: string, options?: QueueReceiverClientOptions): QueueReceiverClient;
+  new(queueOrServiceBusConnectionString1: string, queueNameOrOptions2?: string | QueueReceiverClientOptions, options3?: QueueReceiverClientOptions): QueueReceiverClient;
+  
+  // sessions (takes a required QueueSessionReceiverClientOptions object)
+  new(queueConnectionString: string, options: QueueSessionReceiverClientOptions) : QueueSessionReceiverClient;
+  new(serviceBusConnectionString: string, queueName: string, options?: QueueSessionReceiverClientOptions): QueueSessionReceiverClient;
+  new(queueOrServiceBusConnectionString1: string, queueNameOrOptions2?: string | QueueSessionReceiverClientOptions, options3?: QueueSessionReceiverClientOptions): QueueSessionReceiverClient;
+}
+
+export class QueueSessionReceiverClient {
+  constructor(queueConnectionString: string, options: QueueSessionReceiverClientOptions);
+  constructor(serviceBusConnectionString: string, queueName: string, options?: QueueSessionReceiverClientOptions);
+  constructor(queueOrServiceBusConnectionString1: string, queueNameOrOptions2?: string | QueueSessionReceiverClientOptions, options3?: QueueSessionReceiverClientOptions) {
+  }
+
+  fetch(
+    mode: "PeekLock",
+    options?: FetchOptions
+  ): FetchResult<Message, SettleableContext>;
+  fetch(
+    mode: "ReceiveAndDelete",
+    options?: FetchOptions
+  ): FetchResult<Message, PlainContext>;
+  fetch(
+    mode1: "PeekLock" | "ReceiveAndDelete",
+    options2?: FetchOptions
+  ): (FetchResult<Message, PlainContext> |  FetchResult<Message, SettleableContext>) {    
+    return {
+      async close(): Promise<void> {},
+      context: mode1 === "PeekLock" ? settleableContext : {},
+      next: async () => {}
+    };
+  }
+
+  consume(
+    mode: "PeekLock",
+    handlers: ReceiverHandlers<Message, SettleableContext>
+  ): Closeable;
+  consume(
+    mode: "ReceiveAndDelete",
+    handlers: ReceiverHandlers<Message, PlainContext>
+  ): Closeable;
+  consume(
+    mode: "PeekLock" | "ReceiveAndDelete",
+    handlers:
+      | ReceiverHandlers<Message, SettleableContext & PlainContext>
+      | ReceiverHandlers<Message, PlainContext>
+  ): Closeable {
+    return {
+      async close(): Promise<void> {}
+    }
+  }  
+
+  async peekWithoutLock(messageCount?: number): Promise<PeekedMessage[]>;
+  async peekWithoutLock(
+    fromSequenceNumber: Long,
+    maxMessageCount?: number
+  ): Promise<PeekedMessage[]>;
+  async peekWithoutLock(
+    sessionIdOrMessageCountOrSequenceNumber1?: string | number | Long,
+    maxMessageCountOrSequenceNumber2?: number | Long,
+    maxMessageCount3?: number
+  ): Promise<PeekedMessage[]> {
+    return [];
+  }
+
+  async close() {}
+}
 
 export class QueueReceiverClient {
   private _sbClient: ServiceBusClient;

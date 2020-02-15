@@ -1,6 +1,6 @@
 import { ServiceBusMessage, ReceivedMessageInfo, SendableMessageInfo } from "../serviceBusMessage";
 import { ServiceBusClientOptions } from "../serviceBusClient";
-import { ConnectionCache } from './connectionCache';
+import { SessionConnectionCache } from './connectionCache';
 
 // message with a body and any basic fields that exist in all message types
 // basically a `ServiceBusMessage` w/o the "settlement" methods
@@ -45,19 +45,25 @@ export interface SettleableContext {
 }
 
 export interface QueueReceiverClientOptions extends ServiceBusClientOptions {
-  connectionCache?: ConnectionCache;
+  
+}
+
+export interface SessionInfo {
+  id: string;
+  cache: SessionConnectionCache;
+}
+
+export interface QueueSessionReceiverClientOptions extends QueueReceiverClientOptions {
+  session: SessionInfo;
 }
 
 export interface QueueSenderClientOptions extends ServiceBusClientOptions {
-  connectionCache?: ConnectionCache;
 }
 
 export interface TopicSenderClientOptions extends ServiceBusClientOptions {
-  connectionCache?: ConnectionCache;
 }
 
 export interface SubscriptionReceiverClientOptions extends ServiceBusClientOptions {
-  connectionCache?: ConnectionCache;
 }
 
 export interface CloseableAsyncIterator<MessageT> extends AsyncIterableIterator<MessageT> {
