@@ -236,15 +236,6 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
   ): void {
     this._throwIfReceiverOrConnectionClosed();
     this._throwIfAlreadyReceiving();
-    const connId = this._context.namespace.connectionId;
-    throwTypeErrorIfParameterMissing(connId, "onMessage", onMessage);
-    throwTypeErrorIfParameterMissing(connId, "onError", onError);
-    if (typeof onMessage !== "function") {
-      throw new TypeError("The parameter 'onMessage' must be of type 'function'.");
-    }
-    if (typeof onError !== "function") {
-      throw new TypeError("The parameter 'onError' must be of type 'function'.");
-    }
 
     StreamingReceiver.create(this._context, {
       ...options,

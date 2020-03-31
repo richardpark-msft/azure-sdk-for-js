@@ -338,46 +338,6 @@ describe("invalid parameters", () => {
       return serviceBusClient.test.afterEach();
     });
 
-    // #RevisitCommentedTestsAfterTheSingleClientAPI
-    // Reason for commenting the following 2 tests
-    // `ReceiveMode` is now being passed in the Client - and this test is covered in the newly added `SessionReceiver: Throws error if created a client with invalid receiveMode`
-    // Supposed to be reverted and made changes accordingly once the Toplevel Client is added.
-    // it("SessionReceiver: Missing ReceiveMode", async function(): Promise<void> {
-    //   receiverClient = new ServiceBusReceiverClient(
-    //     {
-    //       queueName: EntityNames.QUEUE_NAME_SESSION,
-    //       connectionString: getEnvVars()["SERVICEBUS_CONNECTION_STRING"]
-    //     },
-    //     undefined as any,
-    //     {
-    //       id: TestMessage.sessionId
-    //     }
-    //   ) as any;
-    //   should.equal(
-    //     receiverClient.receiveMode,
-    //     ReceiveMode.peekLock,
-    //     "Default receiveMode not set when receiveMode not provided to constructor."
-    //   );
-    // });
-
-    // it("SessionReceiver: Invalid ReceiveMode", async function(): Promise<void> {
-    //   receiverClient = new ServiceBusReceiverClient(
-    //     {
-    //       queueName: EntityNames.QUEUE_NAME_SESSION,
-    //       connectionString: getEnvVars()["SERVICEBUS_CONNECTION_STRING"]
-    //     },
-    //     123 as any,
-    //     {
-    //       id: TestMessage.sessionId
-    //     }
-    //   ) as any;
-    //   should.equal(
-    //     receiverClient.receiveMode,
-    //     ReceiveMode.peekLock,
-    //     "Default receiveMode not set when receiveMode not provided to constructor."
-    //   );
-    // });
-
     it("SessionReceiver: Throws error if created a client with invalid receiveMode", async function(): Promise<
       void
     > {
@@ -470,64 +430,6 @@ describe("invalid parameters", () => {
       should.equal(caughtError && caughtError.name, "TypeError");
       should.equal(caughtError && caughtError.message, `Missing parameter "fromSequenceNumber"`);
     });
-
-    it("RegisterMessageHandler: Missing onMessage in SessionReceiver", async function(): Promise<
-      void
-    > {
-      let caughtError: Error | undefined;
-      try {
-        await receiver.subscribe(undefined as any, undefined as any);
-      } catch (error) {
-        caughtError = error;
-      }
-      should.equal(caughtError && caughtError.name, "TypeError");
-      should.equal(caughtError && caughtError.message, `Invalid "MessageHandlers" provided.`);
-    });
-
-    it("RegisterMessageHandler: Wrong type for onMessage in SessionReceiver", async function(): Promise<
-      void
-    > {
-      let caughtError: Error | undefined;
-      try {
-        await receiver.subscribe("somestring" as any, "somethingelse" as any);
-      } catch (error) {
-        caughtError = error;
-      }
-      should.equal(caughtError && caughtError.name, "TypeError");
-      should.equal(caughtError && caughtError.message, `Invalid "MessageHandlers" provided.`);
-    });
-    // #RevisitCommentedTestsAfterTheSingleClientAPI
-    // The following 2 tests didn't make sense for the current handler type. That being said, equivalent tests for current API need to be added.
-    // it("RegisterMessageHandler: Missing onError in SessionReceiver", async function(): Promise<void> {
-    //   let caughtError: Error | undefined;
-    //   try {
-    //     await receiverClient.registerMessageHandler(async () => {
-    //       /** */
-    //     }, undefined as any);
-    //   } catch (error) {
-    //     caughtError = error;
-    //   }
-    //   should.equal(caughtError && caughtError.name, "TypeError");
-    //   should.equal(caughtError && caughtError.message, `Missing parameter "onError"`);
-    // });
-
-    // it("RegisterMessageHandler: Wrong type for onError in SessionReceiver", async function(): Promise<
-    //   void
-    // > {
-    //   let caughtError: Error | undefined;
-    //   try {
-    //     await receiverClient.registerMessageHandler(async () => {
-    //       /** */
-    //     }, "somethingelse" as any);
-    //   } catch (error) {
-    //     caughtError = error;
-    //   }
-    //   should.equal(caughtError && caughtError.name, "TypeError");
-    //   should.equal(
-    //     caughtError && caughtError.message,
-    //     `The parameter 'onError' must be of type 'function'.`
-    //   );
-    // });
 
     it("ReceiveDeferredMessage: Wrong type sequenceNumber in SessionReceiver", async function(): Promise<
       void

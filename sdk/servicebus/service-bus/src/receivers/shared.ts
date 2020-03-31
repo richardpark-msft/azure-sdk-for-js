@@ -3,21 +3,36 @@
 
 import { GetMessageIteratorOptions } from "../models";
 import { Receiver } from "./receiver";
+import { MessageHandlers } from "..";
 
 /**
  * @internal
  * @ignore
  */
 export function assertValidMessageHandlers(handlers: any) {
-  if (
-    handlers &&
-    handlers.processMessage instanceof Function &&
-    handlers.processError instanceof Function
-  ) {
-    return;
+  const actualHandlers = handlers as MessageHandlers<{}>;
+
+  if (!actualHandlers) {
+    throw new TypeError("MessageHandlers was undefined");
   }
 
-  throw new TypeError('Invalid "MessageHandlers" provided.');
+  const missingOrBadMethods = [];
+
+  if (!(actualHandlers.processMessage instanceof Function)) {
+    missingOrBadMethods.push("processMessage");
+  }
+
+  if (!(actualHandlers.processError instanceof Function)) {
+    missingOrBadMethods.push("processError");
+  }
+
+  if (missingOrBadMethods.length > 0) {
+    throw new TypeError(
+      `Invalid MessageHandlers methods provided - these need to be functions (${missingOrBadMethods.join(
+        ","
+      )}).`
+    );
+  }
 }
 
 /**

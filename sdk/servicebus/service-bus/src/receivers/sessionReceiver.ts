@@ -481,15 +481,6 @@ export class SessionReceiverImpl<ReceivedMessageT extends ReceivedMessage | Rece
   ): void {
     this._throwIfReceiverOrConnectionClosed();
     this._throwIfAlreadyReceiving();
-    const connId = this._context.namespace.connectionId;
-    throwTypeErrorIfParameterMissing(connId, "onMessage", onMessage);
-    throwTypeErrorIfParameterMissing(connId, "onError", onError);
-    if (typeof onMessage !== "function") {
-      throw new TypeError("The parameter 'onMessage' must be of type 'function'.");
-    }
-    if (typeof onError !== "function") {
-      throw new TypeError("The parameter 'onError' must be of type 'function'.");
-    }
 
     this._createMessageSessionIfDoesntExist()
       .then(async () => {
