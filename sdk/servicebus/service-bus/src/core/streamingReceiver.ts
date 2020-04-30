@@ -1,52 +1,48 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import {
-  MessageReceiver,
-  ReceiveOptions,
-  OnMessage,
-  OnError,
-  ReceiverType
-} from "./messageReceiver";
+import { MessageReceiver, ReceiveOptions, OnMessage, OnError } from "./messageReceiver";
 
 import { ClientEntityContext } from "../clientEntityContext";
 
-import * as log from "../log";
 import { throwErrorIfConnectionClosed } from "../util/errors";
-import { RetryOperationType, RetryConfig, retry } from "@azure/core-amqp";
 
 /**
  * @internal
  * Describes the streaming receiver where the user can receive the message
  * by providing handler functions.
- * @class StreamingReceiver
- * @extends MessageReceiver
  */
-export class StreamingReceiver extends MessageReceiver {
+export class StreamingReceiver {
   /**
    * Instantiate a new Streaming receiver for receiving messages with handlers.
    *
    * @constructor
-   * @param {ClientEntityContext} context                      The client entity context.
-   * @param {ReceiveOptions} [options]                         Options for how you'd like to connect.
    */
-  constructor(context: ClientEntityContext, options?: ReceiveOptions) {
-    super(context, ReceiverType.streaming, options);
+  constructor(private _messageReceiver: MessageReceiver, options?: ReceiveOptions) {
+    options = options || {};
+    if (options.autoComplete == null) options.autoComplete = true;
 
-    this.resetTimerOnNewMessageReceived = () => {
-      if (this._newMessageReceivedTimer) clearTimeout(this._newMessageReceivedTimer);
-      if (this.newMessageWaitTimeoutInMs) {
-        this._newMessageReceivedTimer = setTimeout(async () => {
-          const msg =
-            `StreamingReceiver '${this.name}' did not receive any messages in ` +
-            `the last ${this.newMessageWaitTimeoutInMs} milliseconds. ` +
-            `Hence ending this receive operation.`;
-          log.error("[%s] %s", this._context.namespace.connectionId, msg);
+    this._messageReceiver.autoComplete = options.autoComplete;
 
-          await this.close();
-        }, this.newMessageWaitTimeoutInMs);
-      }
-    };
+    if (typeof options.maxConcurrentCalls === "number" && options.maxConcurrentCalls > 0) {
+      this._messageReceiver.maxConcurrentCalls = options.maxConcurrentCalls;
+    }
+
+    // super(context, ReceiverType.streaming, options);
+    // TODO: pretty sure this isn't used - newMessageWaitTimeoutInMs is never set in this code.
+    // this.resetTimerOnNewMessageReceived = () => {
+    //   if (this._newMessageReceivedTimer) clearTimeout(this._newMessageReceivedTimer);
+    //   if (this.newMessageWaitTimeoutInMs) {
+    //     this._newMessageReceivedTimer = setTimeout(async () => {
+    //       const msg =
+    //         `StreamingReceiver '${this.name}' did not receive any messages in ` +
+    //         `the last ${this.newMessageWaitTimeoutInMs} milliseconds. ` +
+    //         `Hence ending this receive operation.`;
+    //       log.error("[%s] %s", this._context.namespace.connectionId, msg);
+    //       await this.close();
+    //     }, this.newMessageWaitTimeoutInMs);
+    //   }
+    // };
   }
 
   /**
@@ -56,12 +52,12 @@ export class StreamingReceiver extends MessageReceiver {
    * @param {OnError} onError The error handler to receive an error that occurs while receivin messages.
    */
   receive(onMessage: OnMessage, onError: OnError): void {
-    throwErrorIfConnectionClosed(this._context.namespace);
-    this._onMessage = onMessage;
-    this._onError = onError;
+    throwErrorIfConnectionClosed(this._messageReceiver.namespace);
+    this._messageReceiver._onMessage = onMessage;
+    this._messageReceiver._onError = onError;
 
-    if (this._receiver) {
-      this._receiver.addCredit(this.maxConcurrentCalls);
+    if (this._messageReceiver.receiver) {
+      this._messageReceiver.receiver.addCredit(this._messageReceiver.maxConcurrentCalls);
     }
   }
 
@@ -75,23 +71,33 @@ export class StreamingReceiver extends MessageReceiver {
    */
   static async create(
     context: ClientEntityContext,
+    messageReceiver: MessageReceiver,
     options?: ReceiveOptions
   ): Promise<StreamingReceiver> {
     throwErrorIfConnectionClosed(context.namespace);
-    if (!options) options = {};
-    if (options.autoComplete == null) options.autoComplete = true;
-    const sReceiver = new StreamingReceiver(context, options);
+    // TODO: do we need this? The receiver should be considered initialized by
+    // the time we've hit this code.
+    // const config: RetryConfig<void> = {
+    //   operation: () => {
+    //     return sReceiver._init();
+    //   },
+    //   connectionId: context.namespace.connectionId,
+    //   operationType: RetryOperationType.receiveMessage,
+    //   retryOptions: options.retryOptions
+    // };
+    // await retry<void>(config);
 
-    const config: RetryConfig<void> = {
-      operation: () => {
-        return sReceiver._init();
-      },
-      connectionId: context.namespace.connectionId,
-      operationType: RetryOperationType.receiveMessage,
-      retryOptions: options.retryOptions
-    };
-    await retry<void>(config);
-    context.streamingReceiver = sReceiver;
-    return sReceiver;
+    messageReceiver.takeOwnership();
+    context.streamingReceiver = new StreamingReceiver(messageReceiver, options);
+    return context.streamingReceiver;
+  }
+
+  // compat
+  close(): Promise<void> {
+    return this._messageReceiver.close();
+  }
+
+  get name() {
+    return this._messageReceiver.name;
   }
 }

@@ -421,6 +421,7 @@ export class MessageSession extends LinkEntity {
           this._context.messageSessions[this.sessionId!] = this;
         }
         this._totalAutoLockRenewDuration = Date.now() + this.maxAutoRenewDurationInMs;
+        // TODO: we don't need to do this, right? The session lock serves as the lock.
         await this._ensureTokenRenewal();
         await this._ensureSessionLockRenewal();
       } else {
@@ -932,6 +933,8 @@ export class MessageSession extends LinkEntity {
     const brokeredMessages: ServiceBusMessageImpl[] = [];
     this.isReceivingMessages = true;
 
+    // TODO: what would happen if the user did both? Do we just have both callbacks registered at the same time?
+    // or is there a check to make sure you don't do both methods?
     return new Promise<ServiceBusMessageImpl[]>((resolve, reject) => {
       let totalWaitTimer: any;
 

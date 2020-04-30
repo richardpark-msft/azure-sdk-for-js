@@ -26,6 +26,7 @@ import { ClientEntityContext } from "../clientEntityContext";
 import { ServiceBusMessageImpl, DispositionType, ReceiveMode } from "../serviceBusMessage";
 import { getUniqueName, calculateRenewAfterDuration } from "../util/utils";
 import { MessageHandlerOptions } from "../models";
+import { ConnectionContext } from "../connectionContext";
 
 /**
  * @internal
@@ -138,6 +139,8 @@ export class MessageReceiver extends LinkEntity {
    * automatically after the message processing is complete while receiving messages with handlers.
    * Default: false.
    */
+  // TODO: this is not ideal - we used to set it in the constructor (and still do) but now we
+  // just change it from the outside in StreamingReceiver. Need to move it.
   autoComplete: boolean;
   /**
    * @property {number} maxAutoRenewDurationInMs The maximum duration within which the
@@ -170,17 +173,18 @@ export class MessageReceiver extends LinkEntity {
    * are being actively disposed. It acts as a store for correlating the responses received for
    * active dispositions.
    */
-  protected _deliveryDispositionMap: Map<number, PromiseLike> = new Map<number, PromiseLike>();
+  // TODO: does this have to be public?
+  public _deliveryDispositionMap: Map<number, PromiseLike> = new Map<number, PromiseLike>();
   /**
    * @property {OnMessage} _onMessage The message handler provided by the user that will be wrapped
    * inside _onAmqpMessage.
    */
-  protected _onMessage!: OnMessage;
+  public _onMessage!: OnMessage;
   /**
    * @property {OnMessage} _onError The error handler provided by the user that will be wrapped
    * inside _onAmqpError.
    */
-  protected _onError?: OnError;
+  public _onError?: OnError;
   /**
    * @property {OnAmqpEventAsPromise} _onAmqpMessage The message handler that will be set as the handler on the
    * underlying rhea receiver for the "message" event.
@@ -227,11 +231,13 @@ export class MessageReceiver extends LinkEntity {
    * @property {NodeJS.Timer} _newMessageReceivedTimer The timer that keeps track of time since the
    * last message was received.
    */
-  protected _newMessageReceivedTimer?: NodeJS.Timer;
+  // TODO: see if we can just move this into BatchingReceiver, which is the only real user of it.
+  public _newMessageReceivedTimer?: NodeJS.Timer;
   /**
    * Resets the `_newMessageReceivedTimer` timer when a new message is received.
    */
-  protected resetTimerOnNewMessageReceived: () => void;
+  // TODO: see if we can move this out.
+  public resetTimerOnNewMessageReceived: () => void;
   /**
    * @property {Function} _clearMessageLockRenewTimer Clears the message lock renew timer for a
    * specific messageId.
@@ -242,6 +248,8 @@ export class MessageReceiver extends LinkEntity {
    * the active messages.
    */
   protected _clearAllMessageLockRenewTimers: () => void;
+  // TODO: `options` doesn't really make sense anymore since we set all of this stuff _afterwards_
+  // receiverType should be set afterwards as well.
   constructor(context: ClientEntityContext, receiverType: ReceiverType, options?: ReceiveOptions) {
     super(context.entityPath, context, {
       address: context.entityPath,
@@ -260,6 +268,7 @@ export class MessageReceiver extends LinkEntity {
     };
     // If explicitly set to false then autoComplete is false else true (default).
     this.autoComplete = options.autoComplete === false ? options.autoComplete : true;
+
     this.maxAutoRenewDurationInMs =
       options.maxMessageAutoRenewLockDurationInMs != null
         ? options.maxMessageAutoRenewLockDurationInMs
@@ -710,7 +719,8 @@ export class MessageReceiver extends LinkEntity {
   /**
    * Creates the options that need to be specified while creating an AMQP receiver link.
    */
-  protected _createReceiverOptions(
+  // TODO: make not public if possible.
+  public _createReceiverOptions(
     useNewName?: boolean,
     options?: CreateReceiverOptions
   ): ReceiverOptions {
@@ -750,12 +760,45 @@ export class MessageReceiver extends LinkEntity {
     return rcvrOptions;
   }
 
+  // TODO: these are things I need if we externalize MessageReceiver
+  async closeSelf(): Promise<void> {
+    return this._closeLink(this._receiver);
+  }
+
+  get namespace(): Pick<ConnectionContext, "wasConnectionCloseCalled" | "connectionId"> {
+    return this._context.namespace;
+  }
+
+  get connectionId() {
+    return this._context.namespace.connectionId;
+  }
+
+  get receiver(): Receiver | undefined {
+    return this._receiver;
+  }
+
+  /**
+   * Whether or not a receiver has taken ownership of this
+   * receiver (and thus it should not be assigned to anyone else)
+   */
+  // TODO: come back to this.
+  public takeOwnership(): void {
+    if (this._isOwned) {
+      throw new Error("Receiver has already been claimed by a Streaming or Batching receiver.");
+    }
+
+    this._isOwned = true;
+  }
+
+  private _isOwned: boolean;
+
   /**
    * Creates a new AMQP receiver under a new AMQP session.
    *
    * @returns {Promise<void>} Promise<void>.
    */
-  protected async _init(options?: ReceiverOptions): Promise<void> {
+  // TODO: does this need to be public?
+  public async _init(options?: ReceiverOptions): Promise<void> {
     const connectionId = this._context.namespace.connectionId;
     try {
       if (!this.isOpen() && !this.isConnecting) {

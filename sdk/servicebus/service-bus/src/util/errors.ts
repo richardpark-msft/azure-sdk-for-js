@@ -10,7 +10,9 @@ import { ConnectionContext } from "../connectionContext";
  * Logs and throws Error if the current AMQP connection is closed.
  * @param context The ConnectionContext associated with the current AMQP connection.
  */
-export function throwErrorIfConnectionClosed(context: ConnectionContext): void {
+export function throwErrorIfConnectionClosed(
+  context: Pick<ConnectionContext, "wasConnectionCloseCalled" | "connectionId">
+): void {
   if (context && context.wasConnectionCloseCalled) {
     const errorMessage = "The underlying AMQP connection is closed.";
     const error = new Error(errorMessage);

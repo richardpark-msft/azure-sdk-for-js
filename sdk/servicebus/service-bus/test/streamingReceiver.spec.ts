@@ -22,6 +22,7 @@ import {
   testPeekMsgsLength
 } from "./utils/testutils2";
 import { getDeliveryProperty } from "./utils/misc";
+import { MessageReceiver, ReceiverType } from "../src/core/messageReceiver";
 
 const should = chai.should();
 chai.use(chaiAsPromised);
@@ -247,9 +248,16 @@ describe("Streaming", () => {
       let streamingReceiver: StreamingReceiver | undefined;
       try {
         let actualError: Error | undefined;
-        streamingReceiver = await StreamingReceiver.create((receiverClient as any)._context, {
-          receiveMode: ReceiveMode.peekLock
-        });
+
+        new MessageReceiver((receiverClient as any)._context, ReceiverType.streaming);
+
+        streamingReceiver = await StreamingReceiver.create(
+          (receiverClient as any)._context,
+          messageReceiver,
+          {
+            receiveMode: ReceiveMode.peekLock
+          }
+        );
 
         streamingReceiver.receive(
           async () => {},

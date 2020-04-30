@@ -7,7 +7,6 @@ import { ReceiverEvents, EventContext, OnAmqpEvent, SessionEvents, AmqpError } f
 import { ServiceBusMessageImpl, ReceiveMode } from "../serviceBusMessage";
 import {
   MessageReceiver,
-  ReceiveOptions,
   ReceiverType,
   PromiseLike,
   OnAmqpEventAsPromise
@@ -22,7 +21,7 @@ import { throwErrorIfConnectionClosed } from "../util/errors";
  * @class BatchingReceiver
  * @extends MessageReceiver
  */
-export class BatchingReceiver extends MessageReceiver {
+export class BatchingReceiver {
   /**
    * @property {boolean} isReceivingMessages Indicates whether the link is actively receiving
    * messages. Default: false.
@@ -42,12 +41,18 @@ export class BatchingReceiver extends MessageReceiver {
    * Instantiate a new BatchingReceiver.
    *
    * @constructor
-   * @param {ClientEntityContext} context The client entity context.
-   * @param {ReceiveOptions} [options]  Options for how you'd like to connect.
    */
-  constructor(context: ClientEntityContext, options?: ReceiveOptions) {
-    super(context, ReceiverType.batching, options);
-    this.newMessageWaitTimeoutInMs = 1000;
+  constructor(private _messageReceiver: MessageReceiver) {
+    // TODO: what was the receiver type for?
+    // super(context, ReceiverType.batching, options);
+
+    // TODO: so if the user chooses to receiveBatch() vs subscribe() those would
+    // end up being separate links today (I think). So if that's the case then sharing
+    // a pre-created receiver link would not work for them......
+    // with that said - perhaps our issue here is just to front-load the expensive stuff like
+    // the CBS authorization, etc and the connection itself.
+    this._messageReceiver.receiverType = ReceiverType.batching;
+    this._messageReceiver.newMessageWaitTimeoutInMs = 1000;
   }
 
   /**
@@ -57,7 +62,8 @@ export class BatchingReceiver extends MessageReceiver {
    */
   async onDetached(receiverError?: AmqpError | Error): Promise<void> {
     // Clears the token renewal timer. Closes the link and its session if they are open.
-    await this._closeLink(this._receiver);
+    await this._messageReceiver.closeSelf();
+
     this.detachedError = receiverError;
     if (this.isReceivingMessages && typeof this._finalActionHandler === "function") {
       this._finalActionHandler();
@@ -73,7 +79,7 @@ export class BatchingReceiver extends MessageReceiver {
    * @returns {Promise<ServiceBusMessageImpl[]>} A promise that resolves with an array of Message objects.
    */
   receive(maxMessageCount: number, maxWaitTimeInMs: number): Promise<ServiceBusMessageImpl[]> {
-    throwErrorIfConnectionClosed(this._context.namespace);
+    throwErrorIfConnectionClosed(this._messageReceiver.namespace);
 
     const brokeredMessages: ServiceBusMessageImpl[] = [];
 
@@ -83,7 +89,8 @@ export class BatchingReceiver extends MessageReceiver {
 
       const onSessionError: OnAmqpEvent = (context: EventContext) => {
         this.isReceivingMessages = false;
-        const receiver = this._receiver || context.receiver!;
+        // TODO: might be nice to add a little more encapsulation here.
+        const receiver = this._messageReceiver.receiver || context.receiver!;
         receiver.removeListener(ReceiverEvents.receiverError, onReceiveError);
         receiver.removeListener(ReceiverEvents.message, onReceiveMessage);
         receiver.removeListener(ReceiverEvents.receiverDrained, onReceiveDrain);
@@ -95,8 +102,8 @@ export class BatchingReceiver extends MessageReceiver {
           error = translate(sessionError);
           log.error(
             "[%s] 'session_close' event occurred for Receiver '%s' received an error:\n%O",
-            this._context.namespace.connectionId,
-            this.name,
+            this._messageReceiver.connectionId,
+            this._messageReceiver.name,
             error
           );
         } else {
@@ -105,8 +112,8 @@ export class BatchingReceiver extends MessageReceiver {
         if (totalWaitTimer) {
           clearTimeout(totalWaitTimer);
         }
-        if (this._newMessageReceivedTimer) {
-          clearTimeout(this._newMessageReceivedTimer);
+        if (this._messageReceiver._newMessageReceivedTimer) {
+          clearTimeout(this._messageReceiver._newMessageReceivedTimer);
         }
         reject(error);
       };
@@ -115,18 +122,24 @@ export class BatchingReceiver extends MessageReceiver {
       const finalAction = (this._finalActionHandler = (): void => {
         // clear finalActionHandler so that it can't be called multiple times.
         this._finalActionHandler = undefined;
-        if (this._newMessageReceivedTimer) {
-          clearTimeout(this._newMessageReceivedTimer);
+        if (this._messageReceiver._newMessageReceivedTimer) {
+          clearTimeout(this._messageReceiver._newMessageReceivedTimer);
         }
         if (totalWaitTimer) {
           clearTimeout(totalWaitTimer);
         }
 
         // Removing listeners, so that the next receiveMessages() call can set them again.
-        if (this._receiver) {
-          this._receiver.removeListener(ReceiverEvents.receiverError, onReceiveError);
-          this._receiver.removeListener(ReceiverEvents.message, onReceiveMessage);
-          this._receiver.session.removeListener(SessionEvents.sessionError, onSessionError);
+        if (this._messageReceiver.receiver) {
+          this._messageReceiver.receiver.removeListener(
+            ReceiverEvents.receiverError,
+            onReceiveError
+          );
+          this._messageReceiver.receiver.removeListener(ReceiverEvents.message, onReceiveMessage);
+          this._messageReceiver.receiver.session.removeListener(
+            SessionEvents.sessionError,
+            onSessionError
+          );
         }
 
         // When receiveMode is in receiveAndDelete mode, we should return those messages to the user
@@ -135,10 +148,14 @@ export class BatchingReceiver extends MessageReceiver {
         // so that the user knows there was an underlying issue that prevented receiving messages.
         if (
           this.detachedError &&
-          (this.receiveMode !== ReceiveMode.receiveAndDelete || brokeredMessages.length === 0)
+          (this._messageReceiver.receiveMode !== ReceiveMode.receiveAndDelete ||
+            brokeredMessages.length === 0)
         ) {
-          if (this._receiver) {
-            this._receiver.removeListener(ReceiverEvents.receiverDrained, onReceiveDrain);
+          if (this._messageReceiver.receiver) {
+            this._messageReceiver.receiver.removeListener(
+              ReceiverEvents.receiverDrained,
+              onReceiveDrain
+            );
           }
           this.isReceivingMessages = false;
           const err = translate(this.detachedError);
@@ -146,27 +163,34 @@ export class BatchingReceiver extends MessageReceiver {
         }
 
         // If the receiver has been detached, there is no need to drain.
-        if (this._receiver && this._receiver.credit > 0 && !this.detachedError) {
+        if (
+          this._messageReceiver.receiver &&
+          this._messageReceiver.receiver.credit > 0 &&
+          !this.detachedError
+        ) {
           log.batching(
             "[%s] Receiver '%s': Draining leftover credits(%d).",
-            this._context.namespace.connectionId,
-            this.name,
-            this._receiver.credit
+            this._messageReceiver.connectionId,
+            this._messageReceiver.name,
+            this._messageReceiver.receiver.credit
           );
 
           // Setting drain must be accompanied by a flow call (aliased to addCredit in this case).
-          this._receiver.drain = true;
-          this._receiver.addCredit(1);
+          this._messageReceiver.receiver.drain = true;
+          this._messageReceiver.receiver.addCredit(1);
         } else {
-          if (this._receiver) {
-            this._receiver.removeListener(ReceiverEvents.receiverDrained, onReceiveDrain);
+          if (this._messageReceiver.receiver) {
+            this._messageReceiver.receiver.removeListener(
+              ReceiverEvents.receiverDrained,
+              onReceiveDrain
+            );
           }
 
           this.isReceivingMessages = false;
           log.batching(
             "[%s] Receiver '%s': Resolving receiveMessages() with %d messages.",
-            this._context.namespace.connectionId,
-            this.name,
+            this._messageReceiver.connectionId,
+            this._messageReceiver.name,
             brokeredMessages.length
           );
           resolve(brokeredMessages);
@@ -175,10 +199,10 @@ export class BatchingReceiver extends MessageReceiver {
 
       // Action to be performed on the "message" event.
       const onReceiveMessage: OnAmqpEventAsPromise = async (context: EventContext) => {
-        this.resetTimerOnNewMessageReceived();
+        this._messageReceiver.resetTimerOnNewMessageReceived();
         try {
           const data: ServiceBusMessageImpl = new ServiceBusMessageImpl(
-            this._context,
+            this._messageReceiver._context,
             context.message!,
             context.delivery!,
             true
@@ -190,8 +214,8 @@ export class BatchingReceiver extends MessageReceiver {
           const errObj = err instanceof Error ? err : new Error(JSON.stringify(err));
           log.error(
             "[%s] Receiver '%s' received an error while converting AmqpMessage to ServiceBusMessage:\n%O",
-            this._context.namespace.connectionId,
-            this.name,
+            this._messageReceiver.connectionId,
+            this._messageReceiver.name,
             errObj
           );
           reject(errObj);
@@ -208,16 +232,16 @@ export class BatchingReceiver extends MessageReceiver {
           if (sessionError) {
             log.error(
               "[%s] 'session_close' event occurred for receiver '%s'. The associated error is: %O",
-              this._context.namespace.connectionId,
-              this.name,
+              this._messageReceiver.connectionId,
+              this._messageReceiver.name,
               sessionError
             );
           }
         } catch (err) {
           log.error(
             "[%s] Receiver '%s' error in onSessionClose handler:\n%O",
-            this._context.namespace.connectionId,
-            this.name,
+            this._messageReceiver.connectionId,
+            this._messageReceiver.name,
             translate(err)
           );
         }
@@ -225,17 +249,20 @@ export class BatchingReceiver extends MessageReceiver {
 
       // Action to be performed on the "receiver_drained" event.
       const onReceiveDrain: OnAmqpEvent = () => {
-        if (this._receiver) {
-          this._receiver.removeListener(ReceiverEvents.receiverDrained, onReceiveDrain);
-          this._receiver.drain = false;
+        if (this._messageReceiver.receiver) {
+          this._messageReceiver.receiver.removeListener(
+            ReceiverEvents.receiverDrained,
+            onReceiveDrain
+          );
+          this._messageReceiver.receiver.drain = false;
         }
 
         this.isReceivingMessages = false;
 
         log.batching(
           "[%s] Receiver '%s' drained. Resolving receiveMessages() with %d messages.",
-          this._context.namespace.connectionId,
-          this.name,
+          this._messageReceiver.connectionId,
+          this._messageReceiver.name,
           brokeredMessages.length
         );
 
@@ -249,15 +276,15 @@ export class BatchingReceiver extends MessageReceiver {
           if (receiverError) {
             log.error(
               "[%s] 'receiver_close' event occurred. The associated error is: %O",
-              this._context.namespace.connectionId,
+              this._messageReceiver.connectionId,
               receiverError
             );
           }
         } catch (err) {
           log.error(
             "[%s] Receiver '%s' error in onClose handler:\n%O",
-            this._context.namespace.connectionId,
-            this.name,
+            this._messageReceiver.connectionId,
+            this._messageReceiver.name,
             translate(err)
           );
         }
@@ -266,7 +293,7 @@ export class BatchingReceiver extends MessageReceiver {
       // Action to be taken when an error is received.
       const onReceiveError: OnAmqpEvent = (context: EventContext) => {
         this.isReceivingMessages = false;
-        const receiver = this._receiver || context.receiver!;
+        const receiver = this._messageReceiver.receiver || context.receiver!;
         receiver.removeListener(ReceiverEvents.receiverError, onReceiveError);
         receiver.removeListener(ReceiverEvents.message, onReceiveMessage);
         receiver.removeListener(ReceiverEvents.receiverDrained, onReceiveDrain);
@@ -278,8 +305,8 @@ export class BatchingReceiver extends MessageReceiver {
           error = translate(receiverError);
           log.error(
             "[%s] Receiver '%s' received an error:\n%O",
-            this._context.namespace.connectionId,
-            this.name,
+            this._messageReceiver.connectionId,
+            this._messageReceiver.name,
             error
           );
         } else {
@@ -288,30 +315,31 @@ export class BatchingReceiver extends MessageReceiver {
         if (totalWaitTimer) {
           clearTimeout(totalWaitTimer);
         }
-        if (this._newMessageReceivedTimer) {
-          clearTimeout(this._newMessageReceivedTimer);
+        if (this._messageReceiver._newMessageReceivedTimer) {
+          clearTimeout(this._messageReceiver._newMessageReceivedTimer);
         }
         reject(error);
       };
 
       // Use new message wait timer only in peekLock mode
-      if (this.receiveMode === ReceiveMode.peekLock) {
+      if (this._messageReceiver.receiveMode === ReceiveMode.peekLock) {
         /**
          * Resets the timer when a new message is received. If no messages were received for
          * `newMessageWaitTimeoutInMs`, the messages received till now are returned. The
          * receiver link stays open for the next receive call, but doesn't receive messages until then.
          */
-        this.resetTimerOnNewMessageReceived = () => {
-          if (this._newMessageReceivedTimer) clearTimeout(this._newMessageReceivedTimer);
-          if (this.newMessageWaitTimeoutInMs) {
-            this._newMessageReceivedTimer = setTimeout(async () => {
+        this._messageReceiver.resetTimerOnNewMessageReceived = () => {
+          if (this._messageReceiver._newMessageReceivedTimer)
+            clearTimeout(this._messageReceiver._newMessageReceivedTimer);
+          if (this._messageReceiver.newMessageWaitTimeoutInMs) {
+            this._messageReceiver._newMessageReceivedTimer = setTimeout(async () => {
               const msg =
-                `BatchingReceiver '${this.name}' did not receive any messages in the last ` +
-                `${this.newMessageWaitTimeoutInMs} milliseconds. ` +
+                `BatchingReceiver '${this._messageReceiver.name}' did not receive any messages in the last ` +
+                `${this._messageReceiver.newMessageWaitTimeoutInMs} milliseconds. ` +
                 `Hence ending this batch receive operation.`;
-              log.error("[%s] %s", this._context.namespace.connectionId, msg);
+              log.error("[%s] %s", this._messageReceiver.connectionId, msg);
               finalAction();
-            }, this.newMessageWaitTimeoutInMs);
+            }, this._messageReceiver.newMessageWaitTimeoutInMs);
           }
         };
       }
@@ -320,15 +348,15 @@ export class BatchingReceiver extends MessageReceiver {
       const actionAfterWaitTimeout = (): void => {
         log.batching(
           "[%s] Batching Receiver '%s'  max wait time in milliseconds %d over.",
-          this._context.namespace.connectionId,
-          this.name,
+          this._messageReceiver.connectionId,
+          this._messageReceiver.name,
           maxWaitTimeInMs
         );
         return finalAction();
       };
 
       const onSettled: OnAmqpEvent = (context: EventContext) => {
-        const connectionId = this._context.namespace.connectionId;
+        const connectionId = this._messageReceiver.connectionId;
         const delivery = context.delivery;
         if (delivery) {
           const id = delivery.id;
@@ -342,15 +370,15 @@ export class BatchingReceiver extends MessageReceiver {
             settled,
             state && state.error ? state.error : state
           );
-          if (settled && this._deliveryDispositionMap.has(id)) {
-            const promise = this._deliveryDispositionMap.get(id) as PromiseLike;
+          if (settled && this._messageReceiver._deliveryDispositionMap.has(id)) {
+            const promise = this._messageReceiver._deliveryDispositionMap.get(id) as PromiseLike;
             clearTimeout(promise.timer);
             log.receiver(
               "[%s] Found the delivery with id %d in the map and cleared the timer.",
               connectionId,
               id
             );
-            const deleteResult = this._deliveryDispositionMap.delete(id);
+            const deleteResult = this._messageReceiver._deliveryDispositionMap.delete(id);
             log.receiver(
               "[%s] Successfully deleted the delivery with id %d from the map.",
               connectionId,
@@ -370,18 +398,23 @@ export class BatchingReceiver extends MessageReceiver {
       const addCreditAndSetTimer = (reuse?: boolean): void => {
         log.batching(
           "[%s] Receiver '%s', adding credit for receiving %d messages.",
-          this._context.namespace.connectionId,
-          this.name,
+          this._messageReceiver.connectionId,
+          this._messageReceiver.name,
           maxMessageCount
         );
         // By adding credit here, we let the service know that at max we can handle `maxMessageCount`
         // number of messages concurrently. We will return the user an array of messages that can
         // be of size upto maxMessageCount. Then the user needs to accordingly dispose
         // (complete/abandon/defer/deadletter) the messages from the array.
-        this._receiver!.addCredit(maxMessageCount);
+        this._messageReceiver.receiver!.addCredit(maxMessageCount);
         let msg: string = "[%s] Setting the wait timer for %d milliseconds for receiver '%s'.";
         if (reuse) msg += " Receiver link already present, hence reusing it.";
-        log.batching(msg, this._context.namespace.connectionId, maxWaitTimeInMs, this.name);
+        log.batching(
+          msg,
+          this._messageReceiver.connectionId,
+          maxWaitTimeInMs,
+          this._messageReceiver.name
+        );
         totalWaitTimer = setTimeout(actionAfterWaitTimeout, maxWaitTimeInMs);
         // TODO: Disabling this for now. We would want to give the user a decent chance to receive
         // the first message and only timeout faster if successive messages from there onwards are
@@ -396,40 +429,17 @@ export class BatchingReceiver extends MessageReceiver {
         // resetTimerOnNewMessageReceived();
       };
 
-      if (!this.isOpen()) {
-        // clear detachedError since we are reconnecting.
-        this.detachedError = undefined;
-        log.batching(
-          "[%s] Receiver '%s', setting max concurrent calls to 0.",
-          this._context.namespace.connectionId,
-          this.name
-        );
-        // while creating the receiver link for batching receiver the max concurrent calls
-        // i.e. the credit_window on the link is set to zero. After the link is created
-        // successfully, we add credit which is the maxMessageCount specified by the user.
-        this.maxConcurrentCalls = 0;
-        const rcvrOptions = this._createReceiverOptions(false, {
-          onMessage: onReceiveMessage,
-          onError: onReceiveError,
-          onSessionError: onSessionError,
-          onSettled: onSettled,
-          onClose: onReceiveClose,
-          onSessionClose: onSessionClose
-        });
-        this._init(rcvrOptions)
-          .then(() => {
-            this._receiver!.on(ReceiverEvents.receiverDrained, onReceiveDrain);
-            addCreditAndSetTimer();
-            return;
-          })
-          .catch(reject);
-      } else {
-        addCreditAndSetTimer(true);
-        this._receiver!.on(ReceiverEvents.message, onReceiveMessage);
-        this._receiver!.on(ReceiverEvents.receiverError, onReceiveError);
-        this._receiver!.on(ReceiverEvents.receiverDrained, onReceiveDrain);
-        this._receiver!.session.on(SessionEvents.sessionError, onSessionError);
-      }
+      // TODO: so this guy is already set up to properly hook itself up to a receiver that is already open
+      // so we can assume this is the normal mode of operation and just pre-initialize the receiver.
+      addCreditAndSetTimer(true);
+      this._messageReceiver.receiver!.on(ReceiverEvents.message, onReceiveMessage);
+      this._messageReceiver.receiver!.on(ReceiverEvents.receiverError, onReceiveError);
+      this._messageReceiver.receiver!.session.on(SessionEvents.sessionError, onSessionError);
+      this._messageReceiver.receiver!.on(ReceiverEvents.settled, onSettled);
+
+      this._messageReceiver.receiver!.on(ReceiverEvents.receiverClose, onReceiveClose);
+      this._messageReceiver.receiver!.on(ReceiverEvents.receiverDrained, onReceiveDrain);
+      this._messageReceiver.receiver!.session.on(SessionEvents.sessionClose, onSessionClose);
     });
   }
 
@@ -440,10 +450,24 @@ export class BatchingReceiver extends MessageReceiver {
    * @param {ClientEntityContext} context    The connection context.
    * @param {ReceiveOptions} [options]     Receive options.
    */
-  static create(context: ClientEntityContext, options?: ReceiveOptions): BatchingReceiver {
-    throwErrorIfConnectionClosed(context.namespace);
-    const bReceiver = new BatchingReceiver(context, options);
+  static create(context: ClientEntityContext, messageReceiver: MessageReceiver): BatchingReceiver {
+    throwErrorIfConnectionClosed(messageReceiver.namespace);
+
+    messageReceiver.takeOwnership();
+
+    const bReceiver = new BatchingReceiver(messageReceiver);
+
+    // TODO: future - remove the need to store this in the context receiver at all.
     context.batchingReceiver = bReceiver;
     return bReceiver;
+  }
+
+  // compat
+  close(): Promise<void> {
+    return this._messageReceiver.close();
+  }
+
+  get name() {
+    return this._messageReceiver.name;
   }
 }

@@ -219,6 +219,8 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
       throw new TypeError("The parameter 'onError' must be of type 'function'.");
     }
 
+    // TODO: here's one place I need to make sure can handle hooking up it's handlers
+    // _after_ the receiver has been created.
     StreamingReceiver.create(this._context, {
       ...options,
       receiveMode: convertToInternalReceiveMode(this.receiveMode),
@@ -268,6 +270,9 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
           maxConcurrentCalls: 0,
           receiveMode: convertToInternalReceiveMode(this.receiveMode)
         };
+        // TODO: here's the other spot I need to make sure can handle attaching after the batching
+        // receiver has been created. Now this one in particular is probably pretty easy because it
+        // already has to do this since they're not recreating the receiver link each time.
         this._context.batchingReceiver = BatchingReceiver.create(this._context, options);
       }
       const receivedMessages = await this._context.batchingReceiver.receive(
