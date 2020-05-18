@@ -10,7 +10,8 @@ import {
   RetryConfig,
   ConditionErrorNameMapper,
   ErrorNameConditionMapper,
-  RetryOptions
+  RetryOptions,
+  defaultLock
 } from "@azure/core-amqp";
 import {
   Receiver,
@@ -18,7 +19,8 @@ import {
   EventContext,
   ReceiverOptions,
   AmqpError,
-  isAmqpError
+  isAmqpError,
+  generate_uuid
 } from "rhea-promise";
 import * as log from "../log";
 import { LinkEntity } from "./linkEntity";
@@ -27,6 +29,8 @@ import { ServiceBusMessageImpl, DispositionType, ReceiveMode } from "../serviceB
 import { getUniqueName, calculateRenewAfterDuration } from "../util/utils";
 import { MessageHandlerOptions } from "../models";
 import { DispositionStatusOptions } from "./managementClient";
+import { openLink } from "./shared";
+import { OperationOptions } from '../modelsToBeSharedWithEventHubs';
 
 /**
  * @internal
@@ -752,88 +756,125 @@ export class MessageReceiver extends LinkEntity {
     return rcvrOptions;
   }
 
+  protected async _init(options?: ReceiverOptions & Pick<OperationOptions, 'abortSignal'>): Promise<void> {
+    const receiver = await openLink({
+      abortSignal: options?.abortSignal,
+      acquireLock: (lock, fn) => defaultLock.acquire(lock, fn),      
+      isConnecting: (value) => {
+        if (value) {
+          this.isConnecting = value;
+        }
+        return this.isConnecting;
+      },
+      create: () => {
+        if (options && options.name) {
+          this.name = options.name;
+        }
+
+        if (!options) {
+          options = this._createReceiverOptions();
+        }
+
+        return this._context.namespace.connection.createReceiver(options)
+      },
+      ensureTokenRenewal: () => this._ensureTokenRenewal(),
+      isOpen: () => this.isOpen(),
+      logger: log.receiver,
+      logPrefix: `[${this._context.namespace.connectionId}] The receiver '${this.name}' with address '${this.address}'`,
+      negotiateClaim: () => this._negotiateClaim(),
+      // TODO: we don't have locking around init() right now in the receiver....
+      openLock: this._openLock
+    });
+
+    if (receiver != null) {
+      this._receiver = receiver;
+    }
+  }
+
+  private readonly _openLock: string = `receiver-${generate_uuid()}`;
+
   /**
    * Creates a new AMQP receiver under a new AMQP session.
    *
    * @returns {Promise<void>} Promise<void>.
    */
-  protected async _init(options?: ReceiverOptions): Promise<void> {
-    const connectionId = this._context.namespace.connectionId;
-    try {
-      if (!this.isOpen() && !this.isConnecting) {
-        log.error(
-          "[%s] The receiver '%s' with address '%s' is not open and is not currently " +
-            "establishing itself. Hence let's try to connect.",
-          connectionId,
-          this.name,
-          this.address
-        );
+  // protected async _init(options?: ReceiverOptions): Promise<void> {
+  //   const connectionId = this._context.namespace.connectionId;
+  //   try {
+  //     if (!this.isOpen() && !this.isConnecting) {
+  //       log.error(
+  //         "[%s] The receiver '%s' with address '%s' is not open and is not currently " +
+  //           "establishing itself. Hence let's try to connect.",
+  //         connectionId,
+  //         this.name,
+  //         this.address
+  //       );
 
-        if (options && options.name) {
-          this.name = options.name;
-        }
+  //       if (options && options.name) {
+  //         this.name = options.name;
+  //       }
 
-        this.isConnecting = true;
-        await this._negotiateClaim();
-        if (!options) {
-          options = this._createReceiverOptions();
-        }
-        log.error(
-          "[%s] Trying to create receiver '%s' with options %O",
-          connectionId,
-          this.name,
-          options
-        );
+  //       this.isConnecting = true;
+  //       await this._negotiateClaim();
+  //       if (!options) {
+  //         options = this._createReceiverOptions();
+  //       }
+  //       log.error(
+  //         "[%s] Trying to create receiver '%s' with options %O",
+  //         connectionId,
+  //         this.name,
+  //         options
+  //       );
 
-        this._receiver = await this._context.namespace.connection.createReceiver(options);
-        this.isConnecting = false;
-        log.error(
-          "[%s] Receiver '%s' with address '%s' has established itself.",
-          connectionId,
-          this.name,
-          this.address
-        );
-        log[this.receiverType](
-          "Promise to create the receiver resolved. " + "Created receiver with name: ",
-          this.name
-        );
-        log[this.receiverType](
-          "[%s] Receiver '%s' created with receiver options: %O",
-          connectionId,
-          this.name,
-          options
-        );
-        // It is possible for someone to close the receiver and then start it again.
-        // Thus make sure that the receiver is present in the client cache.
-        if (this.receiverType === ReceiverType.streaming && !this._context.streamingReceiver) {
-          this._context.streamingReceiver = this as any;
-        } else if (this.receiverType === ReceiverType.batching && !this._context.batchingReceiver) {
-          this._context.batchingReceiver = this as any;
-        }
-        await this._ensureTokenRenewal();
-      } else {
-        log.error(
-          "[%s] The receiver '%s' with address '%s' is open -> %s and is connecting " +
-            "-> %s. Hence not reconnecting.",
-          connectionId,
-          this.name,
-          this.address,
-          this.isOpen(),
-          this.isConnecting
-        );
-      }
-    } catch (err) {
-      this.isConnecting = false;
-      err = translate(err);
-      log.error(
-        "[%s] An error occured while creating the receiver '%s': %O",
-        this._context.namespace.connectionId,
-        this.name,
-        err
-      );
-      throw err;
-    }
-  }
+  //       this._receiver = await this._context.namespace.connection.createReceiver(options);
+  //       this.isConnecting = false;
+  //       log.error(
+  //         "[%s] Receiver '%s' with address '%s' has established itself.",
+  //         connectionId,
+  //         this.name,
+  //         this.address
+  //       );
+  //       log[this.receiverType](
+  //         "Promise to create the receiver resolved. " + "Created receiver with name: ",
+  //         this.name
+  //       );
+  //       log[this.receiverType](
+  //         "[%s] Receiver '%s' created with receiver options: %O",
+  //         connectionId,
+  //         this.name,
+  //         options
+  //       );
+  //       // It is possible for someone to close the receiver and then start it again.
+  //       // Thus make sure that the receiver is present in the client cache.
+  //       if (this.receiverType === ReceiverType.streaming && !this._context.streamingReceiver) {
+  //         this._context.streamingReceiver = this as any;
+  //       } else if (this.receiverType === ReceiverType.batching && !this._context.batchingReceiver) {
+  //         this._context.batchingReceiver = this as any;
+  //       }
+  //       await this._ensureTokenRenewal();
+  //     } else {
+  //       log.error(
+  //         "[%s] The receiver '%s' with address '%s' is open -> %s and is connecting " +
+  //           "-> %s. Hence not reconnecting.",
+  //         connectionId,
+  //         this.name,
+  //         this.address,
+  //         this.isOpen(),
+  //         this.isConnecting
+  //       );
+  //     }
+  //   } catch (err) {
+  //     this.isConnecting = false;
+  //     err = translate(err);
+  //     log.error(
+  //       "[%s] An error occured while creating the receiver '%s': %O",
+  //       this._context.namespace.connectionId,
+  //       this.name,
+  //       err
+  //     );
+  //     throw err;
+  //   }
+  // }
 
   protected _deleteFromCache(): void {
     this._receiver = undefined;
