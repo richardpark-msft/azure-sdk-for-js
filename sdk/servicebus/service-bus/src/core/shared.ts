@@ -4,6 +4,7 @@ import * as log from "../log";
 import { Receiver as RheaReceiver, AwaitableSender as RheaSender } from "rhea-promise";
 import { translate } from "@azure/core-amqp";
 import { AbortSignalLike } from "@azure/core-http";
+import { AbortError } from "@azure/abort-controller";
 
 export type RheaLink = RheaSender | RheaReceiver;
 
@@ -40,21 +41,29 @@ export interface OpenArgs<RheaLinkT extends RheaLink> {
  * @param options
  */
 export async function openLink<T extends RheaLink>(args: OpenArgs<T>): Promise<T | undefined> {
+  const checkAborted = (): void => {
+    if (args.abortSignal?.aborted) {
+      throw new AbortError();
+    }
+  };
+
+  checkAborted();
+
   if (args.isOpen() || args.isConnecting()) {
     return Promise.resolve(undefined);
   }
 
   // TODO: set isConnecting up here, cleanup on finally.
 
-  log.error(
-    `${args.logPrefix} is not open and is not currently establishing itself. Hence let's try to connect.`
-  );
-
   args.logger(
-    `${args.logPrefix} Acquiring lock ${args.openLock} for initializing the session, link and possibly the connection.`
+    `${args.logPrefix} is not open or connecting. Acquiring lock ${args.openLock} for initializing the session, link and possibly the connection.`
   );
 
   return args.acquireLock(args.openLock, async () => {
+    checkAborted();
+
+    let link: T | undefined = undefined;
+
     try {
       if (args.isOpen()) {
         return Promise.resolve(undefined);
@@ -79,6 +88,7 @@ export async function openLink<T extends RheaLink>(args: OpenArgs<T>): Promise<T
       args.isConnecting(true);
       // this.isConnecting = true;
       await args.negotiateClaim();
+      checkAborted();
 
       //   log.error(
       //     "[%s] Trying to create sender '%s'...",
@@ -88,7 +98,8 @@ export async function openLink<T extends RheaLink>(args: OpenArgs<T>): Promise<T
 
       log.error(`${args.logPrefix} Trying to create...`);
 
-      const link = await args.create();
+      link = await args.create();
+      checkAborted();
 
       //   if (!options) {
       //     options = this._createSenderOptions(Constants.defaultOperationTimeoutInMs);
@@ -121,8 +132,17 @@ export async function openLink<T extends RheaLink>(args: OpenArgs<T>): Promise<T
       //   if (!this._sender) this._context.sender = this;
 
       await args.ensureTokenRenewal();
+      checkAborted();
+
       return link;
     } catch (err) {
+      if (link) {
+        // TODO: leaving it up to the calling code to properly cleanup the token renewal
+        // timer. When we move that responsibility into here we can take care of cleaning it
+        // up here as well.
+        await link.close();
+      }
+
       const translatedErr = translate(err);
 
       log.error(`${args.logPrefix}. An error occurred during creation`, translatedErr);

@@ -38,7 +38,7 @@ import { ServiceBusMessageBatch, ServiceBusMessageBatchImpl } from "../serviceBu
 import { CreateBatchOptions } from "../models";
 import { OperationOptions } from "../modelsToBeSharedWithEventHubs";
 import { AbortError, AbortSignalLike } from "@azure/abort-controller";
-import { openLink } from './shared';
+import { openLink } from "./shared";
 
 /**
  * @internal
@@ -378,7 +378,9 @@ export class MessageSender extends LinkEntity {
   /**
    * Initializes the sender session on the connection.
    */
-  public async open(options?: AwaitableSenderOptions & Pick<OperationOptions, 'abortSignal'>): Promise<void> {
+  public async open(
+    options?: AwaitableSenderOptions & Pick<OperationOptions, "abortSignal">
+  ): Promise<void> {
     const sender = await openLink({
       acquireLock: (lock, fn) => defaultLock.acquire(lock, fn),
       create: async () => {
@@ -401,77 +403,6 @@ export class MessageSender extends LinkEntity {
     if (sender != null) {
       this._sender = sender;
     }
-
-    // if (this.isOpen()) {
-    //   return;
-    // }
-
-    // log.sender(
-    //   "Acquiring lock %s for initializing the session, sender and possibly the connection.",
-    //   this.openLock
-    // );
-
-    // return await defaultLock.acquire(this.openLock, async () => {
-    //   try {
-    //     // isOpen isConnecting  Should establish
-    //     // true     false          No
-    //     // true     true           No
-    //     // false    true           No
-    //     // false    false          Yes
-    //     if (!this.isOpen()) {
-    //       log.error(
-    //         "[%s] The sender '%s' with address '%s' is not open and is not currently " +
-    //           "establishing itself. Hence let's try to connect.",
-    //         this._context.namespace.connectionId,
-    //         this.name,
-    //         this.address
-    //       );
-    //       this.isConnecting = true;
-    //       await this._negotiateClaim();
-    //       log.error(
-    //         "[%s] Trying to create sender '%s'...",
-    //         this._context.namespace.connectionId,
-    //         this.name
-    //       );
-    //       if (!options) {
-    //         options = this._createSenderOptions(Constants.defaultOperationTimeoutInMs);
-    //       }
-    //       this._sender = await this._context.namespace.connection.createAwaitableSender(options);
-    //       this.isConnecting = false;
-    //       log.error(
-    //         "[%s] Sender '%s' with address '%s' has established itself.",
-    //         this._context.namespace.connectionId,
-    //         this.name,
-    //         this.address
-    //       );
-    //       this._sender.setMaxListeners(1000);
-    //       log.error(
-    //         "[%s] Promise to create the sender resolved. Created sender with name: %s",
-    //         this._context.namespace.connectionId,
-    //         this.name
-    //       );
-    //       log.error(
-    //         "[%s] Sender '%s' created with sender options: %O",
-    //         this._context.namespace.connectionId,
-    //         this.name,
-    //         options
-    //       );
-    //       // It is possible for someone to close the sender and then start it again.
-    //       // Thus make sure that the sender is present in the client cache.
-    //       if (!this._sender) this._context.sender = this;
-    //       await this._ensureTokenRenewal();
-    //     }
-    //   } catch (err) {
-    //     err = translate(err);
-    //     log.error(
-    //       "[%s] An error occurred while creating the sender %s",
-    //       this._context.namespace.connectionId,
-    //       this.name,
-    //       err
-    //     );
-    //     throw err;
-    //   }
-    // });
   }
 
   /**
