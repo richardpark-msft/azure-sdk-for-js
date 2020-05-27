@@ -87,8 +87,6 @@ brings this package in line with the [Azure SDK Design Guidelines for Typescript
   });
   ```
 
-* `peek()`is renamed to `browseMessages()` to avoid confusion with the PeekLock mode
-
 * Subscription rule management has been moved to its own class, rather than being part of the now-removed `SubscriptionClient`
 
   In V1:

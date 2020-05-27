@@ -36,7 +36,7 @@ export {
   SubscribeOptions,
   WaitTimeOptions,
   CreateBatchOptions,
-  BrowseMessagesOptions
+  PeekMessagesOptions
 } from "./models";
 export { OperationOptions } from "./modelsToBeSharedWithEventHubs";
 

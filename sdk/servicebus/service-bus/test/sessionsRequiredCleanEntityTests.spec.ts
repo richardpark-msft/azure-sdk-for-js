@@ -42,7 +42,7 @@ describe("sessions tests -  requires completely clean entity for each test", () 
     // Hence, commenting the following code since there is no need to purge/peek into a freshly created entity
 
     // await purge(receiver);
-    // const browsedMsgs = await receiver.browseMessages();
+    // const browsedMsgs = await receiver.peekMessages();
     // const receiverEntityType = receiver.entityType;
     // if (browsedMsgs.length) {
     //   chai.assert.fail(`Please use an empty ${receiverEntityType} for integration testing`);
@@ -80,8 +80,8 @@ describe("sessions tests -  requires completely clean entity for each test", () 
       });
 
       // At this point AMQP receiver link has not been established.
-      // browseMessages() will not establish the link if sessionId was provided
-      const browsedMsgs = await receiver.browseMessages();
+      // peekMessages() will not establish the link if sessionId was provided
+      const browsedMsgs = await receiver.peekMessages();
       should.equal(browsedMsgs.length, 1, "Unexpected number of messages browsed");
       should.equal(browsedMsgs[0].body, testMessage.body, "MessageBody is different than expected");
       should.equal(
@@ -281,7 +281,7 @@ describe("sessions tests -  requires completely clean entity for each test", () 
       );
       await msgs[0].complete();
 
-      const browsedMsgsInSession = await receiver.browseMessages();
+      const browsedMsgsInSession = await receiver.peekMessages();
       should.equal(browsedMsgsInSession.length, 0, "Unexpected number of messages browsed");
 
       await receiver.close();

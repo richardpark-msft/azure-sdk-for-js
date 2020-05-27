@@ -12,7 +12,7 @@ import {
 import {
   GetMessageIteratorOptions,
   CreateSessionReceiverOptions,
-  BrowseMessagesOptions
+  PeekMessagesOptions
 } from "../models";
 import { MessageSession } from "../session/messageSession";
 import {
@@ -335,12 +335,12 @@ export class SessionReceiverImpl<ReceivedMessageT extends ReceivedMessage | Rece
     return retry<any>(config);
   }
 
-  async browseMessages(options: BrowseMessagesOptions = {}): Promise<ReceivedMessage[]> {
+  async peekMessages(options: PeekMessagesOptions = {}): Promise<ReceivedMessage[]> {
     this._throwIfReceiverOrConnectionClosed();
 
     const managementRequestOptions = {
       ...options,
-      requestName: "browseMessages",
+      requestName: "peek",
       timeoutInMs: this._retryOptions?.timeoutInMs
     };
     const peekOperationPromise = async () => {

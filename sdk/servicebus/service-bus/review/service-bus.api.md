@@ -18,12 +18,6 @@ import { WebSocketImpl } from 'rhea-promise';
 import { WebSocketOptions } from '@azure/core-amqp';
 
 // @public
-export interface BrowseMessagesOptions extends OperationOptions {
-    fromSequenceNumber?: Long;
-    maxMessageCount?: number;
-}
-
-// @public
 export interface CreateBatchOptions extends OperationOptions {
     maxSizeInBytes?: number;
 }
@@ -73,6 +67,12 @@ export interface OperationOptions {
 }
 
 // @public
+export interface PeekMessagesOptions extends OperationOptions {
+    fromSequenceNumber?: Long;
+    maxMessageCount?: number;
+}
+
+// @public
 export interface ReceiveBatchOptions extends OperationOptions, WaitTimeOptions {
 }
 
@@ -106,12 +106,12 @@ export interface ReceivedMessageWithLock extends ReceivedMessage {
 
 // @public
 export interface Receiver<ReceivedMessageT> {
-    browseMessages(options?: BrowseMessagesOptions): Promise<ReceivedMessage[]>;
     close(): Promise<void>;
     entityPath: string;
     getMessageIterator(options?: GetMessageIteratorOptions): AsyncIterableIterator<ReceivedMessageT>;
     isClosed: boolean;
     isReceivingMessages(): boolean;
+    peekMessages(options?: PeekMessagesOptions): Promise<ReceivedMessage[]>;
     receiveBatch(maxMessages: number, options?: ReceiveBatchOptions): Promise<ReceivedMessageT[]>;
     receiveDeferredMessage(sequenceNumber: Long, options?: OperationOptions): Promise<ReceivedMessageT | undefined>;
     receiveDeferredMessages(sequenceNumbers: Long[], options?: OperationOptions): Promise<ReceivedMessageT[]>;

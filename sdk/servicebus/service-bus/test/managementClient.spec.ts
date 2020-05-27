@@ -52,7 +52,7 @@ describe("ManagementClient - disconnects", function(): void {
     await sender.send(TestMessage.getSample());
 
     let peekedMessageCount = 0;
-    let messages = await receiver.browseMessages({ maxMessageCount: 1 });
+    let messages = await receiver.peekMessages({ maxMessageCount: 1 });
     peekedMessageCount += messages.length;
 
     peekedMessageCount.should.equal(1, "Unexpected number of peeked messages.");
@@ -73,7 +73,7 @@ describe("ManagementClient - disconnects", function(): void {
     await delay(2000);
 
     // peek additional messages
-    messages = await receiver.browseMessages({ maxMessageCount: 1 });
+    messages = await receiver.peekMessages({ maxMessageCount: 1 });
     peekedMessageCount += messages.length;
     peekedMessageCount.should.equal(2, "Unexpected number of peeked messages.");
 

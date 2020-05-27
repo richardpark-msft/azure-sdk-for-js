@@ -55,7 +55,7 @@ describe("session tests", () => {
     // Hence, commenting the following code since there is no need to purge/peek into a freshly created entity
 
     // await purge(receiver);
-    // const browsedMsgs = await receiver.browseMessages();
+    // const browsedMsgs = await receiver.peekMessages();
     // const receiverEntityType = receiver.entityType;
     // if (browsedMsgs.length) {
     //   chai.assert.fail(`Please use an empty ${receiverEntityType} for integration testing`);
