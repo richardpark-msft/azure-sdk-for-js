@@ -42,8 +42,8 @@ describe("invalid parameters", () => {
     });
 
     it("Peek: Invalid maxMessageCount for Queue", async function(): Promise<void> {
-      const browsedMessages = await receiver.peekMessages({ maxMessageCount: -100 });
-      should.equal(browsedMessages.length, 0);
+      const peekedMessages = await receiver.peekMessages({ maxMessageCount: -100 });
+      should.equal(peekedMessages.length, 0);
     });
 
     it("Peek: Wrong type maxMessageCount for Queue", async function(): Promise<void> {
@@ -61,11 +61,11 @@ describe("invalid parameters", () => {
     });
 
     it("PeekBySequenceNumber: Invalid maxMessageCount for Queue", async function(): Promise<void> {
-      const browsedMessages = await receiver.peekMessages({
+      const peekedMessages = await receiver.peekMessages({
         fromSequenceNumber: Long.ZERO,
         maxMessageCount: -100
       });
-      should.equal(browsedMessages.length, 0);
+      should.equal(peekedMessages.length, 0);
     });
 
     it("PeekBySequenceNumber: Wrong type maxMessageCount for Queue", async function(): Promise<
@@ -127,10 +127,10 @@ describe("invalid parameters", () => {
     });
 
     it("Peek: Invalid maxMessageCount for Subscription", async function(): Promise<void> {
-      const browsedMessages = await subscriptionReceiverClient.peekMessages({
+      const peekedMessages = await subscriptionReceiverClient.peekMessages({
         maxMessageCount: -100
       });
-      should.equal(browsedMessages.length, 0);
+      should.equal(peekedMessages.length, 0);
     });
 
     it("Peek: Wrong type maxMessageCount for Subscription", async function(): Promise<void> {
@@ -150,11 +150,11 @@ describe("invalid parameters", () => {
     it("PeekBySequenceNumber: Invalid maxMessageCount for Subscription", async function(): Promise<
       void
     > {
-      const browsedMessages = await subscriptionReceiverClient.peekMessages({
+      const peekedMessages = await subscriptionReceiverClient.peekMessages({
         fromSequenceNumber: Long.ZERO,
         maxMessageCount: -100
       });
-      should.equal(browsedMessages.length, 0);
+      should.equal(peekedMessages.length, 0);
     });
 
     it("PeekBySequenceNumber: Wrong type maxMessageCount for Subscription", async function(): Promise<
@@ -366,8 +366,8 @@ describe("invalid parameters", () => {
     });
 
     it("Peek: Invalid maxMessageCount in SessionReceiver", async function(): Promise<void> {
-      const browsedMessages = await receiver.peekMessages({ maxMessageCount: -100 });
-      should.equal(browsedMessages.length, 0);
+      const peekedMessages = await receiver.peekMessages({ maxMessageCount: -100 });
+      should.equal(peekedMessages.length, 0);
     });
 
     it("Peek: Wrong type maxMessageCount in SessionReceiver", async function(): Promise<void> {
@@ -387,11 +387,11 @@ describe("invalid parameters", () => {
     it("PeekBySequenceNumber: Invalid maxMessageCount in SessionReceiver", async function(): Promise<
       void
     > {
-      const browsedMessages = await receiver.peekMessages({
+      const peekedMessages = await receiver.peekMessages({
         fromSequenceNumber: Long.ZERO,
         maxMessageCount: -100
       });
-      should.equal(browsedMessages.length, 0);
+      should.equal(peekedMessages.length, 0);
     });
 
     it("PeekBySequenceNumber: Wrong type maxMessageCount in SessionReceiver", async function(): Promise<

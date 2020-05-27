@@ -6,7 +6,8 @@
   For samples using the current stable version of the package, please use the link below:
   https://github.com/Azure/azure-sdk-for-js/tree/%40azure/service-bus_1.1.5/sdk/servicebus/service-bus/samples
   
-  This sample demonstrates how the peekMessages() function can be used to browse a Service Bus message.
+  This sample demonstrates how the peekMessages() function can be used receive messages without altering
+  the lock state or delivery count.
 
   See https://docs.microsoft.com/en-us/azure/service-bus-messaging/message-browsing to learn
   about message browsing.

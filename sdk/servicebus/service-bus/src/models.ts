@@ -119,7 +119,7 @@ export interface CreateSenderOptions {
  */
 export interface PeekMessagesOptions extends OperationOptions {
   /**
-   * @property The maximum number of messages to browse.
+   * @property The maximum number of messages to peek.
    * Default value is 1
    */
   maxMessageCount?: number;
