@@ -6,7 +6,8 @@ import {
   GetMessageIteratorOptions,
   MessageHandlers,
   ReceiveBatchOptions,
-  SubscribeOptions
+  SubscribeOptions,
+  Closeable
 } from "../models";
 import { OperationOptions } from "../modelsToBeSharedWithEventHubs";
 import { ReceivedMessage } from "..";
@@ -39,7 +40,7 @@ export interface Receiver<ReceivedMessageT> {
    * @param handlers A handler that gets called for messages and errors.
    * @param options Options for subscribe.
    */
-  subscribe(handlers: MessageHandlers<ReceivedMessageT>, options?: SubscribeOptions): void;
+  subscribe(handlers: MessageHandlers<ReceivedMessageT>, options?: SubscribeOptions): Closeable;
 
   /**
    * Returns an iterator that can be used to receive messages from Service Bus.
@@ -432,14 +433,14 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
     };
     const peekOperationPromise = async () => {
       if (options.fromSequenceNumber) {
-        return await this._context.managementClient!.peekBySequenceNumber(
+        return this._context.managementClient!.peekBySequenceNumber(
           options.fromSequenceNumber,
           options.maxMessageCount,
           undefined,
           managementRequestOptions
         );
       } else {
-        return await this._context.managementClient!.peek(
+        return this._context.managementClient!.peek(
           options.maxMessageCount,
           managementRequestOptions
         );
@@ -456,7 +457,7 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
     return retry<ReceivedMessage[]>(config);
   }
 
-  subscribe(handlers: MessageHandlers<ReceivedMessageT>, options?: SubscribeOptions): void {
+  subscribe(handlers: MessageHandlers<ReceivedMessageT>, options?: SubscribeOptions): Closeable {
     assertValidMessageHandlers(handlers);
 
     this._registerMessageHandler(
@@ -469,6 +470,13 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
       },
       options
     );
+
+    return {
+      async close(): Promise<void> {
+        // TODO: send a processClose() event to the user's handler
+        // TODO: and now close the receiver link.
+      }
+    };
   }
 
   /**

@@ -7,6 +7,14 @@ import Long from "long";
 import { AbortSignalLike } from "@azure/abort-controller";
 
 /**
+ * An entity that represents a connection or link
+ * that can be closed.
+ */
+export interface Closeable {
+  close(): Promise<void>;
+}
+
+/**
  * The general message handler interface (used for streamMessages).
  */
 export interface MessageHandlers<ReceivedMessageT> {

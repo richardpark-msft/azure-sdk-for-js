@@ -306,7 +306,8 @@ export interface Receiver<ReceivedMessageT> {
     receiveDeferredMessage(sequenceNumber: Long, options?: OperationOptions): Promise<ReceivedMessageT | undefined>;
     receiveDeferredMessages(sequenceNumbers: Long[], options?: OperationOptions): Promise<ReceivedMessageT[]>;
     receiveMode: "peekLock" | "receiveAndDelete";
-    subscribe(handlers: MessageHandlers<ReceivedMessageT>, options?: SubscribeOptions): void;
+    // Warning: (ae-forgotten-export) The symbol "Closeable" needs to be exported by the entry point index.d.ts
+    subscribe(handlers: MessageHandlers<ReceivedMessageT>, options?: SubscribeOptions): Closeable;
 }
 
 export { RetryOptions }

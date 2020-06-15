@@ -12,7 +12,8 @@ import {
 import {
   PeekMessagesOptions,
   CreateSessionReceiverOptions,
-  GetMessageIteratorOptions
+  GetMessageIteratorOptions,
+  Closeable
 } from "../models";
 import { MessageSession } from "../session/messageSession";
 import {
@@ -515,7 +516,7 @@ export class SessionReceiverImpl<ReceivedMessageT extends ReceivedMessage | Rece
     return retry<ReceivedMessageT[]>(config);
   }
 
-  subscribe(handlers: MessageHandlers<ReceivedMessageT>, options?: SubscribeOptions): void {
+  subscribe(handlers: MessageHandlers<ReceivedMessageT>, options?: SubscribeOptions): Closeable {
     // TODO - receiverOptions for subscribe??
     assertValidMessageHandlers(handlers);
 
@@ -529,6 +530,12 @@ export class SessionReceiverImpl<ReceivedMessageT extends ReceivedMessage | Rece
       },
       options
     );
+
+    return {
+      async close(): Promise<void> {
+        // TODO: fill out.
+      }
+    };
   }
 
   /**
