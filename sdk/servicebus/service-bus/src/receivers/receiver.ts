@@ -28,7 +28,14 @@ import { assertValidMessageHandlers, getMessageIterator } from "./shared";
 import { convertToInternalReceiveMode } from "../constructorHelpers";
 import Long from "long";
 import { ReceivedMessageWithLock, ServiceBusMessageImpl } from "../serviceBusMessage";
-import { Constants, RetryConfig, RetryOperationType, RetryOptions, retry } from "@azure/core-amqp";
+import {
+  Constants,
+  RetryConfig,
+  RetryOperationType,
+  RetryOptions,
+  retry,
+  logger
+} from "@azure/core-amqp";
 import "@azure/core-asynciterator-polyfill";
 
 /**
@@ -465,16 +472,27 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
         return handlers.processMessage((message as any) as ReceivedMessageT);
       },
       (err: Error) => {
-        // TODO: not async internally yet.
-        handlers.processError(err);
+        // eslint-disable-next-line promise/no-promise-in-callback
+        handlers.processError(err).catch((err) => {
+          logger.error(`Error thrown within user's processError handler: ${err}`);
+        });
       },
       options
     );
 
     return {
-      async close(): Promise<void> {
-        // TODO: send a processClose() event to the user's handler
-        // TODO: and now close the receiver link.
+      close: async (): Promise<void> => {
+        if (this._context.streamingReceiver) {
+          await this._context.streamingReceiver.stop();
+        }
+
+        if (handlers?.processClose) {
+          await handlers?.processClose();
+        }
+
+        if (this._context.streamingReceiver) {
+          await this._context.streamingReceiver.close();
+        }
       }
     };
   }

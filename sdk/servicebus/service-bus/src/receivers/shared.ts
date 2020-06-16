@@ -8,11 +8,13 @@ import { Receiver } from "./receiver";
  * @internal
  * @ignore
  */
-export function assertValidMessageHandlers(handlers: any) {
+export function assertValidMessageHandlers(handlers: any): void {
   if (
     handlers &&
     handlers.processMessage instanceof Function &&
-    handlers.processError instanceof Function
+    handlers.processError instanceof Function &&
+    (handlers.processClose == null || handlers.processClose instanceof Function) &&
+    (handlers.processOpen == null || handlers.processOpen instanceof Function)
   ) {
     return;
   }

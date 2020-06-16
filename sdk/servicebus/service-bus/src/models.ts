@@ -29,6 +29,18 @@ export interface MessageHandlers<ReceivedMessageT> {
    * @param err An error from Service Bus.
    */
   processError(err: Error): Promise<void>;
+
+  /**
+   * Optional handler that is called when the link is established but before
+   * any messages have been requested.
+   */
+  processOpen?: () => Promise<void>;
+
+  /**
+   * Optional handler that is called before the link is closed, but after we've
+   * received all pending messages.
+   */
+  processClose?: () => Promise<void>;
 }
 
 /**

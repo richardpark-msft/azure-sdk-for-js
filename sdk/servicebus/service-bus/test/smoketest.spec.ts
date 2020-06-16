@@ -396,6 +396,103 @@ describe("Sample scenarios for track 2", () => {
       );
     });
 
+    it("processClose() is called if the entire receiver is shut down", () => {
+      assert.fail("Not implemented yet");
+    });
+
+    it("processClose() is not called multiple times if the receiver is closed and it was manually stopped.", () => {
+      assert.fail("Not implemented yet");
+    });
+
+    it("processOpen and processClose are called for sessions", async () => {
+      const sessionId = Date.now().toString();
+      const receiver = serviceBusClient.test.addToCleanup(
+        await serviceBusClient.createSessionReceiver(queue, "receiveAndDelete", { sessionId })
+      );
+
+      assert.equal(receiver.sessionId, sessionId);
+
+      await sendSampleMessage(sender, "Queue, receive and delete, sessions", sessionId);
+
+      // note that this method is now available - only shows up in auto-complete
+      // if you construct this object with a session.
+      await receiver.renewSessionLock();
+
+      const errors: string[] = [];
+      const receivedBodies: string[] = [];
+
+      let processCloseWasCalled = false;
+      let processOpenWasCalled = false;
+
+      receiver.subscribe({
+        async processMessage(message: ReceivedMessage): Promise<void> {
+          receivedBodies.push(message.body);
+        },
+        async processError(err: Error): Promise<void> {
+          errors.push(err.message);
+        },
+        async processClose(): Promise<void> {
+          processCloseWasCalled = true;
+        },
+        async processOpen(): Promise<void> {
+          processOpenWasCalled = true;
+        }
+      });
+
+      await waitAndValidate(
+        "Queue, receive and delete, sessions",
+        receivedBodies,
+        errors,
+        receiver
+      );
+
+      assert.isTrue(processOpenWasCalled);
+      assert.isTrue(processCloseWasCalled);
+    });
+
+    it("processOpen and processClose are called for non-sessions", async () => {
+      const receiver = serviceBusClient.test.addToCleanup(
+        //
+        // TODO: don't have a way to intermix session and non-sessions tests in the same suite
+        // so this will have to move out. But the concept is right.
+        //
+        await serviceBusClient.createReceiver(queue, "receiveAndDelete")
+      );
+
+      await sendSampleMessage(sender, "processOpen and processClose are called for non-sessions");
+
+      const errors: string[] = [];
+      const receivedBodies: string[] = [];
+
+      let processCloseWasCalled = false;
+      let processOpenWasCalled = false;
+
+      receiver.subscribe({
+        async processMessage(message: ReceivedMessage): Promise<void> {
+          receivedBodies.push(message.body);
+        },
+        async processError(err: Error): Promise<void> {
+          errors.push(err.message);
+        },
+        async processClose(): Promise<void> {
+          processCloseWasCalled = true;
+        },
+        async processOpen(): Promise<void> {
+          processOpenWasCalled = true;
+        }
+      });
+
+      await waitAndValidate(
+        "processOpen and processClose are called for non-sessions",
+        receivedBodies,
+        errors,
+        receiver
+      );
+
+      assert.isTrue(processOpenWasCalled);
+      assert.isTrue(processCloseWasCalled);
+    });
+
     it("Queue, peek/lock, sessions using an iterator", async () => {
       const sessionId = Date.now().toString();
 

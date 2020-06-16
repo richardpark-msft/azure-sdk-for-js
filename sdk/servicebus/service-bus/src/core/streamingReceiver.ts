@@ -15,6 +15,9 @@ import * as log from "../log";
 import { throwErrorIfConnectionClosed } from "../util/errors";
 import { RetryOperationType, RetryConfig, retry } from "@azure/core-amqp";
 import { OperationOptions } from "../modelsToBeSharedWithEventHubs";
+import { AbortSignalLike } from "@azure/abort-controller";
+import { Receiver, ReceiverEvents } from "rhea-promise";
+import { waitForTimeoutOrAbortOrResolve } from "../util/utils";
 
 /**
  * @internal
@@ -67,6 +70,30 @@ export class StreamingReceiver extends MessageReceiver {
   }
 
   /**
+   * Stops the streaming receiver from receiving more messages
+   * but does not close it.
+   *
+   * Returns when:
+   * 1) all outstanding message handlers have resolved.
+   * 2) the receiver has been drained.
+   *
+   * @param abortSignal
+   */
+  async stop(abortSignal?: AbortSignalLike): Promise<void> {
+    if (this._receiver) {
+      //
+      //
+      //
+      // TODO: do we have a reasonable retry timeout I can snag?
+      // TODO: also await any outstanding message handlers.
+      //
+      //
+      //
+      await drainReceiver(this._receiver, 60 * 1000, abortSignal);
+    }
+  }
+
+  /**
    * Creates a streaming receiver.
    * @static
    *
@@ -109,4 +136,27 @@ export class StreamingReceiver extends MessageReceiver {
     context.streamingReceiver = sReceiver;
     return sReceiver;
   }
+}
+
+export async function drainReceiver(
+  receiver: Pick<Receiver, "once" | "drain" | "addCredit">,
+  maxTimeoutMs: number,
+  abortSignal?: AbortSignalLike
+): Promise<void> {
+  // add on a drain handler
+  const drainPromise = new Promise((resolve) => {
+    receiver.once(ReceiverEvents.receiverDrained, () => {
+      resolve();
+    });
+
+    receiver.drain = true;
+    receiver.addCredit(1);
+  });
+
+  await waitForTimeoutOrAbortOrResolve({
+    actionFn: () => drainPromise,
+    timeoutMessage: "Drain has timed out",
+    timeoutMs: maxTimeoutMs,
+    abortSignal: abortSignal
+  });
 }

@@ -192,8 +192,10 @@ export interface MessageHandlerOptions {
 
 // @public
 export interface MessageHandlers<ReceivedMessageT> {
+    processClose?: () => Promise<void>;
     processError(err: Error): Promise<void>;
     processMessage(message: ReceivedMessageT): Promise<void>;
+    processOpen?: () => Promise<void>;
 }
 
 export { MessagingError }

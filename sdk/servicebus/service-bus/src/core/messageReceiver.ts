@@ -330,6 +330,24 @@ export class MessageReceiver extends LinkEntity {
       }
     };
 
+    //
+    //
+    //
+    //
+    //
+    // TODO: wrap this in some way so we can keep track of the # of outstanding
+    // promises that need to be resolved. This is used so we only stop a subscription
+    // when all outstanding handlers have been resolved.
+    //
+    // An alternate way is to think about only shutting it down when all the _messages_
+    // have been closed. Not sure about that one though.
+    //
+    //
+    //
+    //
+    //
+    //
+
     this._onAmqpMessage = async (context: EventContext) => {
       // If the receiver got closed in PeekLock mode, avoid processing the message as we
       // cannot settle the message.
