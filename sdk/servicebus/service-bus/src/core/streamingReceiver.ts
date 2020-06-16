@@ -1,13 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import {
-  MessageReceiver,
-  OnError,
-  OnMessage,
-  ReceiveOptions,
-  ReceiverType
-} from "./messageReceiver";
+import { MessageReceiver, ReceiveOptions, ReceiverType } from "./messageReceiver";
 
 import { ClientEntityContext } from "../clientEntityContext";
 
@@ -16,8 +10,9 @@ import { throwErrorIfConnectionClosed } from "../util/errors";
 import { RetryOperationType, RetryConfig, retry } from "@azure/core-amqp";
 import { OperationOptions } from "../modelsToBeSharedWithEventHubs";
 import { AbortSignalLike } from "@azure/abort-controller";
-import { Receiver, ReceiverEvents } from "rhea-promise";
+import { Receiver, ReceiverEvents, ReceiverOptions } from "rhea-promise";
 import { waitForTimeoutOrAbortOrResolve } from "../util/utils";
+import { MessageHandlers } from "../models";
 
 /**
  * @internal
@@ -34,8 +29,18 @@ export class StreamingReceiver extends MessageReceiver {
    * @param {ClientEntityContext} context                      The client entity context.
    * @param {ReceiveOptions} [options]                         Options for how you'd like to connect.
    */
-  constructor(context: ClientEntityContext, options?: ReceiveOptions) {
+  constructor(
+    // eslint-disable-next-line @azure/azure-sdk/ts-use-interface-parameters
+    context: ClientEntityContext,
+    private _messageHandlers: MessageHandlers<unknown>,
+    options?: ReceiveOptions
+  ) {
     super(context, ReceiverType.streaming, options);
+
+    this._onMessage = (...args) =>
+      this._messageHandlers.processMessage.call(this._messageHandlers, ...args);
+    this._onError = (...args) =>
+      this._messageHandlers.processError.call(this._messageHandlers, ...args);
 
     this.resetTimerOnNewMessageReceived = () => {
       if (this._newMessageReceivedTimer) clearTimeout(this._newMessageReceivedTimer);
@@ -59,10 +64,8 @@ export class StreamingReceiver extends MessageReceiver {
    * @param {OnMessage} onMessage The message handler to receive servicebus messages.
    * @param {OnError} onError The error handler to receive an error that occurs while receivin messages.
    */
-  receive(onMessage: OnMessage, onError: OnError): void {
+  receive(): void {
     throwErrorIfConnectionClosed(this._context.namespace);
-    this._onMessage = onMessage;
-    this._onError = onError;
 
     if (this._receiver) {
       this._receiver.addCredit(this.maxConcurrentCalls);
@@ -85,11 +88,40 @@ export class StreamingReceiver extends MessageReceiver {
       //
       //
       // TODO: do we have a reasonable retry timeout I can snag?
-      // TODO: also await any outstanding message handlers.
       //
       //
       //
       await drainReceiver(this._receiver, 60 * 1000, abortSignal);
+      await this._waitForOutstandingMessageHandlers();
+
+      if (this._messageHandlers.processClose) {
+        try {
+          await this._messageHandlers.processClose();
+        } catch (err) {
+          await callProcessError(this._messageHandlers, err);
+        }
+      }
+    }
+  }
+
+  private _waitForOutstandingMessageHandlers(): Promise<void> {
+    //
+    //
+    // TODO: implement
+    //
+    //
+    return Promise.resolve();
+  }
+
+  protected async _init(options?: ReceiverOptions, abortSignal?: AbortSignalLike): Promise<void> {
+    await super._init(options, abortSignal);
+
+    if (this._messageHandlers.processOpen) {
+      try {
+        await this._messageHandlers.processOpen();
+      } catch (err) {
+        await callProcessError(this._messageHandlers, err);
+      }
     }
   }
 
@@ -103,10 +135,12 @@ export class StreamingReceiver extends MessageReceiver {
    */
   static async create(
     context: ClientEntityContext,
+    messageHandlers: MessageHandlers<unknown>,
     options?: ReceiveOptions &
       Pick<OperationOptions, "abortSignal"> & {
         _createStreamingReceiver?: (
           context: ClientEntityContext,
+          messageHandlers: MessageHandlers<unknown>,
           options?: ReceiveOptions
         ) => StreamingReceiver;
       }
@@ -118,15 +152,13 @@ export class StreamingReceiver extends MessageReceiver {
     let sReceiver: StreamingReceiver;
 
     if (options?._createStreamingReceiver) {
-      sReceiver = options._createStreamingReceiver(context, options);
+      sReceiver = options._createStreamingReceiver(context, messageHandlers, options);
     } else {
-      sReceiver = new StreamingReceiver(context, options);
+      sReceiver = new StreamingReceiver(context, messageHandlers, options);
     }
 
     const config: RetryConfig<void> = {
-      operation: () => {
-        return sReceiver._init(undefined, options?.abortSignal);
-      },
+      operation: async () => sReceiver._init(undefined, options?.abortSignal),
       connectionId: context.namespace.connectionId,
       operationType: RetryOperationType.receiveMessage,
       retryOptions: options.retryOptions,
@@ -158,5 +190,18 @@ export async function drainReceiver(
     timeoutMessage: "Drain has timed out",
     timeoutMs: maxTimeoutMs,
     abortSignal: abortSignal
+  });
+}
+
+/**
+ * @internal
+ * @ignore
+ */
+export function callProcessError(
+  messageHandlers: Pick<MessageHandlers<unknown>, "processError">,
+  err: Error
+): Promise<void> {
+  return messageHandlers.processError(err).catch((err) => {
+    log.error("Error thrown from processError: %O", err);
   });
 }

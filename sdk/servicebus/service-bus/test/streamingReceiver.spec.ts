@@ -252,16 +252,21 @@ describe("Streaming", () => {
       let streamingReceiver: StreamingReceiver | undefined;
       try {
         let actualError: Error | undefined;
-        streamingReceiver = await StreamingReceiver.create((receiver as any)._context, {
-          receiveMode: ReceiveMode.peekLock
-        });
-
-        streamingReceiver.receive(
-          async () => {},
-          (err) => {
-            actualError = err;
+        streamingReceiver = await StreamingReceiver.create(
+          (receiver as any)._context,
+          {
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            processMessage: async () => {},
+            processError: async (err) => {
+              actualError = err;
+            }
+          },
+          {
+            receiveMode: ReceiveMode.peekLock
           }
         );
+
+        streamingReceiver.receive();
 
         // overwrite _init to throw a non-retryable error.
         // this will be called by onDetached

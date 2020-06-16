@@ -21,21 +21,14 @@ import {
   throwTypeErrorIfParameterNotLongArray
 } from "../util/errors";
 import * as log from "../log";
-import { OnError, OnMessage, ReceiveOptions } from "../core/messageReceiver";
-import { StreamingReceiver } from "../core/streamingReceiver";
+import { ReceiveOptions } from "../core/messageReceiver";
+import { StreamingReceiver, callProcessError } from "../core/streamingReceiver";
 import { BatchingReceiver } from "../core/batchingReceiver";
 import { assertValidMessageHandlers, getMessageIterator } from "./shared";
 import { convertToInternalReceiveMode } from "../constructorHelpers";
 import Long from "long";
-import { ReceivedMessageWithLock, ServiceBusMessageImpl } from "../serviceBusMessage";
-import {
-  Constants,
-  RetryConfig,
-  RetryOperationType,
-  RetryOptions,
-  retry,
-  logger
-} from "@azure/core-amqp";
+import { ReceivedMessageWithLock } from "../serviceBusMessage";
+import { Constants, RetryConfig, RetryOperationType, RetryOptions, retry } from "@azure/core-amqp";
 import "@azure/core-asynciterator-polyfill";
 
 /**
@@ -213,23 +206,13 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
    * @throws MessagingError if the service returns an error while receiving messages. These are bubbled up to be handled by user provided `onError` handler.
    */
   private _registerMessageHandler(
-    onMessage: OnMessage,
-    onError: OnError,
+    messageHandlers: MessageHandlers<ReceivedMessageT>,
     options?: SubscribeOptions
   ): void {
     this._throwIfReceiverOrConnectionClosed();
     this._throwIfAlreadyReceiving();
-    const connId = this._context.namespace.connectionId;
-    throwTypeErrorIfParameterMissing(connId, "onMessage", onMessage);
-    throwTypeErrorIfParameterMissing(connId, "onError", onError);
-    if (typeof onMessage !== "function") {
-      throw new TypeError("The parameter 'onMessage' must be of type 'function'.");
-    }
-    if (typeof onError !== "function") {
-      throw new TypeError("The parameter 'onError' must be of type 'function'.");
-    }
 
-    this._createStreamingReceiver(this._context, {
+    this._createStreamingReceiver(this._context, messageHandlers, {
       ...options,
       receiveMode: convertToInternalReceiveMode(this.receiveMode),
       retryOptions: this._retryOptions
@@ -239,19 +222,20 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
           return;
         }
         if (!this.isClosed) {
-          sReceiver.receive(onMessage, onError);
+          sReceiver.receive();
         } else {
           await sReceiver.close();
         }
         return;
       })
       .catch((err) => {
-        onError(err);
+        callProcessError(messageHandlers, err);
       });
   }
 
   private _createStreamingReceiver(
     context: ClientEntityContext,
+    messageHandlers: MessageHandlers<unknown>,
     options?: ReceiveOptions &
       Pick<OperationOptions, "abortSignal"> & {
         createStreamingReceiver?: (
@@ -260,7 +244,7 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
         ) => StreamingReceiver;
       }
   ): Promise<StreamingReceiver> {
-    return StreamingReceiver.create(context, options);
+    return StreamingReceiver.create(context, messageHandlers, options);
   }
 
   /**
@@ -467,18 +451,7 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
   subscribe(handlers: MessageHandlers<ReceivedMessageT>, options?: SubscribeOptions): Closeable {
     assertValidMessageHandlers(handlers);
 
-    this._registerMessageHandler(
-      async (message: ServiceBusMessageImpl) => {
-        return handlers.processMessage((message as any) as ReceivedMessageT);
-      },
-      (err: Error) => {
-        // eslint-disable-next-line promise/no-promise-in-callback
-        handlers.processError(err).catch((err) => {
-          logger.error(`Error thrown within user's processError handler: ${err}`);
-        });
-      },
-      options
-    );
+    this._registerMessageHandler(handlers, options);
 
     return {
       close: async (): Promise<void> => {

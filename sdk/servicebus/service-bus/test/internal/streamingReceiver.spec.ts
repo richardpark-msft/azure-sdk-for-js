@@ -7,7 +7,7 @@ import { ReceiverImpl } from "../../src/receivers/receiver";
 import { createClientEntityContextForTests, getPromiseResolverForTest } from "./unittestUtils";
 import { ClientEntityContext } from "../../src/clientEntityContext";
 import { ReceiveOptions } from "../../src/core/messageReceiver";
-import { OperationOptions } from "../../src";
+import { OperationOptions, MessageHandlers } from "../../src";
 import { StreamingReceiver } from "../../src/core/streamingReceiver";
 import { AbortController, AbortSignalLike } from "@azure/abort-controller";
 chai.use(chaiAsPromised);
@@ -25,6 +25,7 @@ describe("StreamingReceiver unit tests", () => {
 
       receiverImpl["_createStreamingReceiver"] = async (
         _context: ClientEntityContext,
+        _messageHandlers: MessageHandlers<unknown>,
         options?: ReceiveOptions &
           Pick<OperationOptions, "abortSignal"> & {
             createStreamingReceiver?: (
@@ -60,23 +61,27 @@ describe("StreamingReceiver unit tests", () => {
       let wasCalled = false;
       const abortController = new AbortController();
 
-      await StreamingReceiver.create(createClientEntityContextForTests(), {
-        _createStreamingReceiver: (_context, _options) => {
-          wasCalled = true;
-          return ({
-            _init: (_ignoredOptions: any, abortSignal?: AbortSignalLike) => {
-              wasCalled = true;
-              assert.equal(
-                abortSignal,
-                abortController.signal,
-                "abortSignal passed in when created should propagate to _init()"
-              );
-              return;
-            }
-          } as any) as StreamingReceiver;
-        },
-        abortSignal: abortController.signal
-      });
+      await StreamingReceiver.create(
+        createClientEntityContextForTests(),
+        DoNothingMessageHandlers,
+        {
+          _createStreamingReceiver: (_context, _options) => {
+            wasCalled = true;
+            return ({
+              _init: (_ignoredOptions: any, abortSignal?: AbortSignalLike) => {
+                wasCalled = true;
+                assert.equal(
+                  abortSignal,
+                  abortController.signal,
+                  "abortSignal passed in when created should propagate to _init()"
+                );
+                return;
+              }
+            } as any) as StreamingReceiver;
+          },
+          abortSignal: abortController.signal
+        }
+      );
 
       assert.isTrue(wasCalled);
     });
@@ -99,3 +104,10 @@ describe("StreamingReceiver unit tests", () => {
     });
   });
 });
+
+const DoNothingMessageHandlers: MessageHandlers<unknown> = {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  processError: async () => {},
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  processMessage: async () => {}
+};
