@@ -532,7 +532,9 @@ export class MessageReceiver extends LinkEntity {
         return;
       } finally {
         if (this._receiver) {
-          this._receiver.addCredit(1);
+          if (!this.wasCloseInitiated) {
+            this._receiver.addCredit(1);
+          }
         }
       }
 

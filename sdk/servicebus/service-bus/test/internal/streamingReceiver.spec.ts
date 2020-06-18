@@ -10,6 +10,7 @@ import { ReceiveOptions } from "../../src/core/messageReceiver";
 import { OperationOptions, MessageHandlers } from "../../src";
 import { StreamingReceiver } from "../../src/core/streamingReceiver";
 import { AbortController, AbortSignalLike } from "@azure/abort-controller";
+import { ReceiverEvents } from "rhea-promise";
 chai.use(chaiAsPromised);
 const assert = chai.assert;
 
@@ -63,7 +64,12 @@ describe("StreamingReceiver unit tests", () => {
 
       await StreamingReceiver.create(
         createClientEntityContextForTests(),
-        DoNothingMessageHandlers,
+        {
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          processError: async () => {},
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          processMessage: async () => {}
+        },
         {
           _createStreamingReceiver: (_context, _options) => {
             wasCalled = true;
@@ -87,27 +93,85 @@ describe("StreamingReceiver unit tests", () => {
     });
   });
 
-  describe("process* handlers", () => {
-    it("processClose() is called if the entire receiver is shut down", () => {
-      assert.fail("Not implemented");
-    });
-    it("processClose() is not called multiple times if the receiver is closed and it was manually stopped.", () => {
-      assert.fail("Not implemented");
-    });
-    it("processOpen and processClose are called for sessions", async () => {
-      assert.fail("Not implemented");
+  describe.only("process* handlers", () => {
+    let events: string[];
+    let clientEntityContext: ClientEntityContext;
+
+    beforeEach(() => {
+      events = [];
+
+      clientEntityContext = createClientEntityContextForTests({
+        onCreateReceiverCalled: (receiver) => {
+          receiver["addCredit"] = (_credit) => {
+            if (receiver.drain === true) {
+              receiver.emit(ReceiverEvents.receiverDrained);
+            }
+          };
+
+          receiver["close"] = async () => {
+            events.push("receiver itself is closed");
+          };
+        }
+      });
     });
 
-    // TODO: this is a `MessageSession` test. (same for all tests applies above)
-    it("processOpen and processClose are called for non-sessions", async () => {
-      assert.fail("Not implemented");
+    it.only("streamingReceiver.close() handles the proper process* calling sequence.", async () => {
+      const streamingReceiver = await StreamingReceiver.create(clientEntityContext, {
+        processMessage: async (_msg: any) => {
+          events.push("processMessage");
+        },
+        processError: async (err: Error) => {
+          events.push(`processError: ${err.message}`);
+        },
+        processClose: async () => {
+          events.push("processClose");
+        },
+        processOpen: async () => {
+          events.push("processOpen");
+        }
+      });
+
+      await streamingReceiver.close();
+      assert.deepEqual(events, ["processOpen", "processClose", "receiver itself is closed"]);
+
+      // sanity check - closing again doesnt cause everything to get called again.
+      events.length = 0;
+      await streamingReceiver.close();
+      assert.isEmpty(events);
+    });
+
+    it.only("errors thrown in processClose() and processOpen() are routed to processError", async () => {
+      const streamingReceiver = await StreamingReceiver.create(clientEntityContext, {
+        processMessage: async (_msg: any) => {
+          events.push("processMessage");
+        },
+        processError: async (err: Error) => {
+          events.push(`processError: ${err.message}`);
+          throw new Error("processError threw an error"); // NOTE: this just gets logged, we don't send it back into processError.
+        },
+        processClose: async () => {
+          events.push("processClose");
+          throw new Error("processClose threw an error");
+        },
+        processOpen: async () => {
+          events.push("processOpen");
+          throw new Error("processOpen threw an error");
+        }
+      });
+
+      await streamingReceiver.close();
+      assert.deepEqual(events, [
+        "processOpen",
+        "processError: processOpen threw an error",
+        "processClose",
+        "processError: processClose threw an error",
+        "receiver itself is closed"
+      ]);
+    });
+
+    it.only("we don't close the receiver until in-flight message handlers are stopped", () => {
+      // if the user's message handler is still running we don't want to close.
+      assert.fail("Not implemented yet");
     });
   });
 });
-
-const DoNothingMessageHandlers: MessageHandlers<unknown> = {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  processError: async () => {},
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  processMessage: async () => {}
-};

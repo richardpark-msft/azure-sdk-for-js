@@ -45,7 +45,7 @@ describe("init() and close() interactions", () => {
     messageReceiver2["isConnecting"] = false;
 
     // close() the object. Closed objects should not be able to be reopened.
-    await messageReceiver2.close();
+    await messageReceiver2["close"]();
 
     let negotiateClaimWasCalled = false;
 

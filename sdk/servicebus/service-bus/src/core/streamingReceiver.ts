@@ -7,7 +7,7 @@ import { ClientEntityContext } from "../clientEntityContext";
 
 import * as log from "../log";
 import { throwErrorIfConnectionClosed } from "../util/errors";
-import { RetryOperationType, RetryConfig, retry } from "@azure/core-amqp";
+import { RetryOperationType, RetryConfig, retry, Constants } from "@azure/core-amqp";
 import { OperationOptions } from "../modelsToBeSharedWithEventHubs";
 import { AbortSignalLike } from "@azure/abort-controller";
 import { Receiver, ReceiverEvents, ReceiverOptions } from "rhea-promise";
@@ -36,9 +36,22 @@ export class StreamingReceiver extends MessageReceiver {
     options?: ReceiveOptions
   ) {
     super(context, ReceiverType.streaming, options);
+    this._outstandingPromises = new Set<Promise<void>>();
 
-    this._onMessage = (...args) =>
-      this._messageHandlers.processMessage.call(this._messageHandlers, ...args);
+    this._onMessage = async (...args) => {
+      let prm: Promise<void> | undefined = undefined;
+
+      try {
+        prm = this._messageHandlers.processMessage.call(this._messageHandlers, ...args);
+        this._outstandingPromises.add(prm);
+        await prm;
+      } finally {
+        if (prm) {
+          this._outstandingPromises.delete(prm);
+        }
+      }
+    };
+
     this._onError = (...args) =>
       this._messageHandlers.processError.call(this._messageHandlers, ...args);
 
@@ -72,27 +85,25 @@ export class StreamingReceiver extends MessageReceiver {
     }
   }
 
-  /**
-   * Stops the streaming receiver from receiving more messages
-   * but does not close it.
+  /*
+   * Closes the streaming receiver.
    *
    * Returns when:
    * 1) all outstanding message handlers have resolved.
    * 2) the receiver has been drained.
+   * 3) the link has been closed.
    *
    * @param abortSignal
    */
-  async stop(abortSignal?: AbortSignalLike): Promise<void> {
+  async close(
+    timeoutMs: number = Constants.defaultOperationTimeoutInMs,
+    abortSignal?: AbortSignalLike
+  ): Promise<void> {
     if (this._receiver) {
-      //
-      //
-      //
-      // TODO: do we have a reasonable retry timeout I can snag?
-      //
-      //
-      //
-      await drainReceiver(this._receiver, 60 * 1000, abortSignal);
-      await this._waitForOutstandingMessageHandlers();
+      this.wasCloseInitiated = true;
+
+      await drainReceiver(this._receiver, timeoutMs, abortSignal);
+      await Promise.all(this._outstandingPromises.keys());
 
       if (this._messageHandlers.processClose) {
         try {
@@ -102,16 +113,11 @@ export class StreamingReceiver extends MessageReceiver {
         }
       }
     }
+
+    await super.close();
   }
 
-  private _waitForOutstandingMessageHandlers(): Promise<void> {
-    //
-    //
-    // TODO: implement
-    //
-    //
-    return Promise.resolve();
-  }
+  private _outstandingPromises: Set<Promise<void>>;
 
   protected async _init(options?: ReceiverOptions, abortSignal?: AbortSignalLike): Promise<void> {
     await super._init(options, abortSignal);
@@ -202,6 +208,6 @@ export function callProcessError(
   err: Error
 ): Promise<void> {
   return messageHandlers.processError(err).catch((err) => {
-    log.error("Error thrown from processError: %O", err);
+    log.error(`Error thrown from processError: ${err}`);
   });
 }

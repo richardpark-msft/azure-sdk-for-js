@@ -456,15 +456,7 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
     return {
       close: async (): Promise<void> => {
         if (this._context.streamingReceiver) {
-          await this._context.streamingReceiver.stop();
-        }
-
-        if (handlers?.processClose) {
-          await handlers?.processClose();
-        }
-
-        if (this._context.streamingReceiver) {
-          await this._context.streamingReceiver.close();
+          await this._context.streamingReceiver.close(this._retryOptions.timeoutInMs);
         }
       }
     };
@@ -484,7 +476,7 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
       if (this._context.namespace.connection && this._context.namespace.connection.isOpen()) {
         // Close the streaming receiver.
         if (this._context.streamingReceiver) {
-          await this._context.streamingReceiver.close();
+          await this._context.streamingReceiver.close(this._retryOptions.timeoutInMs);
         }
 
         // Close the batching receiver.

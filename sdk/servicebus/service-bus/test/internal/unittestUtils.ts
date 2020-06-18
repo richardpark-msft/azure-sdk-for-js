@@ -4,10 +4,11 @@
 import { ClientEntityContext } from "../../src/clientEntityContext";
 import { AwaitableSender, Receiver as RheaReceiver } from "rhea-promise";
 import { DefaultDataTransformer, AccessToken } from "@azure/core-amqp";
+import { EventEmitter } from "events";
 
 export function createClientEntityContextForTests(options?: {
   onCreateAwaitableSenderCalled?: () => void;
-  onCreateReceiverCalled?: () => void;
+  onCreateReceiverCalled?: (fakeReceiver: RheaReceiver) => void;
 }): ClientEntityContext & { initWasCalled: boolean } {
   let initWasCalled = false;
 
@@ -32,11 +33,16 @@ export function createClientEntityContextForTests(options?: {
           return testAwaitableSender;
         },
         createReceiver: async (): Promise<RheaReceiver> => {
+          const fakeReceiver = new EventEmitter() as RheaReceiver;
+
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          fakeReceiver["addCredit"] = () => {};
+
           if (options?.onCreateReceiverCalled) {
-            options.onCreateReceiverCalled();
+            options.onCreateReceiverCalled(fakeReceiver);
           }
 
-          return ({} as any) as RheaReceiver;
+          return fakeReceiver;
         }
       },
       dataTransformer: new DefaultDataTransformer(),
@@ -49,7 +55,8 @@ export function createClientEntityContextForTests(options?: {
         cbsLock: "cbs-lock",
         async init() {
           initWasCalled = true;
-        }
+        },
+        async negotiateClaim(): Promise<void> {}
       }
     },
     initWasCalled

@@ -9,6 +9,7 @@ import { getEntityNameFromConnectionString } from "../src/constructorHelpers";
 import { ServiceBusClientForTests, createServiceBusClientForTests } from "./utils/testutils2";
 import { Sender } from "../src/sender";
 import { ReceivedMessageWithLock } from "../src/serviceBusMessage";
+import { Closeable } from "../src/models";
 chai.use(chaiAsPromised);
 const assert = chai.assert;
 
@@ -21,6 +22,44 @@ describe("Sample scenarios for track 2", () => {
 
   after(() => {
     return serviceBusClient.test.after();
+  });
+
+  describe("purposefully close() and drain() before message handlers are complete", () => {
+    it.only("test", async () => {
+      const entityNames = await serviceBusClient.test.createTestEntities(
+        TestClientType.UnpartitionedQueue
+      );
+
+      const sender = serviceBusClient.createSender(entityNames.queue!);
+      const receiver = await serviceBusClient.test.getPeekLockReceiver(entityNames);
+
+      await sender.send({
+        body: "this is a message"
+      });
+
+      const theSub = await new Promise<Closeable>((resolve) => {
+        const sub = receiver.subscribe({
+          processOpen: async () => {
+            console.log(`processOpen called`);
+          },
+          processClose: async () => {
+            console.log(`processClose called`);
+          },
+          processError: async (err) => {
+            console.log(`processError: ${err}`);
+          },
+          processMessage: async (_msg) => {
+            console.log(`processMessage: entering super long delay`);
+            resolve(sub);
+            await delay(1000 * 60);
+            console.log(`processMessage: exiting super long delay`);
+          }
+        });
+      });
+
+      console.log(`About to close`);
+      await theSub.close();
+    });
   });
 
   describe("queues (no sessions)", async () => {
