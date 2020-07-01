@@ -1,8 +1,9 @@
 # Release History
 
-## 1.1.0 (Unreleased)
+## 1.1.0 (2020-07-07)
 
 - Adding browser support for the latest versions of Chrome, Edge and Firefox.
+  [PR 9648](https://github.com/Azure/azure-sdk-for-js/pull/9648)
 
 ## 1.0.1 (2020-02-19)
 
