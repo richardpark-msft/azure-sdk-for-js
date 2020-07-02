@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { generate_uuid } from "rhea-promise";
-import { TokenCredential, isTokenCredential } from "@azure/core-amqp";
+import { TokenCredential, isTokenCredential, TokenType } from "@azure/core-amqp";
 import {
   ServiceBusClientOptions,
   createConnectionContextForConnectionString,
@@ -15,6 +15,7 @@ import { CreateSessionReceiverOptions } from "./models";
 import { Receiver, ReceiverImpl } from "./receivers/receiver";
 import { SessionReceiver, SessionReceiverImpl } from "./receivers/sessionReceiver";
 import { ReceivedMessage, ReceivedMessageWithLock } from "./serviceBusMessage";
+import { messageIterator } from "./receivers/bufferReceiver";
 
 /**
  * A client that can create Sender instances for sending messages to queues and
@@ -447,6 +448,39 @@ export class ServiceBusClient {
    */
   close(): Promise<void> {
     return ConnectionContext.close(this._connectionContext);
+  }
+
+  async createSpecialIterator(
+    credits: number,
+    entityPath: string
+  ): Promise<ReturnType<typeof messageIterator>> {
+    const audience = `${this._connectionContext.config.endpoint}${entityPath}`;
+    const tokenObject = await this._connectionContext.tokenCredential.getToken(audience);
+    await this._connectionContext.cbsSession.init();
+    await this._connectionContext.cbsSession.negotiateClaim(
+      audience,
+      tokenObject!,
+      TokenType.CbsTokenTypeSas
+    );
+
+    // autoaccept: this.receiveMode === ReceiveMode.receiveAndDelete ? true : false,
+    // // receiveAndDelete -> first(0), peekLock -> second (1)
+    // rcv_settle_mode: this.receiveMode === ReceiveMode.receiveAndDelete ? 0 : 1,
+    // // receiveAndDelete -> settled (1), peekLock -> unsettled (0)
+    // snd_settle_mode: this.receiveMode === ReceiveMode.receiveAndDelete ? 1 : 0,
+
+    const receiver = await this._connectionContext.connection.createReceiver({
+      // peeklock equivalent.
+      autoaccept: false,
+      rcv_settle_mode: 1,
+      snd_settle_mode: 0,
+      source: {
+        address: entityPath!
+      },
+      credit_window: 0
+    });
+
+    return messageIterator(receiver, credits);
   }
 }
 

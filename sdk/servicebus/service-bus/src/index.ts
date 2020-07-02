@@ -75,3 +75,5 @@ export {
 export { ServiceBusMessageBatch } from "./serviceBusMessageBatch";
 export { SessionMessageHandlerOptions, SessionReceiverOptions } from "./session/messageSession";
 export { AuthorizationRule, EntityStatus, MessageCountDetails } from "./util/utils";
+
+export { messageIterator } from "./receivers/bufferReceiver";

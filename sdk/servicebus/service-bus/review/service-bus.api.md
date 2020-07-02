@@ -13,6 +13,7 @@ import Long from 'long';
 import { MessagingError } from '@azure/core-amqp';
 import { OperationTracingOptions } from '@azure/core-tracing';
 import { ProxySettings } from '@azure/core-http';
+import { Receiver as Receiver_2 } from 'rhea-promise';
 import { RetryOptions } from '@azure/core-amqp';
 import { ServiceClient } from '@azure/core-http';
 import { TokenCredential } from '@azure/core-amqp';
@@ -98,6 +99,11 @@ export interface MessageHandlers<ReceivedMessageT> {
     processError(err: Error): Promise<void>;
     processMessage(message: ReceivedMessageT): Promise<void>;
 }
+
+// @public (undocumented)
+export function messageIterator(receiver: Receiver_2, initialCredits: number): AsyncIterableIterator<string> & {
+    close(): Promise<void>;
+};
 
 export { MessagingError }
 
@@ -278,6 +284,8 @@ export class ServiceBusClient {
     createSessionReceiver(queueName: string, receiveMode: "receiveAndDelete", options?: CreateSessionReceiverOptions): Promise<SessionReceiver<ReceivedMessage>>;
     createSessionReceiver(topicName: string, subscriptionName: string, receiveMode: "peekLock", options?: CreateSessionReceiverOptions): Promise<SessionReceiver<ReceivedMessageWithLock>>;
     createSessionReceiver(topicName: string, subscriptionName: string, receiveMode: "receiveAndDelete", options?: CreateSessionReceiverOptions): Promise<SessionReceiver<ReceivedMessage>>;
+    // (undocumented)
+    createSpecialIterator(credits: number, entityPath: string): Promise<ReturnType<typeof messageIterator>>;
     fullyQualifiedNamespace: string;
 }
 
