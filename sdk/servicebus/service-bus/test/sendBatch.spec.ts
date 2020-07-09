@@ -41,7 +41,7 @@ describe("Send Batch", () => {
     await sender.close();
   }
 
-  describe("Send multiple homogeneous messages - size > max_batch_size_allowed", function(): void {
+  describe.only("Send multiple homogeneous messages - size > max_batch_size_allowed", function(): void {
     afterEach(async () => {
       await afterEachTest();
     });

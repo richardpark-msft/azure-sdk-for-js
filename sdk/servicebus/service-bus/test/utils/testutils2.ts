@@ -162,7 +162,7 @@ export class ServiceBusTestHelpers {
     sentMessages: ServiceBusMessage[]
   ): Promise<void> {
     let receiver: Receiver<ReceivedMessage> | SessionReceiver<ReceivedMessage>;
-    let receivedMsgs: ReceivedMessage[];
+    let receivedMsgs: ReceivedMessage[] = [];
     if (!useSessions) {
       receiver = await this.getReceiveAndDeleteReceiver({
         queue: entityNames.queue,
@@ -170,10 +170,25 @@ export class ServiceBusTestHelpers {
         subscription: entityNames.subscription,
         usesSessions: false
       });
-      receivedMsgs = await receiver.receiveMessages(sentMessages.length, {
-        // maxWaitTime is set same as numberOfMessages being received
-        maxWaitTimeInMs: sentMessages.length * 1000
-      });
+
+      const startTime = Date.now();
+
+      while (receivedMsgs.length !== sentMessages.length) {
+        const tempMessages = await receiver.receiveMessages(sentMessages.length, {
+          // maxWaitTime is set same as numberOfMessages being received
+          maxWaitTimeInMs: 5000
+        });
+
+        if (tempMessages.length === 0) {
+          break;
+        }
+
+        receivedMsgs.push(...tempMessages);
+
+        if (Date.now() - startTime > sentMessages.length * 1000) {
+          break;
+        }
+      }
       await receiver.close();
     } else {
       // From the sentMessages array, creating a set of all the `session-id`s
@@ -195,11 +210,32 @@ export class ServiceBusTestHelpers {
           usesSessions: true,
           sessionId: id
         });
-        const msgs = await receiver.receiveMessages(numOfMsgsWithSessionId[id], {
-          // Since we know the exact number of messages to be received per session-id,
-          //   a higher `maxWaitTimeInMs` is not a problem
-          maxWaitTimeInMs: 5000 * numOfMsgsWithSessionId[id]
-        });
+        // const msgs = await receiver.receiveMessages(numOfMsgsWithSessionId[id], {
+        //   // Since we know the exact number of messages to be received per session-id,
+        //   //   a higher `maxWaitTimeInMs` is not a problem
+        //   maxWaitTimeInMs: 5000 * numOfMsgsWithSessionId[id]
+        // });
+
+        const startTime = Date.now();
+        const msgs = [];
+
+        while (msgs.length !== sentMessages.length) {
+          const tempMessages = await receiver.receiveMessages(numOfMsgsWithSessionId[id], {
+            // maxWaitTime is set same as numberOfMessages being received
+            maxWaitTimeInMs: 5000
+          });
+
+          if (tempMessages.length === 0) {
+            break;
+          }
+
+          msgs.push(...tempMessages);
+
+          if (Date.now() - startTime > numOfMsgsWithSessionId[id] * 5000) {
+            break;
+          }
+        }
+
         should.equal(
           msgs.length,
           numOfMsgsWithSessionId[id],
