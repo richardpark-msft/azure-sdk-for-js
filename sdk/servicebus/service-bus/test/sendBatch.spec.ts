@@ -15,7 +15,7 @@ import {
 import { Sender } from "../src/sender";
 import { ConditionErrorNameMapper } from "@azure/core-amqp";
 
-describe("Send Batch", () => {
+describe.only("Send Batch", () => {
   let sender: Sender;
   let serviceBusClient: ServiceBusClientForTests;
 
@@ -76,6 +76,9 @@ describe("Send Batch", () => {
           sentMessages.push(messageToSend);
         }
       }
+
+      batchMessage.count.should.equal(sentMessages.length);
+
       await sender.sendMessages(batchMessage);
       // receive all the messages in receive and delete mode
       await serviceBusClient.test.verifyAndDeleteAllSentMessages(
@@ -85,12 +88,12 @@ describe("Send Batch", () => {
       );
     }
 
-    it("Partitioned Queue: SendBatch", async function(): Promise<void> {
+    it.only("Partitioned Queue: SendBatch", async function(): Promise<void> {
       await beforeEachTest(TestClientType.PartitionedQueue);
       await testSendBatch(false);
     });
 
-    it("Partitioned Topic: SendBatch", async function(): Promise<void> {
+    it.only("Partitioned Topic: SendBatch", async function(): Promise<void> {
       await beforeEachTest(TestClientType.PartitionedSubscription);
       await testSendBatch(false);
     });

@@ -170,10 +170,12 @@ export class ServiceBusTestHelpers {
         subscription: entityNames.subscription,
         usesSessions: false
       });
-      receivedMsgs = await receiver.receiveMessages(sentMessages.length, {
+      receivedMsgs = await oldStyleReceiveMessages(
+        receiver,
+        sentMessages.length,
         // maxWaitTime is set same as numberOfMessages being received
-        maxWaitTimeInMs: sentMessages.length * 1000
-      });
+        sentMessages.length * 1000
+      );
       await receiver.close();
     } else {
       // From the sentMessages array, creating a set of all the `session-id`s
@@ -195,11 +197,13 @@ export class ServiceBusTestHelpers {
           usesSessions: true,
           sessionId: id
         });
-        const msgs = await receiver.receiveMessages(numOfMsgsWithSessionId[id], {
+        const msgs = await oldStyleReceiveMessages(
+          receiver,
+          numOfMsgsWithSessionId[id],
           // Since we know the exact number of messages to be received per session-id,
           //   a higher `maxWaitTimeInMs` is not a problem
-          maxWaitTimeInMs: 5000 * numOfMsgsWithSessionId[id]
-        });
+          5000 * numOfMsgsWithSessionId[id]
+        );
         should.equal(
           msgs.length,
           numOfMsgsWithSessionId[id],
@@ -483,4 +487,30 @@ export async function testPeekMsgsLength(
     expectedPeekLength,
     "Unexpected number of msgs found when peeking"
   );
+}
+
+async function oldStyleReceiveMessages<T>(
+  receiver: Receiver<T>,
+  maxMessages: number,
+  maxWaitTimeInMs: number
+): Promise<T[]> {
+  const time = Date.now();
+  const allMessages = [];
+
+  console.log(`Waiting ${maxWaitTimeInMs}ms for ${maxMessages}`);
+
+  do {
+    const receivedMsgs = await receiver.receiveMessages(maxMessages, {
+      maxWaitTimeInMs: 1000
+    });
+
+    console.log(
+      `Done waiting for messages: ${receivedMsgs.length}. Total so far: ${allMessages.length +
+        receivedMsgs.length}`
+    );
+
+    allMessages.push(...receivedMsgs);
+  } while (Date.now() - time < maxWaitTimeInMs && allMessages.length < maxMessages);
+
+  return allMessages;
 }

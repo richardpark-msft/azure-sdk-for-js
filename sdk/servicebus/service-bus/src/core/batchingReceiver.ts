@@ -132,6 +132,7 @@ export class BatchingReceiver extends MessageReceiver {
     this.isReceivingMessages = true;
     return new Promise<ServiceBusMessageImpl[]>((resolve, reject) => {
       let totalWaitTimer: NodeJS.Timer | undefined;
+      let totalMessagesReceived = 0;
 
       // eslint-disable-next-line prefer-const
       let cleanupBeforeResolveOrReject: (
@@ -194,8 +195,14 @@ export class BatchingReceiver extends MessageReceiver {
           );
 
           // Setting drain must be accompanied by a flow call (aliased to addCredit in this case).
+
+          // @HarshaNalluru - toggle this on (and remove the `resolve` below) to see the behavior I'm
+          // talking about.
           this._receiver.drain = true;
           this._receiver.addCredit(1);
+
+          // RP: or just resolve immediately, no drain
+          // resolve(brokeredMessages);
         } else {
           if (this._receiver) {
             this._receiver.removeListener(ReceiverEvents.receiverDrained, onReceiveDrain);
@@ -448,6 +455,11 @@ export class BatchingReceiver extends MessageReceiver {
               // if that happens we'll just resolve to an empty array of messages.
               return resolve([]);
             }
+
+            this._receiver.addListener(ReceiverEvents.message, () => {
+              ++totalMessagesReceived;
+              console.log(`===> Total messages received so far: ${totalMessagesReceived}`);
+            });
 
             // TODO: long-term we probably need to split the code in this promise. This check
             // is just a band-aid for now.
