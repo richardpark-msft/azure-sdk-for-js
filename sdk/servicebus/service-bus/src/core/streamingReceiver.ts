@@ -32,6 +32,11 @@ import { ReceiveMode, ServiceBusMessageImpl } from "../serviceBusMessage";
 import { calculateRenewAfterDuration } from "../util/utils";
 import { AbortSignalLike } from "@azure/abort-controller";
 
+type OnCloseEventContext = {
+  session?: { error?: Error | AmqpError };
+  receiver?: { error?: Error | AmqpError; isItselfClosed(): boolean };
+};
+
 /**
  * @internal
  * Describes the streaming receiver where the user can receive the message
@@ -91,53 +96,41 @@ export class StreamingReceiver extends MessageReceiver {
    */
   protected _onAmqpMessage: OnAmqpEventAsPromise;
 
-  private onClose(context: EventContext) {
-    const connectionId = this._context.namespace.connectionId;
+  private _formatLoggingPrefix(): string {
+    return `[${this._context.namespace.connection.id}|r:${this.name}|a:${this.address}]`;
+  }
+
+  private async onClose(context: OnCloseEventContext): Promise<void> {
     const error = context?.receiver?.error ?? context?.session?.error;
     const eventType = context?.receiver?.error != null ? "receiver_close" : "session_close";
 
     const receiver = this._receiver || context.receiver!;
 
+    const loggingPrefix = this._formatLoggingPrefix();
+
     if (error) {
       log.error(
-        "[%s] 'receiver_close' event occurred for receiver '%s' with address '%s'. " +
-          "The associated error is: %O",
-        connectionId,
-        this.name,
-        this.address,
+        `${loggingPrefix} '${eventType}_close' event occurred. The associated error is: %O`,
         error
       );
     }
+
     this._clearAllMessageLockRenewTimers();
+
     if (receiver && !receiver.isItselfClosed()) {
       if (!this.isConnecting) {
         log.error(
-          "[%s] 'receiver_close' event occurred on the receiver '%s' with address '%s' " +
-            "and the sdk did not initiate this. The receiver is not reconnecting. Hence, calling " +
-            "detached from the _onAmqpClose() handler.",
-          connectionId,
-          this.name,
-          this.address
+          `${loggingPrefix} '${eventType}' event occurred and the sdk did not initiate this. The receiver is not reconnecting. Calling detach.`
         );
         await this.onDetached(error);
       } else {
         log.error(
-          "[%s] 'receiver_close' event occurred on the receiver '%s' with address '%s' " +
-            "and the sdk did not initate this. Moreover the receiver is already re-connecting. " +
-            "Hence not calling detached from the _onAmqpClose() handler.",
-          connectionId,
-          this.name,
-          this.address
+          `${loggingPrefix} '${eventType}' event occurred and the sdk did not initate this. Receiver is already re-connecting, not detaching.`
         );
       }
     } else {
       log.error(
-        "[%s] 'receiver_close' event occurred on the receiver '%s' with address '%s' " +
-          "because the sdk initiated it. Hence not calling detached from the _onAmqpClose" +
-          "() handler.",
-        connectionId,
-        this.name,
-        this.address
+        `${loggingPrefix} '${eventType}' event occurred because the sdk initiated it. Not detaching.`
       );
     }
   }
@@ -159,101 +152,8 @@ export class StreamingReceiver extends MessageReceiver {
     this._retryOptions = options?.retryOptions || {};
     this._receiverHelper = new ReceiverHelper(() => this._receiver);
 
-    this._onAmqpClose = async (context: EventContext) => {
-      const connectionId = this._context.namespace.connectionId;
-      const receiverError = context.receiver && context.receiver.error;
-      const receiver = this._receiver || context.receiver!;
-      if (receiverError) {
-        log.error(
-          "[%s] 'receiver_close' event occurred for receiver '%s' with address '%s'. " +
-            "The associated error is: %O",
-          connectionId,
-          this.name,
-          this.address,
-          receiverError
-        );
-      }
-      this._clearAllMessageLockRenewTimers();
-      if (receiver && !receiver.isItselfClosed()) {
-        if (!this.isConnecting) {
-          log.error(
-            "[%s] 'receiver_close' event occurred on the receiver '%s' with address '%s' " +
-              "and the sdk did not initiate this. The receiver is not reconnecting. Hence, calling " +
-              "detached from the _onAmqpClose() handler.",
-            connectionId,
-            this.name,
-            this.address
-          );
-          await this.onDetached(receiverError);
-        } else {
-          log.error(
-            "[%s] 'receiver_close' event occurred on the receiver '%s' with address '%s' " +
-              "and the sdk did not initate this. Moreover the receiver is already re-connecting. " +
-              "Hence not calling detached from the _onAmqpClose() handler.",
-            connectionId,
-            this.name,
-            this.address
-          );
-        }
-      } else {
-        log.error(
-          "[%s] 'receiver_close' event occurred on the receiver '%s' with address '%s' " +
-            "because the sdk initiated it. Hence not calling detached from the _onAmqpClose" +
-            "() handler.",
-          connectionId,
-          this.name,
-          this.address
-        );
-      }
-    };
-
-    this._onSessionClose = async (context: EventContext) => {
-      const connectionId = this._context.namespace.connectionId;
-      const receiver = this._receiver || context.receiver!;
-      const sessionError = context.session && context.session.error;
-      if (sessionError) {
-        log.error(
-          "[%s] 'session_close' event occurred for receiver '%s' with address '%s'. " +
-            "The associated error is: %O",
-          connectionId,
-          this.name,
-          this.address,
-          sessionError
-        );
-      }
-      this._clearAllMessageLockRenewTimers();
-      if (receiver && !receiver.isSessionItselfClosed()) {
-        if (!this.isConnecting) {
-          log.error(
-            "[%s] 'session_close' event occurred on the session of receiver '%s' with " +
-              "address '%s' and the sdk did not initiate this. Hence calling detached from the " +
-              "_onSessionClose() handler.",
-            connectionId,
-            this.name,
-            this.address
-          );
-          await this.onDetached(sessionError);
-        } else {
-          log.error(
-            "[%s] 'session_close' event occurred on the session of receiver '%s' with " +
-              "address '%s' and the sdk did not initiate this. Moreover the receiver is already " +
-              "re-connecting. Hence not calling detached from the _onSessionClose() handler.",
-            connectionId,
-            this.name,
-            this.address
-          );
-        }
-      } else {
-        log.error(
-          "[%s] 'session_close' event occurred on the session of receiver '%s' with address " +
-            "'%s' because the sdk initiated it. Hence not calling detached from the _onSessionClose" +
-            "() handler.",
-          connectionId,
-          this.name,
-          this.address
-        );
-      }
-    };
+    this._onAmqpClose = async (context: EventContext) => this.onClose(context);
+    this._onSessionClose = async (context: EventContext) => this.onClose(context);
 
     this._onAmqpError = (context: EventContext) => {
       const connectionId = this._context.namespace.connectionId;
