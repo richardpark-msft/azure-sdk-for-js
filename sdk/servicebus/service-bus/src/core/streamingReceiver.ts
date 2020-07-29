@@ -29,7 +29,6 @@ import { OperationOptionsBase } from "../modelsToBeSharedWithEventHubs";
 import * as log from "../log";
 import { AmqpError, EventContext, isAmqpError, OnAmqpEvent } from "rhea-promise";
 import { ReceiveMode, ServiceBusMessageImpl } from "../serviceBusMessage";
-import { calculateRenewAfterDuration } from "../util/utils";
 import { AbortSignalLike } from "@azure/abort-controller";
 
 type OnCloseEventContext = {
@@ -104,7 +103,11 @@ export class StreamingReceiver extends MessageReceiver {
    * @property {OnMessage} _onError The error handler provided by the user that will be wrapped
    * inside _onAmqpError.
    */
-  protected _onError?: OnError;
+  //
+  // TODO: there's some code in MessageReceiver that is shared (settle messages). It's not a big block
+  // but once we share that properly we can move this.
+  //
+  // protected _onError?: OnError;
 
   private _formatLoggingPrefix(): string {
     return `[${this._context.namespace.connection.id}|r:${this.name}|a:${this.address}]`;
@@ -125,7 +128,9 @@ export class StreamingReceiver extends MessageReceiver {
       );
     }
 
-    this._clearAllMessageLockRenewTimers();
+    if (this._lockRenewer) {
+      this._lockRenewer.clear();
+    }
 
     if (receiver && !receiver.isItselfClosed()) {
       if (!this.isConnecting) {
@@ -249,113 +254,117 @@ export class StreamingReceiver extends MessageReceiver {
         true
       );
 
-      if (this.autoRenewLock && bMessage.lockToken) {
-        const lockToken = bMessage.lockToken;
-        // - We need to renew locks before they expire by looking at bMessage.lockedUntilUtc.
-        // - This autorenewal needs to happen **NO MORE** than maxAutoRenewDurationInMs
-        // - We should be able to clear the renewal timer when the user's message handler
-        // is done (whether it succeeds or fails).
-        // Setting the messageId with undefined value in the _messageRenewockTimers Map because we
-        // track state by checking the presence of messageId in the map. It is removed from the map
-        // when an attempt is made to settle the message (either by the user or by the sdk) OR
-        // when the execution of user's message handler completes.
-        this._messageRenewLockTimers.set(bMessage.messageId as string, undefined);
-        log.receiver(
-          "[%s] message with id '%s' is locked until %s.",
-          connectionId,
-          bMessage.messageId,
-          bMessage.lockedUntilUtc!.toString()
-        );
-        const totalAutoLockRenewDuration = Date.now() + this.maxAutoRenewDurationInMs;
-        log.receiver(
-          "[%s] Total autolockrenew duration for message with id '%s' is: ",
-          connectionId,
-          bMessage.messageId,
-          new Date(totalAutoLockRenewDuration).toString()
-        );
-        const autoRenewLockTask = (): void => {
-          if (
-            new Date(totalAutoLockRenewDuration) > bMessage.lockedUntilUtc! &&
-            Date.now() < totalAutoLockRenewDuration
-          ) {
-            if (this._messageRenewLockTimers.has(bMessage.messageId as string)) {
-              // TODO: We can run into problems with clock skew between the client and the server.
-              // It would be better to calculate the duration based on the "lockDuration" property
-              // of the queue. However, we do not have the management plane of the client ready for
-              // now. Hence we rely on the lockedUntilUtc property on the message set by ServiceBus.
-              const amount = calculateRenewAfterDuration(bMessage.lockedUntilUtc!);
-              log.receiver(
-                "[%s] Sleeping for %d milliseconds while renewing the lock for " +
-                  "message with id '%s' is: ",
-                connectionId,
-                amount,
-                bMessage.messageId
-              );
-              // Setting the value of the messageId to the actual timer. This will be cleared when
-              // an attempt is made to settle the message (either by the user or by the sdk) OR
-              // when the execution of user's message handler completes.
-              this._messageRenewLockTimers.set(
-                bMessage.messageId as string,
-                setTimeout(async () => {
-                  try {
-                    log.receiver(
-                      "[%s] Attempting to renew the lock for message with id '%s'.",
-                      connectionId,
-                      bMessage.messageId
-                    );
-                    bMessage.lockedUntilUtc = await this._context.managementClient!.renewLock(
-                      lockToken
-                    );
-                    log.receiver(
-                      "[%s] Successfully renewed the lock for message with id '%s'.",
-                      connectionId,
-                      bMessage.messageId
-                    );
-                    log.receiver(
-                      "[%s] Calling the autorenewlock task again for message with " + "id '%s'.",
-                      connectionId,
-                      bMessage.messageId
-                    );
-                    autoRenewLockTask();
-                  } catch (err) {
-                    log.error(
-                      "[%s] An error occured while auto renewing the message lock '%s' " +
-                        "for message with id '%s': %O.",
-                      connectionId,
-                      bMessage.lockToken,
-                      bMessage.messageId,
-                      err
-                    );
-                    // Let the user know that there was an error renewing the message lock.
-                    this._onError!(err);
-                  }
-                }, amount)
-              );
-            } else {
-              log.receiver(
-                "[%s] Looks like the message lock renew timer has already been " +
-                  "cleared for message with id '%s'.",
-                connectionId,
-                bMessage.messageId
-              );
-            }
-          } else {
-            log.receiver(
-              "[%s] Current time %s exceeds the total autolockrenew duration %s for " +
-                "message with messageId '%s'. Hence we will stop the autoLockRenewTask.",
-              connectionId,
-              new Date(Date.now()).toString(),
-              new Date(totalAutoLockRenewDuration).toString(),
-              bMessage.messageId
-            );
-            this._clearMessageLockRenewTimer(bMessage.messageId as string);
-          }
-        };
-        // start
-        autoRenewLockTask();
+      // if (this.autoRenewLock && bMessage.lockToken) {
+      //   const lockToken = bMessage.lockToken;
+      //   // - We need to renew locks before they expire by looking at bMessage.lockedUntilUtc.
+      //   // - This autorenewal needs to happen **NO MORE** than maxAutoRenewDurationInMs
+      //   // - We should be able to clear the renewal timer when the user's message handler
+      //   // is done (whether it succeeds or fails).
+      //   // Setting the messageId with undefined value in the _messageRenewockTimers Map because we
+      //   // track state by checking the presence of messageId in the map. It is removed from the map
+      //   // when an attempt is made to settle the message (either by the user or by the sdk) OR
+      //   // when the execution of user's message handler completes.
+      //   this._messageRenewLockTimers.set(bMessage.messageId as string, undefined);
+      //   log.receiver(
+      //     "[%s] message with id '%s' is locked until %s.",
+      //     connectionId,
+      //     bMessage.messageId,
+      //     bMessage.lockedUntilUtc!.toString()
+      //   );
+      //   const totalAutoLockRenewDuration = Date.now() + this.maxAutoRenewDurationInMs;
+      //   log.receiver(
+      //     "[%s] Total autolockrenew duration for message with id '%s' is: ",
+      //     connectionId,
+      //     bMessage.messageId,
+      //     new Date(totalAutoLockRenewDuration).toString()
+      //   );
+      //   const autoRenewLockTask = (): void => {
+      //     if (
+      //       new Date(totalAutoLockRenewDuration) > bMessage.lockedUntilUtc! &&
+      //       Date.now() < totalAutoLockRenewDuration
+      //     ) {
+      //       if (this._messageRenewLockTimers.has(bMessage.messageId as string)) {
+      //         // TODO: We can run into problems with clock skew between the client and the server.
+      //         // It would be better to calculate the duration based on the "lockDuration" property
+      //         // of the queue. However, we do not have the management plane of the client ready for
+      //         // now. Hence we rely on the lockedUntilUtc property on the message set by ServiceBus.
+      //         const amount = calculateRenewAfterDuration(bMessage.lockedUntilUtc!);
+      //         log.receiver(
+      //           "[%s] Sleeping for %d milliseconds while renewing the lock for " +
+      //             "message with id '%s' is: ",
+      //           connectionId,
+      //           amount,
+      //           bMessage.messageId
+      //         );
+      //         // Setting the value of the messageId to the actual timer. This will be cleared when
+      //         // an attempt is made to settle the message (either by the user or by the sdk) OR
+      //         // when the execution of user's message handler completes.
+      //         this._messageRenewLockTimers.set(
+      //           bMessage.messageId as string,
+      //           setTimeout(async () => {
+      //             try {
+      //               log.receiver(
+      //                 "[%s] Attempting to renew the lock for message with id '%s'.",
+      //                 connectionId,
+      //                 bMessage.messageId
+      //               );
+      //               bMessage.lockedUntilUtc = await this._context.managementClient!.renewLock(
+      //                 lockToken
+      //               );
+      //               log.receiver(
+      //                 "[%s] Successfully renewed the lock for message with id '%s'.",
+      //                 connectionId,
+      //                 bMessage.messageId
+      //               );
+      //               log.receiver(
+      //                 "[%s] Calling the autorenewlock task again for message with " + "id '%s'.",
+      //                 connectionId,
+      //                 bMessage.messageId
+      //               );
+      //               autoRenewLockTask();
+      //             } catch (err) {
+      //               log.error(
+      //                 "[%s] An error occured while auto renewing the message lock '%s' " +
+      //                   "for message with id '%s': %O.",
+      //                 connectionId,
+      //                 bMessage.lockToken,
+      //                 bMessage.messageId,
+      //                 err
+      //               );
+      //               // Let the user know that there was an error renewing the message lock.
+      //               this._onError!(err);
+      //             }
+      //           }, amount)
+      //         );
+      //       } else {
+      //         log.receiver(
+      //           "[%s] Looks like the message lock renew timer has already been " +
+      //             "cleared for message with id '%s'.",
+      //           connectionId,
+      //           bMessage.messageId
+      //         );
+      //       }
+      //     } else {
+      //       log.receiver(
+      //         "[%s] Current time %s exceeds the total autolockrenew duration %s for " +
+      //           "message with messageId '%s'. Hence we will stop the autoLockRenewTask.",
+      //         connectionId,
+      //         new Date(Date.now()).toString(),
+      //         new Date(totalAutoLockRenewDuration).toString(),
+      //         bMessage.messageId
+      //       );
+      //       this._clearMessageLockRenewTimer(bMessage.messageId as string);
+      //     }
+      //   };
+      //   // start
+      //   autoRenewLockTask();
+      // }
+
+      if (bMessage.lockToken) {
+        await this._lockRenewer?.addMessage(bMessage);
       }
 
-      await this._lockRenewer.addMessage(bMessage);
+      const messageId = bMessage.messageId!.toString();
 
       try {
         await this._onMessage(bMessage);
@@ -363,7 +372,7 @@ export class StreamingReceiver extends MessageReceiver {
         // TODO: this seems like it should be waiting for the user to settle the message (ie, this should only
         // happen if the user is in autocomplete mode.
         //
-        this._lockRenewer.removeMessage(bMessage.messageId);
+        await this._lockRenewer?.removeMessage(messageId);
       } catch (err) {
         // This ensures we call users' error handler when users' message handler throws.
         if (!isAmqpError(err)) {
@@ -380,7 +389,7 @@ export class StreamingReceiver extends MessageReceiver {
 
         // Do not want renewLock to happen unnecessarily, while abandoning the message. Hence,
         // doing this here. Otherwise, this should be done in finally.
-        this._lockRenewer.removeMessage(bMessage.messageId);
+        await this._lockRenewer?.removeMessage(messageId);
         const error = translate(err) as MessagingError;
         // Nothing much to do if user's message handler throws. Let us try abandoning the message.
         if (
@@ -474,119 +483,6 @@ export class StreamingReceiver extends MessageReceiver {
   init(useNewName: boolean, abortSignal?: AbortSignalLike): Promise<void> {
     const options = this._createReceiverOptions(useNewName, this._getHandlers());
     return super._init(options, abortSignal);
-  }
-
-  private async startMessageLockRenewal(
-    connectionId: string,
-    bMessage: RenewableServiceBusMessage
-  ): Promise<any> {
-    if (!this.autoRenewLock || bMessage.lockToken == null) {
-      return;
-    }
-
-    const lockToken = bMessage.lockToken;
-    // - We need to renew locks before they expire by looking at bMessage.lockedUntilUtc.
-    // - This autorenewal needs to happen **NO MORE** than maxAutoRenewDurationInMs
-    // - We should be able to clear the renewal timer when the user's message handler
-    // is done (whether it succeeds or fails).
-    // Setting the messageId with undefined value in the _messageRenewockTimers Map because we
-    // track state by checking the presence of messageId in the map. It is removed from the map
-    // when an attempt is made to settle the message (either by the user or by the sdk) OR
-    // when the execution of user's message handler completes.
-    this._messageRenewLockTimers.set(bMessage.messageId as string, undefined);
-    log.receiver(
-      "[%s] message with id '%s' is locked until %s.",
-      connectionId,
-      bMessage.messageId,
-      bMessage.lockedUntilUtc!.toString()
-    );
-    const totalAutoLockRenewDuration = Date.now() + this.maxAutoRenewDurationInMs;
-    log.receiver(
-      "[%s] Total autolockrenew duration for message with id '%s' is: ",
-      connectionId,
-      bMessage.messageId,
-      new Date(totalAutoLockRenewDuration).toString()
-    );
-    const autoRenewLockTask = (): void => {
-      if (
-        new Date(totalAutoLockRenewDuration) > bMessage.lockedUntilUtc! &&
-        Date.now() < totalAutoLockRenewDuration
-      ) {
-        if (this._messageRenewLockTimers.has(bMessage.messageId as string)) {
-          // TODO: We can run into problems with clock skew between the client and the server.
-          // It would be better to calculate the duration based on the "lockDuration" property
-          // of the queue. However, we do not have the management plane of the client ready for
-          // now. Hence we rely on the lockedUntilUtc property on the message set by ServiceBus.
-          const amount = calculateRenewAfterDuration(bMessage.lockedUntilUtc!);
-          log.receiver(
-            "[%s] Sleeping for %d milliseconds while renewing the lock for " +
-              "message with id '%s' is: ",
-            connectionId,
-            amount,
-            bMessage.messageId
-          );
-          // Setting the value of the messageId to the actual timer. This will be cleared when
-          // an attempt is made to settle the message (either by the user or by the sdk) OR
-          // when the execution of user's message handler completes.
-          this._messageRenewLockTimers.set(
-            bMessage.messageId as string,
-            setTimeout(async () => {
-              try {
-                log.receiver(
-                  "[%s] Attempting to renew the lock for message with id '%s'.",
-                  connectionId,
-                  bMessage.messageId
-                );
-                bMessage.lockedUntilUtc = await this._context.managementClient!.renewLock(
-                  lockToken
-                );
-                log.receiver(
-                  "[%s] Successfully renewed the lock for message with id '%s'.",
-                  connectionId,
-                  bMessage.messageId
-                );
-                log.receiver(
-                  "[%s] Calling the autorenewlock task again for message with " + "id '%s'.",
-                  connectionId,
-                  bMessage.messageId
-                );
-                autoRenewLockTask();
-              } catch (err) {
-                log.error(
-                  "[%s] An error occured while auto renewing the message lock '%s' " +
-                    "for message with id '%s': %O.",
-                  connectionId,
-                  bMessage.lockToken,
-                  bMessage.messageId,
-                  err
-                );
-                // Let the user know that there was an error renewing the message lock.
-                this._onError!(err);
-              }
-            }, amount)
-          );
-        } else {
-          log.receiver(
-            "[%s] Looks like the message lock renew timer has already been " +
-              "cleared for message with id '%s'.",
-            connectionId,
-            bMessage.messageId
-          );
-        }
-      } else {
-        log.receiver(
-          "[%s] Current time %s exceeds the total autolockrenew duration %s for " +
-            "message with messageId '%s'. Hence we will stop the autoLockRenewTask.",
-          connectionId,
-          new Date(Date.now()).toString(),
-          new Date(totalAutoLockRenewDuration).toString(),
-          bMessage.messageId
-        );
-        this._clearMessageLockRenewTimer(bMessage.messageId as string);
-      }
-    };
-    // start
-    autoRenewLockTask();
   }
 
   /**

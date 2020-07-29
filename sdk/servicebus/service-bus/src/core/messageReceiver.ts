@@ -19,6 +19,7 @@ import { DispositionStatusOptions } from "./managementClient";
 import { AbortSignalLike } from "@azure/core-http";
 import { AbortError } from "@azure/abort-controller";
 import { onMessageSettled, DeferredPromiseAndTimer } from "./shared";
+import { LockRenewer } from "./lockRenewer";
 
 /**
  * @internal
@@ -146,6 +147,12 @@ export class MessageReceiver extends LinkEntity {
    */
   protected wasCloseInitiated?: boolean;
 
+  //
+  // TODO: there's some code in MessageReceiver that is shared (settle messages). It's not a big block
+  // but once we share that properly we can move this.
+  //
+  protected _lockRenewer: LockRenewer | undefined;
+
   constructor(
     context: ClientEntityContext,
     receiverType: ReceiverType,
@@ -169,26 +176,21 @@ export class MessageReceiver extends LinkEntity {
         : 300 * 1000;
     this.autoRenewLock =
       this.maxAutoRenewDurationInMs > 0 && this.receiveMode === ReceiveMode.peekLock;
-    this._clearMessageLockRenewTimer = (messageId: string) => {
-      if (this._messageRenewLockTimers.has(messageId)) {
-        clearTimeout(this._messageRenewLockTimers.get(messageId) as NodeJS.Timer);
-        log.receiver(
-          "[%s] Cleared the message renew lock timer for message with id '%s'.",
-          this._context.namespace.connectionId,
-          messageId
-        );
-        this._messageRenewLockTimers.delete(messageId);
-      }
-    };
-    this._clearAllMessageLockRenewTimers = () => {
-      log.receiver(
-        "[%s] Clearing message renew lock timers for all the active messages.",
-        this._context.namespace.connectionId
+
+    if (this.receiveMode === ReceiveMode.peekLock && this.autoRenewLock) {
+      this._lockRenewer = new LockRenewer(
+        `[${this._context.namespace.connection.id}:${this.name}]`,
+        this.maxAutoRenewDurationInMs,
+        () => {
+          if (this._context.managementClient == null) {
+            throw new Error("No management client exists. Can't auto-renew message locks.");
+          }
+
+          return this._context.managementClient;
+        },
+        this._onError!
       );
-      for (const messageId of this._messageRenewLockTimers.keys()) {
-        this._clearMessageLockRenewTimer(messageId);
-      }
-    };
+    }
   }
 
   /**
@@ -349,7 +351,11 @@ export class MessageReceiver extends LinkEntity {
       this.receiverType,
       this._context.entityPath
     );
-    this._clearAllMessageLockRenewTimers();
+
+    if (this._lockRenewer) {
+      this._lockRenewer.clear();
+    }
+
     if (this._receiver) {
       const receiverLink = this._receiver;
       this._deleteFromCache();
@@ -373,7 +379,11 @@ export class MessageReceiver extends LinkEntity {
       if (operation.match(/^(complete|abandon|defer|deadletter)$/) == null) {
         return reject(new Error(`operation: '${operation}' is not a valid operation.`));
       }
-      this._clearMessageLockRenewTimer(message.messageId as string);
+
+      if (this._lockRenewer) {
+        this._lockRenewer.removeMessage(message.messageId as string);
+      }
+
       const delivery = message.delivery;
       const timer = setTimeout(() => {
         this._deliveryDispositionMap.delete(delivery.id);
