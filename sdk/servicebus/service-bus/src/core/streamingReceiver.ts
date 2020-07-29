@@ -559,17 +559,6 @@ export class StreamingReceiver extends MessageReceiver {
       // Removes the link and its session if they are present in rhea's cache.
       await this._closeLink(this._receiver);
 
-      if (this.receiverType === ReceiverType.batching) {
-        log.error(
-          "[%s] Receiver '%s' with address '%s' is a Batching Receiver, so we will not be " +
-            "re-establishing the receiver link.",
-          connectionId,
-          this.name,
-          this.address
-        );
-        return;
-      }
-
       const translatedError = receiverError ? translate(receiverError) : receiverError;
 
       // Track-1
