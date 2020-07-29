@@ -464,7 +464,7 @@ export class StreamingReceiver extends MessageReceiver {
     return super._init(options, abortSignal);
   }
 
-  private async addMessageLockRenewal(
+  private async startMessageLockRenewal(
     connectionId: string,
     bMessage: RenewableServiceBusMessage
   ): Promise<any> {
