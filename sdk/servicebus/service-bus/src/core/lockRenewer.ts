@@ -30,12 +30,6 @@ export class LockRenewer {
     NodeJS.Timer | undefined
   >();
 
-  /**
-   * @property {Function} _clearMessageLockRenewTimer Clears the message lock renew timer for a
-   * specific messageId.
-   */
-  protected _clearMessageLockRenewTimer: (messageId: string) => void;
-
   constructor(private _logPrefix: string) {}
 
   //
