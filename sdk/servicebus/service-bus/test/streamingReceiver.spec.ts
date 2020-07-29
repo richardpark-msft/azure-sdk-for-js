@@ -169,7 +169,7 @@ describe("Streaming Receiver Tests", () => {
           receiveMode: ReceiveMode.peekLock
         });
 
-        streamingReceiver.receive(
+        streamingReceiver.subscribe(
           async () => {},
           (err) => {
             actualError = err;

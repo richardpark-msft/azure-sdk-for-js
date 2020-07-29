@@ -232,7 +232,7 @@ export class ReceiverImpl<ReceivedMessageT extends ReceivedMessage | ReceivedMes
           return;
         }
         if (!this.isClosed) {
-          sReceiver.receive(onMessage, onError);
+          sReceiver.subscribe(onMessage, onError);
         } else {
           await sReceiver.close();
         }
