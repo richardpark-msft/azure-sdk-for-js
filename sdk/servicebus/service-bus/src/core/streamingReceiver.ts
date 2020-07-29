@@ -71,7 +71,6 @@ export class StreamingReceiver extends MessageReceiver {
   private _retryOptions: RetryOptions;
 
   private _receiverHelper: ReceiverHelper;
-
   /**
    * @property {OnAmqpEventAsPromise} _onAmqpClose The message handler that will be set as the handler on the
    * underlying rhea receiver for the "receiver_close" event.
@@ -99,7 +98,26 @@ export class StreamingReceiver extends MessageReceiver {
    * @property {OnAmqpEventAsPromise} _onAmqpMessage The message handler that will be set as the handler on the
    * underlying rhea receiver for the "message" event.
    */
-  protected _onAmqpMessage: OnAmqpEventAsPromise;
+  private _onAmqpMessage: OnAmqpEventAsPromise;
+
+  /**
+   * @property {Map<string, Function>} _messageRenewLockTimers Maintains a map of messages for which
+   * the lock is automatically renewed.
+   */
+  protected _messageRenewLockTimers: Map<string, NodeJS.Timer | undefined> = new Map<
+    string,
+    NodeJS.Timer | undefined
+  >();
+  /**
+   * @property {Function} _clearMessageLockRenewTimer Clears the message lock renew timer for a
+   * specific messageId.
+   */
+  protected _clearMessageLockRenewTimer: (messageId: string) => void;
+  /**
+   * @property {Function} _clearMessageLockRenewTimer Clears the message lock renew timer for all
+   * the active messages.
+   */
+  protected _clearAllMessageLockRenewTimers: () => void;
 
   private _formatLoggingPrefix(): string {
     return `[${this._context.namespace.connection.id}|r:${this.name}|a:${this.address}]`;

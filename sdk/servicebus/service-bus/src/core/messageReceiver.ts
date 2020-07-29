@@ -145,24 +145,6 @@ export class MessageReceiver extends LinkEntity {
    * @property {boolean} wasCloseInitiated Denotes if receiver was explicitly closed by user.
    */
   protected wasCloseInitiated?: boolean;
-  /**
-   * @property {Map<string, Function>} _messageRenewLockTimers Maintains a map of messages for which
-   * the lock is automatically renewed.
-   */
-  protected _messageRenewLockTimers: Map<string, NodeJS.Timer | undefined> = new Map<
-    string,
-    NodeJS.Timer | undefined
-  >();
-  /**
-   * @property {Function} _clearMessageLockRenewTimer Clears the message lock renew timer for a
-   * specific messageId.
-   */
-  protected _clearMessageLockRenewTimer: (messageId: string) => void;
-  /**
-   * @property {Function} _clearMessageLockRenewTimer Clears the message lock renew timer for all
-   * the active messages.
-   */
-  protected _clearAllMessageLockRenewTimers: () => void;
 
   constructor(
     context: ClientEntityContext,
