@@ -91,18 +91,21 @@ export class StreamingReceiver extends MessageReceiver {
    */
   protected _onAmqpMessage: OnAmqpEventAsPromise;
 
-  private onClose() {
+  private onClose(context: EventContext) {
     const connectionId = this._context.namespace.connectionId;
-    const receiverError = context.receiver && context.receiver.error;
+    const error = context?.receiver?.error ?? context?.session?.error;
+    const eventType = context?.receiver?.error != null ? "receiver_close" : "session_close";
+
     const receiver = this._receiver || context.receiver!;
-    if (receiverError) {
+
+    if (error) {
       log.error(
         "[%s] 'receiver_close' event occurred for receiver '%s' with address '%s'. " +
           "The associated error is: %O",
         connectionId,
         this.name,
         this.address,
-        receiverError
+        error
       );
     }
     this._clearAllMessageLockRenewTimers();
@@ -116,7 +119,7 @@ export class StreamingReceiver extends MessageReceiver {
           this.name,
           this.address
         );
-        await this.onDetached(receiverError);
+        await this.onDetached(error);
       } else {
         log.error(
           "[%s] 'receiver_close' event occurred on the receiver '%s' with address '%s' " +
