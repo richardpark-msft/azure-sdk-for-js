@@ -91,6 +91,54 @@ export class StreamingReceiver extends MessageReceiver {
    */
   protected _onAmqpMessage: OnAmqpEventAsPromise;
 
+  private onClose() {
+    const connectionId = this._context.namespace.connectionId;
+    const receiverError = context.receiver && context.receiver.error;
+    const receiver = this._receiver || context.receiver!;
+    if (receiverError) {
+      log.error(
+        "[%s] 'receiver_close' event occurred for receiver '%s' with address '%s'. " +
+          "The associated error is: %O",
+        connectionId,
+        this.name,
+        this.address,
+        receiverError
+      );
+    }
+    this._clearAllMessageLockRenewTimers();
+    if (receiver && !receiver.isItselfClosed()) {
+      if (!this.isConnecting) {
+        log.error(
+          "[%s] 'receiver_close' event occurred on the receiver '%s' with address '%s' " +
+            "and the sdk did not initiate this. The receiver is not reconnecting. Hence, calling " +
+            "detached from the _onAmqpClose() handler.",
+          connectionId,
+          this.name,
+          this.address
+        );
+        await this.onDetached(receiverError);
+      } else {
+        log.error(
+          "[%s] 'receiver_close' event occurred on the receiver '%s' with address '%s' " +
+            "and the sdk did not initate this. Moreover the receiver is already re-connecting. " +
+            "Hence not calling detached from the _onAmqpClose() handler.",
+          connectionId,
+          this.name,
+          this.address
+        );
+      }
+    } else {
+      log.error(
+        "[%s] 'receiver_close' event occurred on the receiver '%s' with address '%s' " +
+          "because the sdk initiated it. Hence not calling detached from the _onAmqpClose" +
+          "() handler.",
+        connectionId,
+        this.name,
+        this.address
+      );
+    }
+  }
+
   /**
    * Instantiate a new Streaming receiver for receiving messages with handlers.
    *
