@@ -37,11 +37,6 @@ type OnCloseEventContext = {
   receiver?: { error?: Error | AmqpError; isItselfClosed(): boolean };
 };
 
-type RenewableServiceBusMessage = Pick<
-  ServiceBusMessageImpl,
-  "messageId" | "lockToken" | "lockedUntilUtc"
->;
-
 /**
  * @internal
  * Describes the streaming receiver where the user can receive the message
@@ -99,25 +94,6 @@ export class StreamingReceiver extends MessageReceiver {
    * underlying rhea receiver for the "message" event.
    */
   private _onAmqpMessage: OnAmqpEventAsPromise;
-
-  /**
-   * @property {Map<string, Function>} _messageRenewLockTimers Maintains a map of messages for which
-   * the lock is automatically renewed.
-   */
-  protected _messageRenewLockTimers: Map<string, NodeJS.Timer | undefined> = new Map<
-    string,
-    NodeJS.Timer | undefined
-  >();
-  /**
-   * @property {Function} _clearMessageLockRenewTimer Clears the message lock renew timer for a
-   * specific messageId.
-   */
-  protected _clearMessageLockRenewTimer: (messageId: string) => void;
-  /**
-   * @property {Function} _clearMessageLockRenewTimer Clears the message lock renew timer for all
-   * the active messages.
-   */
-  protected _clearAllMessageLockRenewTimers: () => void;
 
   /**
    * @property {OnMessage} _onMessage The message handler provided by the user that will be wrapped
@@ -378,9 +354,16 @@ export class StreamingReceiver extends MessageReceiver {
         // start
         autoRenewLockTask();
       }
+
+      await this._lockRenewer.addMessage(bMessage);
+
       try {
         await this._onMessage(bMessage);
-        this._clearMessageLockRenewTimer(bMessage.messageId as string);
+        //
+        // TODO: this seems like it should be waiting for the user to settle the message (ie, this should only
+        // happen if the user is in autocomplete mode.
+        //
+        this._lockRenewer.removeMessage(bMessage.messageId);
       } catch (err) {
         // This ensures we call users' error handler when users' message handler throws.
         if (!isAmqpError(err)) {
@@ -397,7 +380,7 @@ export class StreamingReceiver extends MessageReceiver {
 
         // Do not want renewLock to happen unnecessarily, while abandoning the message. Hence,
         // doing this here. Otherwise, this should be done in finally.
-        this._clearMessageLockRenewTimer(bMessage.messageId as string);
+        this._lockRenewer.removeMessage(bMessage.messageId);
         const error = translate(err) as MessagingError;
         // Nothing much to do if user's message handler throws. Let us try abandoning the message.
         if (
