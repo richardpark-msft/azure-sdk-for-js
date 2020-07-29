@@ -37,6 +37,11 @@ type OnCloseEventContext = {
   receiver?: { error?: Error | AmqpError; isItselfClosed(): boolean };
 };
 
+type RenewableServiceBusMessage = Pick<
+  ServiceBusMessageImpl,
+  "messageId" | "lockToken" | "lockedUntilUtc"
+>;
+
 /**
  * @internal
  * Describes the streaming receiver where the user can receive the message
@@ -461,7 +466,7 @@ export class StreamingReceiver extends MessageReceiver {
 
   private addMessageLockRenewal(
     connectionId: string,
-    bMessage: Pick<ServiceBusMessageImpl, "messageId" | "lockToken" | "lockedUntilUtc">
+    bMessage: RenewableServiceBusMessage
   ): Promise<any> {
     if (this.autoRenewLock && bMessage.lockToken) {
       const lockToken = bMessage.lockToken;
