@@ -119,6 +119,17 @@ export class StreamingReceiver extends MessageReceiver {
    */
   protected _clearAllMessageLockRenewTimers: () => void;
 
+  /**
+   * @property {OnMessage} _onMessage The message handler provided by the user that will be wrapped
+   * inside _onAmqpMessage.
+   */
+  protected _onMessage!: OnMessage;
+  /**
+   * @property {OnMessage} _onError The error handler provided by the user that will be wrapped
+   * inside _onAmqpError.
+   */
+  protected _onError?: OnError;
+
   private _formatLoggingPrefix(): string {
     return `[${this._context.namespace.connection.id}|r:${this.name}|a:${this.address}]`;
   }
