@@ -28,7 +28,7 @@ import {
 import { OperationOptionsBase } from "../modelsToBeSharedWithEventHubs";
 import * as log from "../log";
 import { AmqpError, EventContext, isAmqpError, OnAmqpEvent } from "rhea-promise";
-import { ReceiveMode, ServiceBusMessage, ServiceBusMessageImpl } from "../serviceBusMessage";
+import { ReceiveMode, ServiceBusMessageImpl } from "../serviceBusMessage";
 import { calculateRenewAfterDuration } from "../util/utils";
 import { AbortSignalLike } from "@azure/abort-controller";
 
