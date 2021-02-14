@@ -14,7 +14,8 @@ async function main() {
         return addAuthenticationGroupToBuilder(yargs)
           .option("entity", {
             group: "Arguments",
-            description: "The entity to peek messages from (either: 'queue' or 'topic/subscription')",
+            description:
+              "The entity to peek messages from (either: 'queue' or 'topic/subscription')",
             string: true,
             nargs: 1,
             demandOption: true
@@ -22,7 +23,8 @@ async function main() {
           .option("properties", {
             group: "Arguments",
             alias: ["p"],
-            description: "The fields to extract from the message. These can be any field in the type ServiceBusReceivedMessage",
+            description:
+              "The fields to extract from the message. These can be any field in the type ServiceBusReceivedMessage",
             array: true,
             default: ["body", "messageId"]
           })
@@ -34,7 +36,9 @@ async function main() {
             boolean: true
           });
       },
-      handler: async (argv: AuthOptions & { entity?: string, properties?: string[], number?: boolean; }) => {
+      handler: async (
+        argv: AuthOptions & { entity?: string; properties?: string[]; number?: boolean }
+      ) => {
         const serviceBusClient = createServiceBusClient(argv);
         try {
           const receiver = serviceBusClient.createReceiver(argv.entity!);
@@ -46,16 +50,17 @@ async function main() {
     })
     .command({
       command: "receive <entity>",
-      describe: "Receive (and delete) messages from an entity of the format 'queue' or 'topic/subscription'",
+      describe:
+        "Receive (and delete) messages from an entity of the format 'queue' or 'topic/subscription'",
       builder: addAuthenticationGroupToBuilder,
-      handler: (_argv) => {
-      }
+      handler: (_argv) => {}
     })
     .command({
       command: "send <entity>",
-      describe: "Receive (and delete) messages from an entity of the format 'queue' or 'topic/subscription'",
+      describe:
+        "Receive (and delete) messages from an entity of the format 'queue' or 'topic/subscription'",
       builder: (yargs) => {
-        return addAuthenticationGroupToBuilder(yargs)
+        return addAuthenticationGroupToBuilder(yargs);
       },
       handler: (_argv) => {
         // const serviceBusClient = createServiceBusClient(argv);
@@ -67,13 +72,11 @@ async function main() {
       builder: (yargs) => {
         return yargs;
       },
-      handler: (_argv) => { }
+      handler: (_argv) => {}
     })
     .demandCommand()
     .strictCommands()
-    .help()
-    .argv;
-
+    .help().argv;
 }
 
 main().catch((err) => {
@@ -81,7 +84,11 @@ main().catch((err) => {
   process.exit(1);
 });
 
-async function peekMessages(receiver: ServiceBusReceiver, properties: string[], shouldNumber: boolean) {
+async function peekMessages(
+  receiver: ServiceBusReceiver,
+  properties: string[],
+  shouldNumber: boolean
+) {
   const printMessage = createPrintMessageFn(properties, shouldNumber);
 
   while (true) {
@@ -93,10 +100,7 @@ async function peekMessages(receiver: ServiceBusReceiver, properties: string[], 
   }
 }
 
-function createPrintMessageFn(
-  properties: string[],
-  shouldNumber: boolean
-) {
+function createPrintMessageFn(properties: string[], shouldNumber: boolean) {
   let messageNumber: number | undefined;
 
   if (shouldNumber) {
