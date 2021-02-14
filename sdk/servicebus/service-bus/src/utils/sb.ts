@@ -1,215 +1,89 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import minimist from "minimist";
-import { ServiceBusClient } from "../serviceBusClient";
-import * as dotenv from "dotenv";
-import { DefaultAzureCredential } from "@azure/identity";
+import yargs from "yargs";
 import { ServiceBusReceiver } from "../receivers/receiver";
-import { ServiceBusReceivedMessage } from "../serviceBusMessage";
-import { createInterface } from "readline";
-import { loadArgFromFileOrText } from "./cli";
-
-dotenv.config();
-
-interface AuthenticationArgs {
-  connectionString?: string;
-  // or
-  useEnv?: boolean;
-  // or
-  dotEnv?: boolean;
-  // or
-  defaultAzureCredential?: boolean;
-  serviceBusNamespace?: string;
-}
-
-type PeekArgs = AuthenticationArgs & {
-  entity?: string;
-  deadLetter?: boolean;
-  count?: number;
-};
-
-class ArgsError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ArgsError";
-  }
-}
-
-const authenticationMinimistOpts = {
-  alias: {
-    cs: "connectionString",
-    env: "useEnv"
-  },
-  boolean: ["useEnv"],
-  string: ["defaultAzureCredential", "serviceBusNamespace"]
-};
-
-function mergeMinimistArgs(...args: minimist.Opts[]) {
-  const finalArgs: minimist.Opts = {
-    boolean: [],
-    string: [],
-    alias: {}
-  };
-
-  for (const arg of args) {
-    finalArgs.alias = {
-      ...finalArgs.alias,
-      ...(arg.alias ?? {})
-    };
-
-    if (Array.isArray(arg.string)) {
-      (finalArgs.string as string[]).push(...(arg.string as string[]));
-    }
-
-    if (Array.isArray(arg.boolean)) {
-      (finalArgs.boolean as string[]).push(...(arg.boolean as string[]));
-    }
-  }
-
-  return finalArgs;
-}
-
-function getConnectionStringFromEnvironment(): string {
-  const connectionString = process.env.SERVICEBUS_CONNECTION_STRING;
-
-  if (connectionString == null) {
-    throw new ArgsError(
-      "A connection string must be set in the environment variable 'SERVICEBUS_CONNECTION_STRING'"
-    );
-  }
-
-  return connectionString;
-}
-
-const helpText = `Usage:`;
+import { addAuthenticationGroupToBuilder, AuthOptions, createServiceBusClient } from "./auth";
 
 async function main() {
-  // check that first argument - it's the "mode"
-  if (process.argv.length < 3) {
-    throw new ArgsError("No mode specified");
-  }
-
-  const mode = process.argv[2];
-
-  switch (mode) {
-    case "peek": {
-      const minimistOpts = mergeMinimistArgs(authenticationMinimistOpts, {
-        string: ["entity"]
-      });
-
-      const parsedArgs = minimist(process.argv.slice(3), minimistOpts) as PeekArgs;
-
-      if (parsedArgs.entity == null) {
-        throw new ArgsError("Entity should be specified using --entity");
-      }
-
-      const serviceBusClient = createServiceBusClient(parsedArgs);
-      const receiver = serviceBusClient.createReceiver(parsedArgs.entity);
-
-      await peekMessages(receiver);
-      break;
-    }
-    case "receiveAndDelete": {
-      const minimistOpts = mergeMinimistArgs(authenticationMinimistOpts, {
-        string: ["entity"]
-      });
-
-      const parsedArgs = minimist(process.argv.slice(3), minimistOpts) as PeekArgs;
-
-      if (parsedArgs.entity == null) {
-        throw new ArgsError("Entity should be specified using --entity");
-      }
-
-      const serviceBusClient = createServiceBusClient(parsedArgs);
-      const receiver = serviceBusClient.createReceiver(parsedArgs.entity);
-
-      receiver.subscribe({
-        processError: async (errContext) => {
-          console.error(`WARNING: ${errContext.error}`);
-        },
-        processMessage: async (message) => {
-          printMessage(message);
-        }
-      });
-
-      break;
-    }
-    case "send": {
-      const minimistOpts = mergeMinimistArgs(authenticationMinimistOpts, {
-        string: ["entity"]
-      });
-
-      const parsedArgs = minimist(process.argv.slice(3), minimistOpts) as PeekArgs;
-
-      if (parsedArgs.entity == null) {
-        throw new ArgsError("Entity should be specified using --entity");
-      }
-
-      const serviceBusClient = createServiceBusClient(parsedArgs);
-      const sender = serviceBusClient.createSender(parsedArgs.entity);
-
-      const readlineInterface = createInterface({
-        terminal: false,
-        input: process.stdin,
-        output: process.stdout
-      });
-
-      const sendPromises: Promise<void>[] = [];
-
-      readlineInterface.on("line", (line) => {
-        sendPromises.push(sender.sendMessages(loadArgFromFileOrText(line)));
-      });
-
-      readlineInterface.on("close", () => {
-        Promise.all(sendPromises)
-          .catch((err) => {
-            console.error(err);
+  yargs(process.argv.slice(2))
+    .command({
+      command: "peek <entity>",
+      describe: "Peek messages from an entity of the format 'queue' or 'subscription'",
+      builder: (yargs) => {
+        return addAuthenticationGroupToBuilder(yargs)
+          .option("entity", {
+            group: "Arguments",
+            description: "The entity to peek messages from (either: 'queue' or 'topic/subscription')",
+            string: true,
+            nargs: 1,
+            demandOption: true
           })
-          .then(() => serviceBusClient.close())
-          .then(() => {
-            process.exit(1);
+          .option("properties", {
+            group: "Arguments",
+            alias: ["p"],
+            description: "The fields to extract from the message. These can be any field in the type ServiceBusReceivedMessage",
+            array: true,
+            default: ["body", "messageId"]
+          })
+          .option("number", {
+            group: "Arguments",
+            alias: ["n"],
+            description: "Causes a leading number to be printed before each line",
+            default: false,
+            boolean: true
           });
-      });
+      },
+      handler: async (argv: AuthOptions & { entity?: string, properties?: string[], number?: boolean; }) => {
+        const serviceBusClient = createServiceBusClient(argv);
+        try {
+          const receiver = serviceBusClient.createReceiver(argv.entity!);
+          await peekMessages(receiver, argv.properties!, !!argv.number);
+        } finally {
+          await serviceBusClient.close();
+        }
+      }
+    })
+    .command({
+      command: "receive <entity>",
+      describe: "Receive (and delete) messages from an entity of the format 'queue' or 'topic/subscription'",
+      builder: addAuthenticationGroupToBuilder,
+      handler: (_argv) => {
+      }
+    })
+    .command({
+      command: "send <entity>",
+      describe: "Receive (and delete) messages from an entity of the format 'queue' or 'topic/subscription'",
+      builder: (yargs) => {
+        return addAuthenticationGroupToBuilder(yargs)
+      },
+      handler: (_argv) => {
+        // const serviceBusClient = createServiceBusClient(argv);
+      }
+    })
+    .command({
+      command: "sample <sample name>",
+      describe: "Install a sample program into this project",
+      builder: (yargs) => {
+        return yargs;
+      },
+      handler: (_argv) => { }
+    })
+    .demandCommand()
+    .strictCommands()
+    .help()
+    .argv;
 
-      break;
-    }
-    default: {
-      throw new ArgsError(`Invalid mode '${mode}'`);
-    }
-  }
 }
 
 main().catch((err) => {
   console.log(`Error: ${err}`);
-
-  if (err.name === "ArgsError") {
-    console.error(helpText);
-  } else {
-    console.error("Error thrown:", err);
-  }
-
   process.exit(1);
 });
 
-function createServiceBusClient(parsedArgs: AuthenticationArgs) {
-  if (parsedArgs.connectionString) {
-    return new ServiceBusClient(parsedArgs.connectionString);
-  } else if (parsedArgs.dotEnv) {
-    // expect that:
-    // SERVICEBUS_CONNECTION_STRING is defined in the environment
-    dotenv.config();
-    return new ServiceBusClient(getConnectionStringFromEnvironment());
-  } else if (parsedArgs.useEnv) {
-    return new ServiceBusClient(getConnectionStringFromEnvironment());
-  } else if (parsedArgs.defaultAzureCredential && parsedArgs.serviceBusNamespace) {
-    return new ServiceBusClient(parsedArgs.serviceBusNamespace, new DefaultAzureCredential());
-  } else {
-    throw new ArgsError("No authentication mechanism specified.");
-  }
-}
+async function peekMessages(receiver: ServiceBusReceiver, properties: string[], shouldNumber: boolean) {
+  const printMessage = createPrintMessageFn(properties, shouldNumber);
 
-async function peekMessages(receiver: ServiceBusReceiver) {
   while (true) {
     let messages = await receiver.peekMessages(10);
 
@@ -219,15 +93,27 @@ async function peekMessages(receiver: ServiceBusReceiver) {
   }
 }
 
-function printMessage(
-  message: ServiceBusReceivedMessage,
-  fields: (keyof ServiceBusReceivedMessage)[] = ["body", "messageId"]
+function createPrintMessageFn(
+  properties: string[],
+  shouldNumber: boolean
 ) {
-  const newMessage: any = {};
+  let messageNumber: number | undefined;
 
-  for (const field of fields) {
-    newMessage[field] = message[field];
+  if (shouldNumber) {
+    messageNumber = 1;
   }
 
-  console.log(JSON.stringify(newMessage));
+  return (message: any) => {
+    const newMessage: any = {};
+
+    for (const field of properties) {
+      newMessage[field] = message[field];
+    }
+
+    if (messageNumber != null) {
+      console.log(`${messageNumber++}. ${JSON.stringify(newMessage)}`);
+    } else {
+      console.log(JSON.stringify(newMessage));
+    }
+  };
 }

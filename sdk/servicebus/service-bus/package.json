@@ -115,8 +115,7 @@
     "process": "^0.11.10",
     "tslib": "^2.0.0",
     "rhea-promise": "^1.0.0",
-    "minimist": "~1.2.5",
-    "@types/minimist": "~1.2.0"
+    "yargs": "^15.0.0"
   },
   "devDependencies": {
     "@azure/dev-tool": "^1.0.0",
@@ -178,6 +177,7 @@
     "sinon": "^9.0.2",
     "@types/sinon": "^9.0.4",
     "events": "^3.0.0",
-    "typedoc": "0.15.2"
+    "typedoc": "0.15.2",
+    "@types/yargs": "^15.0.5"
   }
 }
