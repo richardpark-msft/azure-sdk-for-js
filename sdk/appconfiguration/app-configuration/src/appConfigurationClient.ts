@@ -30,8 +30,11 @@ import {
   ConfigurationSettingId,
   DeleteConfigurationSettingOptions,
   DeleteConfigurationSettingResponse,
+  FeatureFlag,
+  FeatureFlagContentType,
   GetConfigurationSettingOptions,
   GetConfigurationSettingResponse,
+  KeyVaultReference,
   ListConfigurationSettingPage,
   ListConfigurationSettingsOptions,
   ListRevisionsOptions,
@@ -60,6 +63,7 @@ import {
   AppConfigurationOptionalParams as GeneratedAppConfigurationClientOptions
 } from "./generated/src/models";
 import { syncTokenPolicy, SyncTokens } from "./internal/synctokenpolicy";
+import { convertToFeatureFlag } from "./internal/featureFlag";
 
 const packageName = "azsdk-js-app-configuration";
 
@@ -117,6 +121,7 @@ export interface InternalAppConfigurationClientOptions extends AppConfigurationC
 export class AppConfigurationClient {
   private client: AppConfiguration;
   private spanner: Spanner<AppConfigurationClient>;
+  private _syncTokens: SyncTokens;
 
   /**
    * Initializes a new instance of the AppConfigurationClient class.
@@ -164,13 +169,13 @@ export class AppConfigurationClient {
       }
     }
 
-    const syncTokens = appConfigOptions.syncTokens || new SyncTokens();
+    this._syncTokens = appConfigOptions.syncTokens || new SyncTokens();
 
     this.client = new AppConfiguration(
       appConfigCredential,
       appConfigEndpoint,
       apiVersion,
-      getGeneratedClientOptions(appConfigEndpoint, syncTokens, appConfigOptions)
+      getGeneratedClientOptions(appConfigEndpoint, this._syncTokens, appConfigOptions)
     );
 
     this.spanner = new Spanner<AppConfigurationClient>("Azure.Data.AppConfiguration");
@@ -230,6 +235,33 @@ export class AppConfigurationClient {
     });
   }
 
+  async getKeyVaultReference(id: Omit<ConfigurationSettingId, "kind">): Promise<KeyVaultReference> {
+    const setting = await this.getConfigurationSetting({
+      ...id
+    });
+
+    if (setting.value == null) {
+      throw new Error(`${id.key} is not a valid KeyVaultReference or has invalid content.`);
+    }
+
+    const keyVaultReference = JSON.parse(setting.value);
+
+    return {
+      ...setting,
+      // TODO: actually format this.
+      ...keyVaultReference
+    };
+  }
+
+  async getFeatureFlag(
+    id: Omit<ConfigurationSettingId, "kind">
+  ): Promise<GetConfigurationSettingResponse<FeatureFlag>> {
+    return ((await this.getConfigurationSetting({
+      ...id,
+      kind: "FeatureFlag"
+    })) as any) as GetConfigurationSettingResponse<FeatureFlag>;
+  }
+
   /**
    * Gets a setting from the Azure App Configuration service.
    *
@@ -249,7 +281,16 @@ export class AppConfigurationClient {
       "getConfigurationSetting",
       requestOptions,
       async (newOptions) => {
-        const originalResponse = await this.client.getKeyValue(id.key, {
+        let key = id.key;
+
+        // TODO: validate .kind is actually one of the ones we know about (or undefined)
+        if (id.kind === "FeatureFlag") {
+          if (!key.match(/^\.appconfig\.featureflag/)) {
+            key = `.appconfig.featureflag/${key}`;
+          }
+        }
+
+        const originalResponse = await this.client.getKeyValue(key, {
           ...newOptions,
           label: id.label,
           select: formatFieldsForSelect(options.fields),
@@ -270,6 +311,10 @@ export class AppConfigurationClient {
 
           // and now we'll undefine all the other properties that are not HTTP related
           makeConfigurationSettingEmpty(response);
+        }
+
+        if (response.contentType === FeatureFlagContentType) {
+          return convertToFeatureFlag(response);
         }
 
         return response;
@@ -518,6 +563,16 @@ export class AppConfigurationClient {
         return transformKeyValueResponse(response);
       }
     });
+  }
+
+  /**
+   * Adds a sync token to the internal sync token map for this client.
+   *
+   * @param syncToken A sync token.
+   */
+  addSyncToken(syncToken: string): void {
+    // TODO: not sure what the format of _this_ sync token is when they get it externally.
+    this._syncTokens.addSyncTokenFromHeaderValue(syncToken);
   }
 }
 

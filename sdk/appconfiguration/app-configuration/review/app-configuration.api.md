@@ -27,8 +27,13 @@ export class AppConfigurationClient {
     constructor(connectionString: string, options?: AppConfigurationClientOptions);
     constructor(endpoint: string, tokenCredential: TokenCredential, options?: AppConfigurationClientOptions);
     addConfigurationSetting(configurationSetting: AddConfigurationSettingParam, options?: AddConfigurationSettingOptions): Promise<AddConfigurationSettingResponse>;
+    addSyncToken(syncToken: string): void;
     deleteConfigurationSetting(id: ConfigurationSettingId, options?: DeleteConfigurationSettingOptions): Promise<DeleteConfigurationSettingResponse>;
     getConfigurationSetting(id: ConfigurationSettingId, options?: GetConfigurationSettingOptions): Promise<GetConfigurationSettingResponse>;
+    // (undocumented)
+    getFeatureFlag(id: Omit<ConfigurationSettingId, 'kind'>): Promise<FeatureFlag>;
+    // (undocumented)
+    getKeyVaultReference(id: Omit<ConfigurationSettingId, 'kind'>): Promise<KeyVaultReference>;
     listConfigurationSettings(options?: ListConfigurationSettingsOptions): PagedAsyncIterableIterator<ConfigurationSetting, ListConfigurationSettingPage>;
     listRevisions(options?: ListRevisionsOptions): PagedAsyncIterableIterator<ConfigurationSetting, ListRevisionsPage>;
     setConfigurationSetting(configurationSetting: SetConfigurationSettingParam, options?: SetConfigurationSettingOptions): Promise<SetConfigurationSettingResponse>;
@@ -50,6 +55,7 @@ export interface ConfigurationSetting extends ConfigurationSettingParam {
 export interface ConfigurationSettingId {
     etag?: string;
     key: string;
+    kind?: "FeatureFlag" | "KeyVaultReference" | "ConfigurationSetting";
     label?: string;
 }
 
@@ -71,6 +77,66 @@ export interface DeleteConfigurationSettingOptions extends HttpOnlyIfUnchangedFi
 
 // @public
 export interface DeleteConfigurationSettingResponse extends SyncTokenHeaderField, HttpResponseFields, HttpResponseField<SyncTokenHeaderField> {
+}
+
+// @public (undocumented)
+export interface FeatureFlag extends ConfigurationSetting, FeatureFlagParam {
+}
+
+// @public (undocumented)
+export type FeatureFlagContentType = "application/vnd.microsoft.appconfig.ff+json;charset=utf-8";
+
+// @public
+export interface FeatureFlagParam extends ConfigurationSettingId {
+    // (undocumented)
+    conditions: {
+        client_filters: (FeatureFlagTargetingClientFilter | FeatureFlagTimeWindowClientFilter | FeatureFlagPercentageClientFilter | object)[];
+    };
+    // (undocumented)
+    description: string;
+    // (undocumented)
+    enabled: true;
+}
+
+// @public (undocumented)
+export interface FeatureFlagPercentageClientFilter {
+    // (undocumented)
+    name: "Microsoft.Percentage";
+    // (undocumented)
+    parameters: {
+        [key: string]: number;
+    };
+}
+
+// @public (undocumented)
+export const FeatureFlagPrefix = ".appconfig.featureflag/";
+
+// @public (undocumented)
+export interface FeatureFlagTargetingClientFilter {
+    // (undocumented)
+    name: "Microsoft.Targeting";
+    // (undocumented)
+    parameters: {
+        Audience: {
+            Users: string[];
+            Groups: {
+                Name: string;
+                RolloutPercentage: number;
+            }[];
+        };
+        DefaultRolloutPercentage: number;
+    };
+}
+
+// @public
+export interface FeatureFlagTimeWindowClientFilter {
+    // (undocumented)
+    name: "Microsoft.TimeWindow";
+    // (undocumented)
+    parameters: {
+        Start: string;
+        End: string;
+    };
 }
 
 // @public
@@ -107,6 +173,39 @@ export interface HttpResponseField<HeadersT> {
 // @public
 export interface HttpResponseFields {
     statusCode: number;
+}
+
+// @public (undocumented)
+export function isFeatureFlag(setting: ConfigurationSetting | FeatureFlag | KeyVaultReference): setting is FeatureFlag;
+
+// @public (undocumented)
+export function isPercentageClientFilter(filter: FeatureFlagTargetingClientFilter | FeatureFlagTimeWindowClientFilter | FeatureFlagPercentageClientFilter | object): filter is FeatureFlagPercentageClientFilter;
+
+// @public (undocumented)
+export function isTargetingClientFilter(filter: FeatureFlagTargetingClientFilter | FeatureFlagTimeWindowClientFilter | FeatureFlagPercentageClientFilter | object): filter is FeatureFlagTargetingClientFilter;
+
+// @public (undocumented)
+export function isTimeWindowClientFilter(filter: FeatureFlagTimeWindowClientFilter | FeatureFlagTimeWindowClientFilter | FeatureFlagPercentageClientFilter | object): filter is FeatureFlagTimeWindowClientFilter;
+
+// @public (undocumented)
+export interface KeyVaultReference extends ConfigurationSetting {
+    // (undocumented)
+    uri: string;
+}
+
+// @public (undocumented)
+export type keyvaultReferenceContentType = "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8";
+
+// @public (undocumented)
+export interface KeyVaultReferenceParam extends ConfigurationSettingId {
+    // (undocumented)
+    keyvaultReference: string;
+}
+
+// @public (undocumented)
+export interface KeyVaultReferenceParam extends ConfigurationSetting {
+    // (undocumented)
+    keyvaultReference: string;
 }
 
 // @public

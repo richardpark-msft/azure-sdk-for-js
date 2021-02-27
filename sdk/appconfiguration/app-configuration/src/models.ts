@@ -22,7 +22,108 @@ export interface ConfigurationSettingId {
    * The etag for this setting
    */
   etag?: string;
+
+  /**
+   * The type of setting to get.
+   */
+  kind?: "FeatureFlag" | "KeyVaultReference" | "ConfigurationSetting"; // requires special formatting for ID
 }
+
+export function isFeatureFlag(
+  setting: ConfigurationSetting | FeatureFlag | KeyVaultReference
+): setting is FeatureFlag {
+  return setting.kind === "FeatureFlag";
+}
+
+export function isTargetingClientFilter(
+  filter:
+    | FeatureFlagTargetingClientFilter
+    | FeatureFlagTimeWindowClientFilter
+    | FeatureFlagPercentageClientFilter
+    | object
+): filter is FeatureFlagTargetingClientFilter {
+  return (filter as any).name === "Microsoft.Targeting";
+}
+
+export function isTimeWindowClientFilter(
+  filter:
+    | FeatureFlagTimeWindowClientFilter
+    | FeatureFlagTimeWindowClientFilter
+    | FeatureFlagPercentageClientFilter
+    | object
+): filter is FeatureFlagTimeWindowClientFilter {
+  return (filter as any).name === "Microsoft.TimeWindow";
+}
+
+export function isPercentageClientFilter(
+  filter:
+    | FeatureFlagTargetingClientFilter
+    | FeatureFlagTimeWindowClientFilter
+    | FeatureFlagPercentageClientFilter
+    | object
+): filter is FeatureFlagPercentageClientFilter {
+  return (filter as any).name === "Microsoft.Percentage";
+}
+
+export interface FeatureFlagTargetingClientFilter {
+  name: "Microsoft.Targeting"; // Microsoft.Targeting
+  parameters: {
+    Audience: {
+      Users: string[];
+      Groups: { Name: string; RolloutPercentage: number }[];
+    };
+    DefaultRolloutPercentage: number;
+  };
+}
+
+export interface FeatureFlagTimeWindowClientFilter {
+  name: "Microsoft.TimeWindow";
+  parameters: {
+    // `Start`, `End` (they're strings today)
+    Start: string; // not ISO8601....
+    End: string; // not ISO8601....
+  };
+}
+
+export interface FeatureFlagPercentageClientFilter {
+  name: "Microsoft.Percentage";
+  parameters: {
+    [key: string]: number; // TODO: The UI for creating this one is really unclear what these values are for. Are they numbers? Should they add up to 100%?
+  };
+}
+
+export interface KeyVaultReference extends ConfigurationSetting {
+  uri: string;
+}
+
+export const FeatureFlagPrefix = ".appconfig.featureflag/";
+export const FeatureFlagContentType = "application/vnd.microsoft.appconfig.ff+json;charset=utf-8";
+export const keyvaultReferenceContentType =
+  "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8";
+
+/**
+ * A FeatureFlag
+ */
+export interface FeatureFlagParam extends ConfigurationSettingId {
+  enabled: true;
+  // displayName: string;
+  description: string;
+  // TODO: hoist up?
+  conditions: {
+    // `client_filters`
+    client_filters: (
+      | FeatureFlagTargetingClientFilter
+      | FeatureFlagTimeWindowClientFilter
+      | FeatureFlagPercentageClientFilter
+      | object
+    )[];
+  };
+}
+
+/**
+ *
+ */
+export interface FeatureFlag extends ConfigurationSetting, FeatureFlagParam {}
 
 /**
  * Necessary fields for updating or creating a new configuration setting
@@ -202,11 +303,9 @@ export interface GetConfigurationHeaders extends SyncTokenHeaderField {}
 /**
  * Response from retrieving a ConfigurationSetting.
  */
-export interface GetConfigurationSettingResponse
-  extends ConfigurationSetting,
-    GetConfigurationHeaders,
-    HttpResponseFields,
-    HttpResponseField<GetConfigurationHeaders> {}
+export type GetConfigurationSettingResponse<
+  T extends ConfigurationSetting = ConfigurationSetting
+> = T & GetConfigurationHeaders & HttpResponseFields & HttpResponseField<GetConfigurationHeaders>;
 
 /**
  * Options for getting a ConfigurationSetting.
