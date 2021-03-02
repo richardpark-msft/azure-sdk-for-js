@@ -59,10 +59,8 @@ export interface SpanContext {
 
 // @public
 export interface SpanOptions {
-    attributes?: {
-        [key: string]: unknown;
-    };
-    parent?: SpanContext | null;
+    // Warning: (ae-forgotten-export) The symbol "SpanAttributes" needs to be exported by the entry point index.d.ts
+    attributes?: SpanAttributes;
 }
 
 // @public
