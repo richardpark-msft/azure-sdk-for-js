@@ -3,7 +3,14 @@
 
 import { TestSpan } from "./testSpan";
 import { NoOpTracer } from "../noop/noOpTracer";
-import { SpanContext, SpanKind, SpanOptions, TraceFlags } from "@opentelemetry/api";
+import {
+  SpanContext,
+  SpanKind,
+  SpanOptions,
+  TraceFlags,
+  Context as OTContext,
+  getSpan
+} from "@opentelemetry/api";
 
 /**
  * Simple representation of a Span that only has name and child relationships.
@@ -116,8 +123,8 @@ export class TestTracer extends NoOpTracer {
    * @param name - The name of the span.
    * @param options - The SpanOptions used during Span creation.
    */
-  startSpan(name: string, options: SpanOptions = {}): TestSpan {
-    const parentContext = this._getParentContext(options);
+  startSpan(name: string, options?: SpanOptions, context?: OTContext): TestSpan {
+    const parentContext = this._getParentContext(context);
 
     let traceId: string;
     let isRootSpan = false;
@@ -129,7 +136,7 @@ export class TestTracer extends NoOpTracer {
       isRootSpan = true;
     }
 
-    const context: SpanContext = {
+    const spanContext: SpanContext = {
       traceId,
       spanId: this.getNextSpanId(),
       traceFlags: TraceFlags.NONE
@@ -137,10 +144,10 @@ export class TestTracer extends NoOpTracer {
     const span = new TestSpan(
       this,
       name,
-      context,
-      options.kind || SpanKind.INTERNAL,
+      spanContext,
+      options?.kind || SpanKind.INTERNAL,
       parentContext ? parentContext.spanId : undefined,
-      options.startTime
+      options?.startTime
     );
     this.knownSpans.push(span);
     if (isRootSpan) {
@@ -149,8 +156,12 @@ export class TestTracer extends NoOpTracer {
     return span;
   }
 
-  private _getParentContext(options: SpanOptions): SpanContext | undefined {
-    const parent = options.parent;
+  private _getParentContext(context: OTContext | undefined): SpanContext | undefined {
+    if (context == null) {
+      return undefined;
+    }
+
+    const parent = getSpan(context);
     let result: SpanContext | undefined;
     if (parent) {
       if ("traceId" in parent) {

@@ -48,6 +48,25 @@ export interface Link {
 }
 
 /**
+ * Attributes for a Span.
+ */
+export interface SpanAttributes {
+  [attributeKey: string]: SpanAttributeValue | undefined;
+}
+/**
+ * Attribute values may be any non-nullish primitive value except an object.
+ *
+ * null or undefined attribute values are invalid and will result in undefined behavior.
+ */
+export declare type SpanAttributeValue =
+  | string
+  | number
+  | boolean
+  | Array<null | undefined | string>
+  | Array<null | undefined | number>
+  | Array<null | undefined | boolean>;
+
+/**
  * An interface that enables manual propagation of Spans
  */
 export interface SpanOptions {
@@ -60,7 +79,7 @@ export interface SpanOptions {
   /**
    * Attributes to set on the Span
    */
-  attributes?: { [key: string]: unknown };
+  attributes?: SpanAttributes;
 
   /** {@link Link}s span to other spans */
   links?: Link[];

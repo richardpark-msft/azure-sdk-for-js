@@ -4,14 +4,17 @@
 
 ```ts
 
-import { Attributes } from '@opentelemetry/api';
+import { Context } from '@opentelemetry/api';
+import { Exception } from '@opentelemetry/api';
 import { Span as OpenCensusSpan } from '@opencensus/web-types';
 import { Tracer as OpenCensusTracer } from '@opencensus/web-types';
 import { SpanContext as OTSpanContext } from '@opentelemetry/api';
 import { SpanOptions as OTSpanOptions } from '@opentelemetry/api';
 import { Span } from '@opentelemetry/api';
+import { SpanAttributes } from '@opentelemetry/api';
+import { SpanAttributeValue } from '@opentelemetry/api';
 import { SpanKind } from '@opentelemetry/api';
-import { Status } from '@opentelemetry/api';
+import { SpanStatus } from '@opentelemetry/api';
 import { TimeInput } from '@opentelemetry/api';
 import { Tracer } from '@opentelemetry/api';
 import { TracerBase } from '@opencensus/web-types';
@@ -52,13 +55,14 @@ export type LinkContext = {
 
 // @public
 export class NoOpSpan implements Span {
-    addEvent(_name: string, _attributes?: Attributes): this;
+    addEvent(_name: string, _attributes?: SpanAttributes): this;
     context(): OTSpanContext;
     end(_endTime?: number): void;
     isRecording(): boolean;
+    recordException(_exception: Exception, _time?: TimeInput): void;
     setAttribute(_key: string, _value: unknown): this;
-    setAttributes(_attributes: Attributes): this;
-    setStatus(_status: Status): this;
+    setAttributes(_attributes: SpanAttributes): this;
+    setStatus(_status: SpanStatus): this;
     updateName(_name: string): this;
 }
 
@@ -75,15 +79,16 @@ export { OpenCensusSpan }
 // @public
 export class OpenCensusSpanWrapper implements Span {
     constructor(span: OpenCensusSpan);
-    constructor(tracer: OpenCensusTracerWrapper, name: string, options?: OTSpanOptions);
-    addEvent(_name: string, _attributes?: Attributes): this;
+    constructor(tracer: OpenCensusTracerWrapper, name: string, options?: OTSpanOptions, context?: Context);
+    addEvent(_name: string, _attributes?: SpanAttributes): this;
     context(): OTSpanContext;
     end(_endTime?: number): void;
     getWrappedSpan(): OpenCensusSpan;
     isRecording(): boolean;
+    recordException(_exception: Exception, _time?: TimeInput): void;
     setAttribute(key: string, value: unknown): this;
-    setAttributes(attributes: Attributes): this;
-    setStatus(status: Status): this;
+    setAttributes(attributes: SpanAttributes): this;
+    setStatus(status: SpanStatus): this;
     updateName(name: string): this;
 }
 
@@ -131,9 +136,8 @@ export interface SpanGraphNode {
 
 // @public
 export interface SpanOptions {
-    attributes?: {
-        [key: string]: unknown;
-    };
+    // Warning: (ae-forgotten-export) The symbol "SpanAttributes" needs to be exported by the entry point index.d.ts
+    attributes?: SpanAttributes_2;
     kind?: SpanKind;
     links?: Link[];
     parent?: SpanContext | null;
@@ -142,7 +146,7 @@ export interface SpanOptions {
 // @public
 export class TestSpan extends NoOpSpan {
     constructor(parentTracer: Tracer, name: string, context: OTSpanContext, kind: SpanKind, parentSpanId?: string, startTime?: TimeInput);
-    readonly attributes: Attributes;
+    readonly attributes: SpanAttributes;
     context(): OTSpanContext;
     end(_endTime?: number): void;
     endCalled: boolean;
@@ -150,11 +154,11 @@ export class TestSpan extends NoOpSpan {
     kind: SpanKind;
     name: string;
     readonly parentSpanId?: string;
-    setAttribute(key: string, value: unknown): this;
-    setAttributes(attributes: Attributes): this;
-    setStatus(status: Status): this;
+    setAttribute(key: string, value: SpanAttributeValue): this;
+    setAttributes(attributes: SpanAttributes): this;
+    setStatus(status: SpanStatus): this;
     readonly startTime: TimeInput;
-    status: Status;
+    status: SpanStatus;
     tracer(): Tracer;
     }
 
@@ -164,7 +168,7 @@ export class TestTracer extends NoOpTracer {
     getKnownSpans(): TestSpan[];
     getRootSpans(): TestSpan[];
     getSpanGraph(traceId: string): SpanGraph;
-    startSpan(name: string, options?: OTSpanOptions): TestSpan;
+    startSpan(name: string, options?: OTSpanOptions, context?: Context): TestSpan;
     }
 
 // @public
