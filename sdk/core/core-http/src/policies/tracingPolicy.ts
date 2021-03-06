@@ -38,7 +38,7 @@ export class TracingPolicy extends BaseRequestPolicy {
   }
 
   public async sendRequest(request: WebResourceLike): Promise<HttpOperationResponse> {
-    if (!request.spanOptions || !request.context) {
+    if (!request.context) {
       return this._nextPolicy.sendRequest(request);
     }
 

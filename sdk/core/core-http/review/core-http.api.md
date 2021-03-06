@@ -6,6 +6,7 @@
 
 import { AbortSignalLike } from '@azure/abort-controller';
 import { AccessToken } from '@azure/core-auth';
+import { Context } from '@azure/core-tracing';
 import { Debugger } from '@azure/logger';
 import { GetTokenOptions } from '@azure/core-auth';
 import { isTokenCredential } from '@azure/core-auth';
@@ -907,6 +908,7 @@ export class WebResource implements WebResourceLike {
     // (undocumented)
     body?: any;
     clone(): WebResource;
+    context?: Context;
     decompressResponse?: boolean;
     // (undocumented)
     formData?: any;
@@ -949,6 +951,7 @@ export interface WebResourceLike {
     abortSignal?: AbortSignalLike;
     body?: any;
     clone(): WebResourceLike;
+    context?: Context;
     decompressResponse?: boolean;
     // (undocumented)
     formData?: any;

@@ -4,7 +4,7 @@
 
 ```ts
 
-import { Context } from '@opentelemetry/api';
+import { Context as Context_2 } from '@opentelemetry/api';
 import { Exception } from '@opentelemetry/api';
 import { Span as OpenCensusSpan } from '@opencensus/web-types';
 import { Tracer as OpenCensusTracer } from '@opencensus/web-types';
@@ -18,6 +18,13 @@ import { SpanStatus } from '@opentelemetry/api';
 import { TimeInput } from '@opentelemetry/api';
 import { Tracer } from '@opentelemetry/api';
 import { TracerBase } from '@opencensus/web-types';
+
+// @public
+export interface Context {
+    deleteValue(key: symbol): Context;
+    getValue(key: symbol): unknown;
+    setValue(key: symbol, value: unknown): Context;
+}
 
 // @public
 export function createSpanFunction(args: CreateSpanFunctionArgs): <T extends {
@@ -79,7 +86,7 @@ export { OpenCensusSpan }
 // @public
 export class OpenCensusSpanWrapper implements Span {
     constructor(span: OpenCensusSpan);
-    constructor(tracer: OpenCensusTracerWrapper, name: string, options?: OTSpanOptions, context?: Context);
+    constructor(tracer: OpenCensusTracerWrapper, name: string, options?: OTSpanOptions, context?: Context_2);
     addEvent(_name: string, _attributes?: SpanAttributes): this;
     context(): OTSpanContext;
     end(_endTime?: number): void;
@@ -168,7 +175,7 @@ export class TestTracer extends NoOpTracer {
     getKnownSpans(): TestSpan[];
     getRootSpans(): TestSpan[];
     getSpanGraph(traceId: string): SpanGraph;
-    startSpan(name: string, options?: OTSpanOptions, context?: Context): TestSpan;
+    startSpan(name: string, options?: OTSpanOptions, context?: Context_2): TestSpan;
     }
 
 // @public
