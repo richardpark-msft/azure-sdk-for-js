@@ -3,7 +3,14 @@
 
 import * as assert from "assert";
 import sinon from "sinon";
-import { setSpan, SpanKind, TraceFlags, context as otContext, getSpanContext, Context } from "@opentelemetry/api";
+import {
+  setSpan,
+  SpanKind,
+  TraceFlags,
+  context as otContext,
+  getSpanContext,
+  Context
+} from "@opentelemetry/api";
 
 import { setTracer } from "../src/tracerProxy";
 import { TestTracer } from "../src/tracers/test/testTracer";
@@ -16,6 +23,10 @@ describe("createSpan", () => {
 
   beforeEach(() => {
     createSpan = createSpanFunction({ namespace: "Microsoft.Test", packagePrefix: "Azure.Test" });
+  });
+
+  afterEach(() => {
+    sinon.restore();
   });
 
   it("returns a created span with the right metadata", () => {
@@ -134,7 +145,7 @@ describe("createSpan", () => {
             testAttribute: "testValue"
           }
         }
-      }
+      } as OperationTracingOptions
     });
 
     assert.ok(span);
@@ -155,63 +166,70 @@ describe("createSpan", () => {
           attributes: {
             testAttribute: "testValue"
           }
-        }
+        },
+        context: updatedOptions.tracingOptions.context
       }
-    });
-
-    it("createSpans, testing parent/child relationship", () => {
-      setTracer(new TestTracer());
-
-      const createSpanFn = createSpanFunction({ namespace: "Microsoft.Test", packagePrefix: "Azure.Test" });
-
-      let parentContext: Context;
-
-      // create the parent span and do some basic checks.
-      {
-        const op: { tracingOptions: OperationTracingOptions } = {
-          tracingOptions: {}
-        };
-
-        const { span, updatedOptions } = createSpanFn("parent", op);
-        assert.ok(span);
-
-        parentContext = updatedOptions.tracingOptions!.context!;
-
-        assert.ok(parentContext);
-        assert.notDeepEqual(parentContext, otContext.active(), "new child context should be created");
-        assert.equal(getSpanContext(parentContext!)?.spanId, span.context().spanId, "context returned in the updated options should point to our newly created span");
-      }
-
-      const { span: childSpan, updatedOptions } = createSpanFn("child", {
-        tracingOptions: {
-          context: parentContext
-        }
-      });
-      assert.ok(childSpan);
-
-      assert.ok(updatedOptions.tracingOptions.context);
-      assert.equal(getSpanContext(updatedOptions.tracingOptions.context!)?.spanId, childSpan.context().spanId);
-    });
-
-    afterEach(() => {
-      sinon.restore();
     });
   });
 
-  function setupTracer() {
-    const tracer = new TestTracer();
-    setTracer(tracer);
+  it("createSpans, testing parent/child relationship", () => {
+    setTracer(new TestTracer());
 
-    const testSpan = new TestSpan(
-      tracer,
-      "testing",
-      { traceId: "", spanId: "", traceFlags: TraceFlags.NONE },
-      SpanKind.INTERNAL // this isn't used by anything in our test.
+    const createSpanFn = createSpanFunction({
+      namespace: "Microsoft.Test",
+      packagePrefix: "Azure.Test"
+    });
+
+    let parentContext: Context;
+
+    // create the parent span and do some basic checks.
+    {
+      const op: { tracingOptions: OperationTracingOptions } = {
+        tracingOptions: {}
+      };
+
+      const { span, updatedOptions } = createSpanFn("parent", op);
+      assert.ok(span);
+
+      parentContext = updatedOptions.tracingOptions!.context!;
+
+      assert.ok(parentContext);
+      assert.notDeepEqual(parentContext, otContext.active(), "new child context should be created");
+      assert.equal(
+        getSpanContext(parentContext!)?.spanId,
+        span.context().spanId,
+        "context returned in the updated options should point to our newly created span"
+      );
+    }
+
+    const { span: childSpan, updatedOptions } = createSpanFn("child", {
+      tracingOptions: {
+        context: parentContext
+      }
+    });
+    assert.ok(childSpan);
+
+    assert.ok(updatedOptions.tracingOptions.context);
+    assert.equal(
+      getSpanContext(updatedOptions.tracingOptions.context!)?.spanId,
+      childSpan.context().spanId
     );
-    const setAttributeSpy = sinon.spy(testSpan, "setAttribute");
-    const startSpanStub = sinon.stub(tracer, "startSpan");
-    startSpanStub.returns(testSpan);
+  });
+});
 
-    return { tracer, testSpan, startSpanStub, setAttributeSpy };
-  }
+function setupTracer() {
+  const tracer = new TestTracer();
+  setTracer(tracer);
 
+  const testSpan = new TestSpan(
+    tracer,
+    "testing",
+    { traceId: "", spanId: "", traceFlags: TraceFlags.NONE },
+    SpanKind.INTERNAL // this isn't used by anything in our test.
+  );
+  const setAttributeSpy = sinon.spy(testSpan, "setAttribute");
+  const startSpanStub = sinon.stub(tracer, "startSpan");
+  startSpanStub.returns(testSpan);
+
+  return { tracer, testSpan, startSpanStub, setAttributeSpy };
+}
