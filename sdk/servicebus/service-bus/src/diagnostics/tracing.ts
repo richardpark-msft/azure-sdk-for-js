@@ -2,7 +2,14 @@
 // Licensed under the MIT license.
 
 import { OperationOptions } from "@azure/core-http";
-import { Span, SpanContext, SpanKind } from "@opentelemetry/api";
+import {
+  setSpan,
+  Span,
+  SpanContext,
+  SpanKind,
+  context as otContext,
+  setSpanContext
+} from "@opentelemetry/api";
 import {
   createSpanFunction,
   extractSpanContextFromTraceParentHeader,
@@ -20,7 +27,6 @@ export const createSpan = createSpanFunction({
   packagePrefix: "Azure.ServiceBus",
   namespace: "Microsoft.ServiceBus"
 });
-
 
 /**
  * @internal
@@ -174,7 +180,7 @@ export function extractSpanContextFromServiceBusMessage(
 export function convertTryAddOptionsForCompatibility(tryAddOptions: TryAddOptions): TryAddOptions {
   /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
   // @ts-ignore: parentSpan is deprecated and this is compat code to translate it until we can get rid of it.
-  const possibleParentSpan = tryAddOptions.parentSpan;
+  const legacyParentSpanOrSpanContext = tryAddOptions.parentSpan;
 
   /*
     Our goal here is to offer compatibility but there is a case where a user might accidentally pass
@@ -209,7 +215,7 @@ export function convertTryAddOptionsForCompatibility(tryAddOptions: TryAddOption
     try to announce this (and other changes related to tracing) in our next big rev.
   */
 
-  if (!possibleParentSpan || tryAddOptions.tracingOptions) {
+  if (!legacyParentSpanOrSpanContext || tryAddOptions.tracingOptions) {
     // assume that the options are already in the modern shape even if (possibly)
     // they were still specifying `parentSpan`
     return tryAddOptions;
@@ -218,9 +224,9 @@ export function convertTryAddOptionsForCompatibility(tryAddOptions: TryAddOption
   const convertedOptions: TryAddOptions = {
     ...tryAddOptions,
     tracingOptions: {
-      spanOptions: {
-        parent: isSpan(possibleParentSpan) ? possibleParentSpan.context() : possibleParentSpan
-      }
+      context: isSpan(legacyParentSpanOrSpanContext)
+        ? setSpan(otContext.active(), legacyParentSpanOrSpanContext)
+        : setSpanContext(otContext.active(), legacyParentSpanOrSpanContext)
     }
   };
 

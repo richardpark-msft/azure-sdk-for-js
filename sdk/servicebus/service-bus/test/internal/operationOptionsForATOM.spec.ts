@@ -12,6 +12,7 @@ import { WebResource } from "@azure/core-http";
 import { executeAtomXmlOperation } from "../../src/util/atomXmlHelper";
 import { NamespaceResourceSerializer } from "../../src/serializers/namespaceResourceSerializer";
 import { TestTracer, setTracer, SpanGraph } from "@azure/core-tracing";
+import { setSpan, context } from "@opentelemetry/api";
 
 chai.use(chaiAsPromised);
 chai.use(chaiExclude);
@@ -244,7 +245,7 @@ describe("Operation Options", () => {
       setTracer(tracer);
       const rootSpan = tracer.startSpan("root");
       await serviceBusAtomManagementClient.getNamespaceProperties({
-        tracingOptions: { spanOptions: { parent: rootSpan.context() } }
+        tracingOptions: { context: setSpan(context.active(), rootSpan) }
       });
       rootSpan.end();
 

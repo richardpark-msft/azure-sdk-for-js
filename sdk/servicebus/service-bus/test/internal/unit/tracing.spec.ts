@@ -3,7 +3,14 @@
 
 import chai from "chai";
 import { getTracer, NoOpSpan, TestSpan, TestTracer } from "@azure/core-tracing";
-import { SpanStatusCode, SpanOptions, Context as OTContext } from "@opentelemetry/api";
+import {
+  SpanStatusCode,
+  SpanOptions,
+  Context as OTContext,
+  setSpanContext,
+  context as otContext,
+  getSpanContext
+} from "@opentelemetry/api";
 import { ServiceBusMessageImpl, ServiceBusReceivedMessage } from "../../../src/serviceBusMessage";
 import {
   createAndEndProcessingSpan,
@@ -25,17 +32,15 @@ import { instrumentMessage } from "../../../src/diagnostics/tracing";
 const should = chai.should();
 const assert = chai.assert;
 
-describe.only("Tracing tests", () => {
+describe("Tracing tests", () => {
   let tracer: TestTracer2;
   let resetTracer: () => void;
   const tracingOptions: OperationOptionsBase["tracingOptions"] = {
-    spanOptions: {
-      parent: {
-        spanId: "my parent span id",
-        traceId: "my trace id",
-        traceFlags: 0
-      }
-    }
+    context: setSpanContext(otContext.active(), {
+      spanId: "my parent span id",
+      traceId: "my trace id",
+      traceFlags: 0
+    })
   };
 
   beforeEach(() => {
@@ -97,7 +102,7 @@ describe.only("Tracing tests", () => {
     );
 
     assert.equal(
-      options?.tracingOptions?.spanOptions?.parent?.spanId,
+      getSpanContext(options?.tracingOptions?.context!)?.spanId,
       "my parent span id",
       "Parent span should be properly passed in."
     );
@@ -276,7 +281,8 @@ describe.only("Tracing tests", () => {
       assert.equal(receiver.entityPath, "entity path");
       assert.equal(config.host, "fakeHost");
       assert.isFalse(Array.isArray(messages));
-      assert.equal(options?.tracingOptions?.spanOptions?.parent?.spanId, "my parent span id");
+
+      assert.equal(getSpanContext(options?.tracingOptions?.context!)!.spanId, "my parent span id");
 
       data.span = getTracer().startSpan("some span") as TestSpan;
       return data.span;
@@ -295,21 +301,19 @@ describe.only("Tracing tests", () => {
       host: "thehost"
     };
 
-    it.only("basic span properties are set", async () => {
+    it("basic span properties are set", async () => {
       const fakeParentSpanContext = new NoOpSpan().context();
 
       createProcessingSpan([], receiverProperties, connectionConfig, {
         tracingOptions: {
-          spanOptions: {
-            parent: fakeParentSpanContext
-          }
+          context: setSpanContext(otContext.active(), fakeParentSpanContext)
         }
       });
 
       should.equal(tracer.spanName, "Azure.ServiceBus.process");
       should.exist(tracer.spanOptions);
       tracer.spanOptions!.kind!.should.equal(SpanKind.CONSUMER);
-      tracer.context!.should.equal(fakeParentSpanContext);
+      getSpanContext(tracer.context!)!.should.equal(fakeParentSpanContext);
 
       const attributes = tracer.getRootSpans()[0].attributes;
 
@@ -432,7 +436,6 @@ class TestTracer2 extends TestTracer {
     this.spanName = nameArg;
     this.spanOptions = optionsArg;
     this.context = contextArg;
-    console.log(`startSpan: ${contextArg}`);
     this.span = super.startSpan(nameArg, optionsArg, contextArg);
     return this.span;
   }

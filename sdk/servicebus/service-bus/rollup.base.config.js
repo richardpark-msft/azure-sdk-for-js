@@ -137,7 +137,15 @@ export function browserConfig(test = false) {
         namedExports: {
           events: ["EventEmitter"],
           long: ["ZERO"],
-          "@opentelemetry/api": ["SpanStatusCode", "SpanKind", "TraceFlags", "setSpan", "getSpan"],
+          "@opentelemetry/api": [
+            "SpanStatusCode",
+            "SpanKind",
+            "TraceFlags",
+            "setSpan",
+            "getSpan",
+            "getSpanContext",
+            "setSpanContext"
+          ],
           chai: ["should", "assert"],
           assert: ["equal", "deepEqual", "notEqual"]
         }
