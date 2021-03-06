@@ -10,7 +10,7 @@ import {
   PipelineResponse,
   createHttpHeaders
 } from "../src";
-import { SpanContext, TraceFlags, TraceState } from "@opentelemetry/api";
+import { SpanContext, TraceFlags, TraceState, context, setSpan } from "@opentelemetry/api";
 import { setTracer, NoOpTracer, NoOpSpan } from "@azure/core-tracing";
 
 class MockSpan extends NoOpSpan {
@@ -93,7 +93,7 @@ class MockTracer extends NoOpTracer {
 
 const ROOT_SPAN = new MockSpan("root", "root", TraceFlags.SAMPLED, "");
 
-describe("tracingPolicy", function () {
+describe("tracingPolicy", function() {
   const TRACE_VERSION = "00";
 
   it("will not create a span if spanOptions are missing", async () => {
@@ -124,9 +124,7 @@ describe("tracingPolicy", function () {
     const request = createPipelineRequest({
       url: "https://bing.com",
       tracingOptions: {
-        spanOptions: {
-          parent: ROOT_SPAN.context()
-        }
+        context: setSpan(context.active(), ROOT_SPAN)
       }
     });
     const response: PipelineResponse = {
@@ -163,9 +161,7 @@ describe("tracingPolicy", function () {
     const request = createPipelineRequest({
       url: "https://bing.com",
       tracingOptions: {
-        spanOptions: {
-          parent: ROOT_SPAN.context()
-        }
+        context: setSpan(context.active(), ROOT_SPAN)
       }
     });
     const response: PipelineResponse = {
@@ -202,9 +198,7 @@ describe("tracingPolicy", function () {
     const request = createPipelineRequest({
       url: "https://bing.com",
       tracingOptions: {
-        spanOptions: {
-          parent: ROOT_SPAN.context()
-        }
+        context: setSpan(context.active(), ROOT_SPAN)
       }
     });
     const response: PipelineResponse = {
@@ -241,9 +235,7 @@ describe("tracingPolicy", function () {
     const request = createPipelineRequest({
       url: "https://bing.com",
       tracingOptions: {
-        spanOptions: {
-          parent: ROOT_SPAN.context()
-        }
+        context: setSpan(context.active(), ROOT_SPAN)
       }
     });
     const response: PipelineResponse = {
@@ -281,9 +273,7 @@ describe("tracingPolicy", function () {
     const request = createPipelineRequest({
       url: "https://bing.com",
       tracingOptions: {
-        spanOptions: {
-          parent: ROOT_SPAN.context()
-        }
+        context: setSpan(context.active(), ROOT_SPAN)
       }
     });
     const response: PipelineResponse = {
