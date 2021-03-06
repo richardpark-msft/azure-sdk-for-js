@@ -27,7 +27,7 @@ function ignoreNiseSinonEvalWarnings(warning: RollupWarning): boolean {
   return (
     warning.code === "EVAL" &&
     (warning.id?.includes("node_modules/nise") || warning.id?.includes("node_modules/sinon")) ===
-    true
+      true
   );
 }
 
@@ -82,7 +82,14 @@ function makeBrowserTestConfig() {
           chai: ["version", "use", "util", "config", "expect", "should", "assert"],
           // OpenTelemetry uses an __exportStar downleveled helper function to
           // declare its exports, and so we have to add them here as well.
-          "@opentelemetry/api": ["SpanKind", "TraceFlags", "getSpan", "setSpan", "SpanStatusCode"]
+          "@opentelemetry/api": [
+            "SpanKind",
+            "TraceFlags",
+            "getSpan",
+            "setSpan",
+            "SpanStatusCode",
+            "getSpanContext"
+          ]
         }
       }),
       json(),
