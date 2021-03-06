@@ -5,8 +5,9 @@ import assert from "assert";
 import { AuthorizationCodeCredential } from "../../../src";
 import { TestTracer, setTracer, SpanGraph } from "@azure/core-tracing";
 import { MockAuthHttpClient, assertClientCredentials } from "../../authTestUtils";
+import { setSpan, context as otContext } from "@opentelemetry/api";
 
-describe("AuthorizationCodeCredential", function() {
+describe("AuthorizationCodeCredential", function () {
   it("sends an authorization request with the given credentials and authorization code", async () => {
     const mockHttpClient = new MockAuthHttpClient();
     const redirectUri = "http://localhost:8080/authresponse";
@@ -67,7 +68,7 @@ describe("AuthorizationCodeCredential", function() {
     );
   });
 
-  it("traces the authorization code request when tracing is enabled", async function() {
+  it("traces the authorization code request when tracing is enabled", async function () {
     const tracer = new TestTracer();
     setTracer(tracer);
 
@@ -99,9 +100,7 @@ describe("AuthorizationCodeCredential", function() {
 
     await credential.getToken("scope", {
       tracingOptions: {
-        spanOptions: {
-          parent: rootSpan.context()
-        }
+        context: setSpan(otContext.active(), rootSpan)
       }
     });
 

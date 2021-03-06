@@ -9,7 +9,7 @@ import {
   createPipelineFromOptions,
   InternalPipelineOptions
 } from "@azure/core-http";
-import { CanonicalCode } from "@opentelemetry/api";
+import { SpanStatusCode } from "@opentelemetry/api";
 
 import { SDK_VERSION } from "./constants";
 import { logger } from "./logger";
@@ -24,7 +24,7 @@ export { RepositoryAttributes, ChangeableAttributes };
 /**
  * Options for the `GetAttributesOptions` method of `ContainerRegistryClient`.
  */
-export interface GetAttributesOptions extends OperationOptions {}
+export interface GetAttributesOptions extends OperationOptions { }
 
 /**
  * Client options used to configure Container Registry Repository API requests.
@@ -112,7 +112,7 @@ export class ContainerRegistryClient {
     } catch (e) {
       // There are different standard codes available for different errors:
       // https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/api.md#status
-      span.setStatus({ code: CanonicalCode.UNKNOWN, message: e.message });
+      span.setStatus({ code: SpanStatusCode.ERROR, message: e.message });
 
       throw e;
     } finally {

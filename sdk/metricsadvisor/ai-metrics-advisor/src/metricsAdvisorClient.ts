@@ -15,7 +15,7 @@ import { TokenCredential } from "@azure/core-auth";
 import { GeneratedClient } from "./generated/generatedClient";
 import { createSpan } from "./tracing";
 import { MetricsAdvisorKeyCredential } from "./metricsAdvisorKeyCredentialPolicy";
-import { CanonicalCode } from "@opentelemetry/api";
+import { SpanStatusCode } from "@opentelemetry/api";
 import {
   MetricFeedbackUnion,
   AnomalyIncident,
@@ -45,7 +45,7 @@ import { createClientPipeline } from "./createClientPipeline";
  * Client options used to configure Metrics Advisor API requests.
  */
 
-export interface MetricsAdvisorClientOptions extends PipelineOptions {}
+export interface MetricsAdvisorClientOptions extends PipelineOptions { }
 
 /**
  * Options for listing incidents for detection configurations
@@ -894,11 +894,11 @@ export class MetricsAdvisorClient {
       filter:
         options.dimensionFilter || options.severityFilter
           ? {
-              dimensionFilter: options.dimensionFilter?.map((d) => {
-                return { dimension: d };
-              }),
-              severityFilter: options.severityFilter
-            }
+            dimensionFilter: options.dimensionFilter?.map((d) => {
+              return { dimension: d };
+            }),
+            severityFilter: options.severityFilter
+          }
           : undefined
     };
     if (continuationToken === undefined) {
@@ -1544,7 +1544,7 @@ export class MetricsAdvisorClient {
       };
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -1581,7 +1581,7 @@ export class MetricsAdvisorClient {
       return this.getFeedback(feedbackId);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -1613,7 +1613,7 @@ export class MetricsAdvisorClient {
       };
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;

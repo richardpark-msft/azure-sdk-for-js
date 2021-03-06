@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { extractSpanContextFromTraceParentHeader } from "@azure/core-tracing";
-import { CanonicalCode, Link, Span, SpanContext, SpanKind } from "@opentelemetry/api";
+import { SpanStatusCode, Link, Span, SpanContext, SpanKind } from "@opentelemetry/api";
 import { ConnectionContext } from "../connectionContext";
 import { OperationOptionsBase } from "../modelsToBeSharedWithEventHubs";
 import { ServiceBusReceiver } from "../receivers/receiver";
@@ -114,6 +114,6 @@ export function createAndEndProcessingSpan(
   options?: OperationOptionsBase
 ): void {
   const span = createProcessingSpan(receivedMessages, receiver, connectionConfig, options);
-  span.setStatus({ code: CanonicalCode.OK });
+  span.setStatus({ code: SpanStatusCode.OK });
   span.end();
 }

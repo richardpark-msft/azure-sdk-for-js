@@ -30,7 +30,7 @@ import {
 import { AnalysisPollOperation, AnalysisPollOperationState, OperationMetadata } from "../poller";
 import { GeneratedClient as Client } from "../../generated";
 import { processAndCombineSuccessfulAndErroneousDocuments } from "../../textAnalyticsResult";
-import { CanonicalCode } from "@opentelemetry/api";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { createSpan } from "../../tracing";
 import { TextAnalyticsOperationOptions } from "../../textAnalyticsOperationOptions";
 export { State };
@@ -104,7 +104,7 @@ export interface BeginAnalyzeHealthcareEntitiesOptions extends TextAnalyticsOper
  * The state of the begin analyze healthcare polling operation.
  */
 export interface AnalyzeHealthcareOperationState
-  extends AnalysisPollOperationState<PagedAnalyzeHealthcareEntitiesResult> {}
+  extends AnalysisPollOperationState<PagedAnalyzeHealthcareEntitiesResult> { }
 
 /**
  * Class that represents a poller that waits for the healthcare results.
@@ -208,7 +208,7 @@ export class BeginAnalyzeHealthcarePollerOperation extends AnalysisPollOperation
       }
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -266,7 +266,7 @@ export class BeginAnalyzeHealthcarePollerOperation extends AnalysisPollOperation
       return { done: false };
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -289,7 +289,7 @@ export class BeginAnalyzeHealthcarePollerOperation extends AnalysisPollOperation
     } catch (e) {
       const exception = handleInvalidDocumentBatch(e);
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: exception.message
       });
       throw exception;

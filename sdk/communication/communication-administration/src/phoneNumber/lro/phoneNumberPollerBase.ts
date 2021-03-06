@@ -3,7 +3,7 @@
 
 import { delay, operationOptionsToRequestOptionsBase } from "@azure/core-http";
 import { Poller, PollOperation } from "@azure/core-lro";
-import { CanonicalCode } from "@opentelemetry/api";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { VoidResponse } from "../../common/models";
 import { attachHttpResponse } from "../../common/mappers";
 import { createSpan } from "../../common/tracing";
@@ -39,7 +39,7 @@ export class PhoneNumberPollOperationBase<TState, TResult>
    * @param state - The state of the poll operation
    * @param cancelMessage - A message to dispaly when a poll operation is cancelled.
    */
-  constructor(public state: TState, private cancelMessage: string = "Canceling not supported.") {}
+  constructor(public state: TState, private cancelMessage: string = "Canceling not supported.") { }
 
   /**
    * Reaches to the service and updates the Poller operation.
@@ -81,7 +81,7 @@ export class PhoneNumberReservationPollOperationBase<TState, TResult>
     public state: TState,
     private client: PhoneNumberAdministration,
     private cancelMessage: string = "Canceling not supported."
-  ) {}
+  ) { }
 
   /**
    * Gets the reservation associated with a given id.
@@ -105,7 +105,7 @@ export class PhoneNumberReservationPollOperationBase<TState, TResult>
       return attachHttpResponse<PhoneNumberReservation>(rest, _response);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -136,7 +136,7 @@ export class PhoneNumberReservationPollOperationBase<TState, TResult>
       return attachHttpResponse({}, _response);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;

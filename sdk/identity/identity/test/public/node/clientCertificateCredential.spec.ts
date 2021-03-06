@@ -8,8 +8,9 @@ import assert from "assert";
 import { ClientCertificateCredential } from "../../../src";
 import { MockAuthHttpClient } from "../../authTestUtils";
 import { setTracer, TestTracer, SpanGraph } from "@azure/core-tracing";
+import { setSpan, context as otContext } from "@opentelemetry/api";
 
-describe("ClientCertificateCredential", function() {
+describe("ClientCertificateCredential", function () {
   it("loads a PEM-formatted certificate from a file", () => {
     const credential = new ClientCertificateCredential(
       "tenant",
@@ -189,9 +190,7 @@ describe("ClientCertificateCredential", function() {
 
     await credential.getToken("scope", {
       tracingOptions: {
-        spanOptions: {
-          parent: rootSpan.context()
-        }
+        context: setSpan(otContext.active(), rootSpan)
       }
     });
 

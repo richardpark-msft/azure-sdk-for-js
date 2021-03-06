@@ -16,7 +16,7 @@ import {
 } from "@azure/core-http";
 import "@azure/core-paging";
 import { PageSettings, PagedAsyncIterableIterator } from "@azure/core-paging";
-import { CanonicalCode } from "@opentelemetry/api";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { logger } from "../common/logger";
 import { createSpan } from "../common/tracing";
 import {
@@ -81,7 +81,7 @@ import { PurchaseReservationPoller } from "./lro/purchase/poller";
 /**
  * Client options used to configure the UserTokenClient API requests.
  */
-export interface PhoneNumberAdministrationClientOptions extends PipelineOptions {}
+export interface PhoneNumberAdministrationClientOptions extends PipelineOptions { }
 
 const isPhoneNumberAdministrationClientOptions = (
   options: any
@@ -191,7 +191,7 @@ export class PhoneNumberAdministrationClient {
       return attachHttpResponse({}, _response);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -221,7 +221,7 @@ export class PhoneNumberAdministrationClient {
       return attachHttpResponse({}, _response);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -258,7 +258,7 @@ export class PhoneNumberAdministrationClient {
       );
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -288,7 +288,7 @@ export class PhoneNumberAdministrationClient {
       return attachHttpResponse<UpdatePhoneNumberCapabilitiesResponse>(rest, _response);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -322,7 +322,7 @@ export class PhoneNumberAdministrationClient {
       return attachHttpResponse<AreaCodes>(rest, _response);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -352,7 +352,7 @@ export class PhoneNumberAdministrationClient {
       return attachHttpResponse<NumberConfigurationResponse>({ pstnConfiguration }, _response);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -385,7 +385,7 @@ export class PhoneNumberAdministrationClient {
       return attachHttpResponse<LocationOptionsResponse>({ locationOptions }, _response);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -416,7 +416,7 @@ export class PhoneNumberAdministrationClient {
       return attachHttpResponse<PhoneNumberReservation>(rest, _response);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -446,7 +446,7 @@ export class PhoneNumberAdministrationClient {
       return attachHttpResponse({}, _response);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;

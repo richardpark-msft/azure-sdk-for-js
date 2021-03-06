@@ -3,7 +3,7 @@
 
 // TODO: this code is a straight-copy from EventHubs. Need to merge.
 
-import { CanonicalCode, Span, SpanContext } from "@opentelemetry/api";
+import { SpanStatusCode, Span, SpanContext } from "@opentelemetry/api";
 import { OperationOptions } from "@azure/core-http";
 import { OperationTracingOptions } from "@azure/core-tracing";
 
@@ -39,11 +39,11 @@ export interface TryAddOptions {
 export async function trace<T>(fn: () => Promise<T>, span: Span): Promise<T> {
   try {
     const ret = await fn();
-    span.setStatus({ code: CanonicalCode.OK });
+    span.setStatus({ code: SpanStatusCode.OK });
     return ret;
   } catch (err) {
     span.setStatus({
-      code: CanonicalCode.UNKNOWN,
+      code: SpanStatusCode.ERROR,
       message: err.message
     });
     throw err;

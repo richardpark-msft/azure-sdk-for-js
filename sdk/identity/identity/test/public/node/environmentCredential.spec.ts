@@ -11,6 +11,7 @@ import {
   assertRejects
 } from "../../authTestUtils";
 import { TestTracer, setTracer, SpanGraph } from "@azure/core-tracing";
+import { setSpan, context as otContext } from "@opentelemetry/api";
 
 interface OAuthErrorResponse {
   error: string;
@@ -21,7 +22,7 @@ interface OAuthErrorResponse {
   correlation_id?: string;
 }
 
-describe("EnvironmentCredential", function() {
+describe("EnvironmentCredential", function () {
   it("finds and uses client credential environment variables", async () => {
     process.env.AZURE_TENANT_ID = "tenant";
     process.env.AZURE_CLIENT_ID = "client";
@@ -99,11 +100,12 @@ describe("EnvironmentCredential", function() {
 
     const credential = new EnvironmentCredential(mockHttpClient.tokenCredentialOptions);
     const rootSpan = tracer.startSpan("root");
+
     await credential.getToken("scope", {
       tracingOptions: {
         spanOptions: {
-          parent: rootSpan.context()
-        }
+        },
+        context: setSpan(otContext.active(), rootSpan)
       }
     });
     rootSpan.end();

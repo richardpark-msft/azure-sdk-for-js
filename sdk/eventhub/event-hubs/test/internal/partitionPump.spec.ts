@@ -3,7 +3,7 @@
 
 import { createProcessingSpan, trace } from "../../src/partitionPump";
 import { NoOpSpan, TestSpan, TestTracer } from "@azure/core-tracing";
-import { CanonicalCode, SpanKind, SpanOptions } from "@opentelemetry/api";
+import { SpanStatusCode, SpanKind, SpanOptions, Context } from "@opentelemetry/api";
 import chai from "chai";
 import { ReceivedEventData } from "../../src/eventData";
 import { instrumentEventData } from "../../src/diagnostics/instrumentEventData";
@@ -21,10 +21,12 @@ describe("PartitionPump", () => {
     class TestTracer2 extends TestTracer {
       public spanOptions: SpanOptions | undefined;
       public spanName: string | undefined;
+      public context: Context | undefined;
 
-      startSpan(nameArg: string, optionsArg?: SpanOptions): TestSpan {
+      startSpan(nameArg: string, optionsArg?: SpanOptions, contextArg?: Context): TestSpan {
         this.spanName = nameArg;
         this.spanOptions = optionsArg;
+        this.context = contextArg;
         return super.startSpan(nameArg, optionsArg);
       }
     }
@@ -45,7 +47,7 @@ describe("PartitionPump", () => {
 
       should.exist(tracer.spanOptions);
       tracer.spanOptions!.kind!.should.equal(SpanKind.CONSUMER);
-      tracer.spanOptions!.parent!.should.equal(fakeParentSpanContext);
+      tracer.context!.should.equal(fakeParentSpanContext);
 
       const attributes = tracer.getRootSpans()[0].attributes;
 
@@ -105,7 +107,7 @@ describe("PartitionPump", () => {
         /* no-op */
       }, span);
 
-      span.status!.code.should.equal(CanonicalCode.OK);
+      span.status!.code.should.equal(SpanStatusCode.OK);
       should.equal(span.endCalled, true);
     });
 
@@ -117,7 +119,7 @@ describe("PartitionPump", () => {
         throw new Error("error thrown from fn");
       }, span).should.be.rejectedWith(/error thrown from fn/);
 
-      span.status!.code.should.equal(CanonicalCode.UNKNOWN);
+      span.status!.code.should.equal(SpanStatusCode.ERROR);
       span.status!.message!.should.equal("error thrown from fn");
       should.equal(span.endCalled, true);
     });

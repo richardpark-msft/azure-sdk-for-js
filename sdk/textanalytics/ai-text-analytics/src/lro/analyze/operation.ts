@@ -24,7 +24,7 @@ import { PageSettings } from "@azure/core-paging";
 import { getOperationId, handleInvalidDocumentBatch, nextLinkToTopAndSkip } from "../../util";
 import { AnalysisPollOperation, AnalysisPollOperationState, OperationMetadata } from "../poller";
 import { GeneratedClient as Client } from "../../generated";
-import { CanonicalCode } from "@opentelemetry/api";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { createSpan } from "../../tracing";
 import { logger } from "../../logger";
 export { State };
@@ -100,7 +100,7 @@ export interface BeginAnalyzeBatchActionsOptions extends OperationOptions {
  */
 export interface AnalyzeBatchActionsOperationState
   extends AnalysisPollOperationState<PagedAnalyzeBatchActionsResult>,
-    AnalyzeBatchActionsOperationMetadata {}
+  AnalyzeBatchActionsOperationMetadata { }
 
 /**
  * @internal
@@ -203,7 +203,7 @@ export class BeginAnalyzeBatchActionsPollerOperation extends AnalysisPollOperati
         : { result };
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -241,7 +241,7 @@ export class BeginAnalyzeBatchActionsPollerOperation extends AnalysisPollOperati
       return { done: false, operationMetdata: getMetaInfoFromResponse(response) };
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -272,7 +272,7 @@ export class BeginAnalyzeBatchActionsPollerOperation extends AnalysisPollOperati
     } catch (e) {
       const exception = handleInvalidDocumentBatch(e);
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: exception.message
       });
       throw exception;

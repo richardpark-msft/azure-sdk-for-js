@@ -62,7 +62,7 @@ export class NoOpSpan implements Span {
   }
 
   /**
-   * Sets a status on the span. Overrides the default of CanonicalCode.OK.
+   * Sets a status on the span. Overrides the default of SpanStatusCode.OK.
    * @param _status - The status to set.
    */
   setStatus(_status: SpanStatus): this {
@@ -90,5 +90,5 @@ export class NoOpSpan implements Span {
    * @param [time] the time to set as Span's event time. If not provided,
    *     use the current time.
    */
-  recordException(_exception: Exception, _time?: TimeInput): void {}
+  recordException(_exception: Exception, _time?: TimeInput): void { }
 }

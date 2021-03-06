@@ -15,7 +15,7 @@ import {
   OperationOptions,
   operationOptionsToRequestOptionsBase
 } from "@azure/core-http";
-import { CanonicalCode } from "@opentelemetry/api";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { SmsApiClient } from "./generated/src/smsApiClient";
 import { SDK_VERSION } from "./constants";
 import { createSpan } from "./tracing";
@@ -26,7 +26,7 @@ import { generateSendMessageRequest } from "./utils/smsUtils";
 /**
  * Client options used to configure SMS Client API requests.
  */
-export interface SmsClientOptions extends PipelineOptions {}
+export interface SmsClientOptions extends PipelineOptions { }
 
 /**
  * Values used to configure Sms message
@@ -179,7 +179,7 @@ export class SmsClient {
       return response.value;
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;

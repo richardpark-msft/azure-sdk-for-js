@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { SpanKind } from "@opentelemetry/api";
+import { SpanKind, Context } from "@opentelemetry/api";
 
 /**
  * Shorthand enum for common traceFlags values inside SpanContext
@@ -71,12 +71,6 @@ export declare type SpanAttributeValue =
  */
 export interface SpanOptions {
   /**
-   * The SpanContext that refers to a parent span, if any.
-   * A null value indicates that this should be a new root span,
-   * rather than potentially detecting a span via a context manager.
-   */
-  parent?: SpanContext | null;
-  /**
    * Attributes to set on the Span
    */
   attributes?: SpanAttributes;
@@ -98,4 +92,9 @@ export interface OperationTracingOptions {
    * OpenTelemetry SpanOptions used to create a span when tracing is enabled.
    */
   spanOptions?: SpanOptions;
+
+  /**
+   * OpenTelemetry context to use for created Spans.
+   */
+  context?: Context;
 }

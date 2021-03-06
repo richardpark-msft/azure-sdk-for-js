@@ -43,7 +43,7 @@ import {
   makeRecognizeLinkedEntitiesResultArray
 } from "./recognizeLinkedEntitiesResultArray";
 import { createSpan } from "./tracing";
-import { CanonicalCode } from "@opentelemetry/api";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { textAnalyticsAzureKeyCredentialPolicy } from "./azureKeyCredentialPolicy";
 import {
   AddParamsToTask,
@@ -439,7 +439,7 @@ export class TextAnalyticsClient {
       return makeDetectLanguageResultArray(realInputs, result);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -533,7 +533,7 @@ export class TextAnalyticsClient {
        */
       const backwardCompatibleException = handleInvalidDocumentBatch(e);
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: backwardCompatibleException.message
       });
       throw backwardCompatibleException;
@@ -615,7 +615,7 @@ export class TextAnalyticsClient {
       return makeAnalyzeSentimentResultArray(realInputs, result);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -691,7 +691,7 @@ export class TextAnalyticsClient {
       return makeExtractKeyPhrasesResultArray(realInputs, result);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -769,7 +769,7 @@ export class TextAnalyticsClient {
       return makeRecognizePiiEntitiesResultArray(realInputs, result);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -847,7 +847,7 @@ export class TextAnalyticsClient {
       return makeRecognizeLinkedEntitiesResultArray(realInputs, result);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;

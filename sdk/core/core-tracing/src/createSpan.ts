@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { Span, SpanOptions, SpanKind } from "@opentelemetry/api";
+import { Span, SpanOptions, SpanKind, setSpan, context as otContext } from "@opentelemetry/api";
 import { getTracer } from "../src/tracerProxy";
 import { OperationTracingOptions } from "./interfaces";
 
@@ -26,6 +26,7 @@ export interface CreateSpanFunctionArgs {
   namespace: string;
 }
 
+
 /**
  * Creates a function that can be used to create spans using the global tracer.
  *
@@ -45,7 +46,7 @@ export interface CreateSpanFunctionArgs {
  * @param args - allows configuration of the prefix for each span as well as the az.namespace field.
  */
 export function createSpanFunction(args: CreateSpanFunctionArgs) {
-  return function<T extends { tracingOptions?: OperationTracingOptions }>(
+  return function <T extends { tracingOptions?: OperationTracingOptions }>(
     operationName: string,
     operationOptions: T | undefined
   ): { span: Span; updatedOptions: T } {
@@ -57,7 +58,7 @@ export function createSpanFunction(args: CreateSpanFunctionArgs) {
     };
 
     const spanName = args.packagePrefix ? `${args.packagePrefix}.${operationName}` : operationName;
-    const span = tracer.startSpan(spanName, spanOptions);
+    const span = tracer.startSpan(spanName, spanOptions, tracingOptions.context);
 
     if (args.namespace) {
       span.setAttribute("az.namespace", args.namespace);
@@ -68,7 +69,6 @@ export function createSpanFunction(args: CreateSpanFunctionArgs) {
     if (span.isRecording() && args.namespace) {
       newSpanOptions = {
         ...tracingOptions.spanOptions,
-        parent: span.context(),
         attributes: {
           ...spanOptions.attributes,
           "az.namespace": args.namespace
@@ -76,20 +76,20 @@ export function createSpanFunction(args: CreateSpanFunctionArgs) {
       };
     }
 
-    const newTracingOptions: OperationTracingOptions = {
+    const newTracingOptions: Required<OperationTracingOptions> = {
       ...tracingOptions,
-      spanOptions: newSpanOptions
-      // TODO: .context soon.
+      spanOptions: newSpanOptions,
+      context: setSpan(tracingOptions.context || otContext.active(), span)
     };
 
     const newOperationOptions = {
       ...operationOptions,
       tracingOptions: newTracingOptions
-    };
+    } as (T & { tracingOptions: Required<OperationTracingOptions> });
 
     return {
       span,
-      updatedOptions: newOperationOptions as T
+      updatedOptions: newOperationOptions
     };
   };
 }

@@ -16,7 +16,7 @@ import {
   bearerTokenAuthenticationPolicy,
   isNode
 } from "@azure/core-http";
-import { CanonicalCode } from "@opentelemetry/api";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { AnonymousCredential } from "./credentials/AnonymousCredential";
 import { BlobClient, BlobDeleteOptions, BlobSetTierOptions } from "./Clients";
 import { AccessTier } from "./generatedModels";
@@ -201,7 +201,7 @@ export class BlobBatch {
       );
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -317,7 +317,7 @@ export class BlobBatch {
       );
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -379,9 +379,9 @@ class InnerBatchRequest {
     if (!isAnonymousCreds) {
       factories[2] = isTokenCredential(credential)
         ? attachCredential(
-            bearerTokenAuthenticationPolicy(credential, StorageOAuthScopes),
-            credential
-          )
+          bearerTokenAuthenticationPolicy(credential, StorageOAuthScopes),
+          credential
+        )
         : credential;
     }
     factories[policyFactoryLength - 1] = new BatchRequestAssemblePolicyFactory(this); // Use batch assemble policy to assemble request and intercept request from going to wire
@@ -503,7 +503,7 @@ class BatchHeaderFilterPolicy extends BaseRequestPolicy {
 }
 
 class BatchHeaderFilterPolicyFactory implements RequestPolicyFactory {
-  constructor() {}
+  constructor() { }
 
   public create(nextPolicy: RequestPolicy, options: RequestPolicyOptions): BatchHeaderFilterPolicy {
     return new BatchHeaderFilterPolicy(nextPolicy, options);

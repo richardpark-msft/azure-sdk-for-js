@@ -110,7 +110,7 @@ export class TestSpan extends NoOpSpan {
   }
 
   /**
-   * Sets a status on the span. Overrides the default of CanonicalCode.OK.
+   * Sets a status on the span. Overrides the default of SpanStatusCode.OK.
    * @param status - The status to set.
    */
   setStatus(status: SpanStatus): this {

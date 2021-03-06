@@ -106,6 +106,7 @@ export class OpenCensusTracerWrapper implements Tracer {
 
 // @public
 export interface OperationTracingOptions {
+    context?: Context;
     spanOptions?: SpanOptions;
 }
 
@@ -140,7 +141,6 @@ export interface SpanOptions {
     attributes?: SpanAttributes_2;
     kind?: SpanKind;
     links?: Link[];
-    parent?: SpanContext | null;
 }
 
 // @public

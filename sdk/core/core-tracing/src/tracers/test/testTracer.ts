@@ -9,7 +9,8 @@ import {
   SpanOptions,
   TraceFlags,
   Context as OTContext,
-  getSpan
+  context as otContext,
+  getSpanContext
 } from "@opentelemetry/api";
 
 /**
@@ -124,7 +125,7 @@ export class TestTracer extends NoOpTracer {
    * @param options - The SpanOptions used during Span creation.
    */
   startSpan(name: string, options?: SpanOptions, context?: OTContext): TestSpan {
-    const parentContext = this._getParentContext(context);
+    const parentContext = getSpanContext(context || otContext.active());
 
     let traceId: string;
     let isRootSpan = false;
@@ -154,22 +155,5 @@ export class TestTracer extends NoOpTracer {
       this.rootSpans.push(span);
     }
     return span;
-  }
-
-  private _getParentContext(context: OTContext | undefined): SpanContext | undefined {
-    if (context == null) {
-      return undefined;
-    }
-
-    const parent = getSpan(context);
-    let result: SpanContext | undefined;
-    if (parent) {
-      if ("traceId" in parent) {
-        result = parent;
-      } else {
-        result = parent.context();
-      }
-    }
-    return result;
   }
 }

@@ -122,7 +122,7 @@ export function browserConfig(test = false) {
 
       cjs({
         namedExports: {
-          "@opentelemetry/api": ["CanonicalCode", "SpanKind", "TraceFlags"],
+          "@opentelemetry/api": ["SpanStatusCode", "SpanKind", "TraceFlags", "setSpan", "getSpan"],
           chai: ["should", "assert"],
           assert: ["equal", "deepEqual", "notEqual"]
         }

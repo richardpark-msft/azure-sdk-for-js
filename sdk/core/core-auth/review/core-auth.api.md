@@ -34,6 +34,7 @@ export interface GetTokenOptions {
     };
     tracingOptions?: {
         spanOptions?: SpanOptions;
+        context?: Context;
     };
 }
 
@@ -68,6 +69,10 @@ export interface TokenCredential {
     getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken | null>;
 }
 
+
+// Warnings were encountered during analysis:
+//
+// src/tokenCredential.ts:53:5 - (ae-forgotten-export) The symbol "Context" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

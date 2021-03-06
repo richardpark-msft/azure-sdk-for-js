@@ -8,7 +8,7 @@ import {
   InteractiveBrowserCredentialBrowserOptions
 } from "./interactiveBrowserCredentialOptions";
 import { createSpan } from "../util/tracing";
-import { CanonicalCode } from "@opentelemetry/api";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { DefaultTenantId } from "../constants";
 import { credentialLogger, formatSuccess, formatError } from "../util/logging";
 import { MSALAuthCode } from "./msalBrowser/msalAuthCode";
@@ -58,8 +58,7 @@ export class InteractiveBrowserCredential implements TokenCredential {
     const loginStyles = ["redirect", "popup"];
     if (loginStyles.indexOf(this.loginStyle) === -1) {
       const error = new Error(
-        `Invalid loginStyle: ${
-          options.loginStyle
+        `Invalid loginStyle: ${options.loginStyle
         }. Should be any of the following: ${loginStyles.join(", ")}.`
       );
       logger.info(formatError("", error));
@@ -147,7 +146,7 @@ export class InteractiveBrowserCredential implements TokenCredential {
       }
     } catch (err) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: err.message
       });
       logger.getToken.info(formatError(scopes, err));

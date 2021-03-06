@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { operationOptionsToRequestOptionsBase, RequestOptionsBase } from "@azure/core-http";
-import { CanonicalCode } from "@opentelemetry/api";
+import { SpanStatusCode } from "@opentelemetry/api";
 import {
   CreateReservationRequest,
   CreateReservationOptions,
@@ -69,7 +69,7 @@ export class ReservePhoneNumbersPollOperation extends PhoneNumberReservationPoll
       return attachHttpResponse<CreateReservationResponse>({ reservationId: searchId }, _response);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;

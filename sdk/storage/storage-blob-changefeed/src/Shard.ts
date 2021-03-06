@@ -8,7 +8,7 @@ import { BlobChangeFeedEvent } from "./models/BlobChangeFeedEvent";
 import { ShardCursor } from "./models/ChangeFeedCursor";
 import { AbortSignalLike } from "@azure/core-http";
 import { createSpan } from "./utils/tracing";
-import { CanonicalCode } from "@opentelemetry/api";
+import { SpanStatusCode } from "@opentelemetry/api";
 
 /**
  * Options to configure {@link Shard.getChange} operation.
@@ -75,7 +75,7 @@ export class Shard {
       return event;
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -88,9 +88,9 @@ export class Shard {
     return this.currentChunk === undefined
       ? undefined
       : {
-          CurrentChunkPath: this.currentChunk.chunkPath,
-          BlockOffset: this.currentChunk.blockOffset,
-          EventIndex: this.currentChunk.eventIndex
-        };
+        CurrentChunkPath: this.currentChunk.chunkPath,
+        BlockOffset: this.currentChunk.blockOffset,
+        EventIndex: this.currentChunk.eventIndex
+      };
   }
 }

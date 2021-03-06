@@ -102,7 +102,7 @@ export function browserConfig(test = false) {
         namedExports: {
           events: ["EventEmitter"],
           chai: ["assert"],
-          "@opentelemetry/api": ["CanonicalCode", "SpanKind", "TraceFlags"]
+          "@opentelemetry/api": ["SpanStatusCode", "SpanKind", "TraceFlags", "setSpan", "getSpan"]
         }
       }),
       // disable the plugin in the rollup config to cut-out errors

@@ -143,7 +143,7 @@ export function browserConfig(test = false) {
             "notEqual",
             "strictEqual"
           ],
-          "@opentelemetry/api": ["CanonicalCode", "SpanKind", "TraceFlags"]
+          "@opentelemetry/api": ["SpanStatusCode", "SpanKind", "TraceFlags", "setSpan", "getSpan"]
         }
       })
     ],

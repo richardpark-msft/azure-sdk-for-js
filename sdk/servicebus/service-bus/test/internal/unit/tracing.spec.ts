@@ -3,7 +3,7 @@
 
 import chai from "chai";
 import { getTracer, NoOpSpan, TestSpan, TestTracer } from "@azure/core-tracing";
-import { CanonicalCode, SpanOptions } from "@opentelemetry/api";
+import { SpanStatusCode, SpanOptions, Context as OTContext } from "@opentelemetry/api";
 import { ServiceBusMessageImpl, ServiceBusReceivedMessage } from "../../../src/serviceBusMessage";
 import {
   createAndEndProcessingSpan,
@@ -25,7 +25,7 @@ import { instrumentMessage } from "../../../src/diagnostics/tracing";
 const should = chai.should();
 const assert = chai.assert;
 
-describe("Tracing tests", () => {
+describe.only("Tracing tests", () => {
   let tracer: TestTracer2;
   let resetTracer: () => void;
   const tracingOptions: OperationOptionsBase["tracingOptions"] = {
@@ -148,7 +148,7 @@ describe("Tracing tests", () => {
       assert.equal(err.message, "This message failed when we tried to process it");
 
       assert.deepEqual(testData.span?.status, {
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: "This message failed when we tried to process it"
       });
     }
@@ -159,7 +159,7 @@ describe("Tracing tests", () => {
       }
     } as any) as ServiceBusMessageImpl);
 
-    assert.equal(testData.span!.status.code, CanonicalCode.OK);
+    assert.equal(testData.span!.status.code, SpanStatusCode.OK);
   });
 
   it("streaming (sessions)", async () => {
@@ -206,7 +206,7 @@ describe("Tracing tests", () => {
     } catch (err) {
       assert.equal(err.message, "This message failed when we tried to process it");
       assert.deepEqual(testData.span!.status, {
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: "This message failed when we tried to process it"
       });
     }
@@ -217,7 +217,7 @@ describe("Tracing tests", () => {
       }
     } as any) as ServiceBusMessageImpl);
 
-    assert.equal(testData.span!.status.code, CanonicalCode.OK);
+    assert.equal(testData.span!.status.code, SpanStatusCode.OK);
   });
 
   /**
@@ -295,7 +295,7 @@ describe("Tracing tests", () => {
       host: "thehost"
     };
 
-    it("basic span properties are set", async () => {
+    it.only("basic span properties are set", async () => {
       const fakeParentSpanContext = new NoOpSpan().context();
 
       createProcessingSpan([], receiverProperties, connectionConfig, {
@@ -307,10 +307,9 @@ describe("Tracing tests", () => {
       });
 
       should.equal(tracer.spanName, "Azure.ServiceBus.process");
-
       should.exist(tracer.spanOptions);
       tracer.spanOptions!.kind!.should.equal(SpanKind.CONSUMER);
-      tracer.spanOptions!.parent!.should.equal(fakeParentSpanContext);
+      tracer.context!.should.equal(fakeParentSpanContext);
 
       const attributes = tracer.getRootSpans()[0].attributes;
 
@@ -398,7 +397,7 @@ describe("Tracing tests", () => {
         /** Nothing to do here */
       }, span);
 
-      span.status!.code.should.equal(CanonicalCode.OK);
+      span.status!.code.should.equal(SpanStatusCode.OK);
       span.endCalled.should.be.ok;
     });
 
@@ -409,7 +408,7 @@ describe("Tracing tests", () => {
         throw new Error("error thrown from fn");
       }, span).should.be.rejectedWith(/error thrown from fn/);
 
-      span.status!.code.should.equal(CanonicalCode.UNKNOWN);
+      span.status!.code.should.equal(SpanStatusCode.ERROR);
       span.status!.message!.should.equal("error thrown from fn");
       span.endCalled.should.be.ok;
     });
@@ -420,17 +419,21 @@ class TestTracer2 extends TestTracer {
   spanName: string | undefined;
   spanOptions: SpanOptions | undefined;
   span: TestSpan | undefined;
+  context: OTContext | undefined;
 
   clearTracingData() {
     this.spanName = undefined;
     this.spanOptions = undefined;
     this.span = undefined;
+    this.context = undefined;
   }
 
-  startSpan(nameArg: string, optionsArg?: SpanOptions): TestSpan {
+  startSpan(nameArg: string, optionsArg?: SpanOptions, contextArg?: OTContext): TestSpan {
     this.spanName = nameArg;
     this.spanOptions = optionsArg;
-    this.span = super.startSpan(nameArg, optionsArg);
+    this.context = contextArg;
+    console.log(`startSpan: ${contextArg}`);
+    this.span = super.startSpan(nameArg, optionsArg, contextArg);
     return this.span;
   }
 }
