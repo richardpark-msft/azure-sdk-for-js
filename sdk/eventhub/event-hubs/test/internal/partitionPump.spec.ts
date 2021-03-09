@@ -3,7 +3,14 @@
 
 import { createProcessingSpan, trace } from "../../src/partitionPump";
 import { NoOpSpan, TestSpan, TestTracer } from "@azure/core-tracing";
-import { SpanStatusCode, SpanKind, SpanOptions, Context } from "@opentelemetry/api";
+import {
+  SpanStatusCode,
+  SpanKind,
+  SpanOptions,
+  Context,
+  setSpanContext,
+  context
+} from "@opentelemetry/api";
 import chai from "chai";
 import { ReceivedEventData } from "../../src/eventData";
 import { instrumentEventData } from "../../src/diagnostics/instrumentEventData";
@@ -37,9 +44,7 @@ describe("PartitionPump", () => {
 
       await createProcessingSpan([], eventHubProperties, {
         tracingOptions: {
-          spanOptions: {
-            parent: fakeParentSpanContext
-          }
+          context: setSpanContext(context.active(), fakeParentSpanContext)
         }
       });
 
