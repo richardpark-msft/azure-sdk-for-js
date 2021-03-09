@@ -67,7 +67,7 @@
     "@azure/logger": "^1.0.0",
     "@opentelemetry/api": "^0.18.0",
     "tslib": "^2.0.0",
-    "@azure/core-tracing": "1.0.0-preview.11",
+    "@azure/core-tracing": "1.0.0-preview.11"
   },
   "devDependencies": {
     "@azure/dev-tool": "^1.0.0",
