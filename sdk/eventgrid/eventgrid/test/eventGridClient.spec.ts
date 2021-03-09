@@ -17,6 +17,7 @@ import {
   convertCloudEventToModelType
 } from "../src/eventGridClient";
 import { FullOperationResponse } from "@azure/core-client";
+import { setSpan, context } from "@opentelemetry/api";
 
 describe("EventGridPublisherClient", function() {
   let recorder: Recorder;
@@ -180,9 +181,7 @@ describe("EventGridPublisherClient", function() {
         ],
         {
           tracingOptions: {
-            spanOptions: {
-              parent: rootSpan.context()
-            }
+            context: setSpan(context.active(), rootSpan)
           },
           onResponse: (response) => (res = response)
         }
