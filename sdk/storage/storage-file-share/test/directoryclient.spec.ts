@@ -12,6 +12,7 @@ import { TestTracer, setTracer, SpanGraph } from "@azure/core-tracing";
 import { URLBuilder } from "@azure/core-http";
 import { MockPolicyFactory } from "./utils/MockPolicyFactory";
 import { Pipeline } from "../src/Pipeline";
+import { setSpan, context } from "@opentelemetry/api";
 dotenv.config();
 
 describe("DirectoryClient", () => {
@@ -671,8 +672,7 @@ describe("DirectoryClient", () => {
     const tracer = new TestTracer();
     setTracer(tracer);
     const rootSpan = tracer.startSpan("root");
-    const spanOptions = { parent: rootSpan.context() };
-    const tracingOptions = { spanOptions };
+    const tracingOptions = { context: setSpan(context.active(), rootSpan) };
     const directoryName = recorder.getUniqueName("directory");
     const { directoryClient: subDirClient } = await dirClient.createSubdirectory(directoryName, {
       tracingOptions

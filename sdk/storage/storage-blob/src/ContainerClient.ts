@@ -202,24 +202,24 @@ export interface SignedIdentifier {
 export declare type ContainerGetAccessPolicyResponse = {
   signedIdentifiers: SignedIdentifier[];
 } & ContainerGetAccessPolicyHeaders & {
-  /**
-   * The underlying HTTP response.
-   */
-  _response: HttpResponse & {
     /**
-     * The parsed HTTP response headers.
+     * The underlying HTTP response.
      */
-    parsedHeaders: ContainerGetAccessPolicyHeaders;
-    /**
-     * The response body as text (string format)
-     */
-    bodyAsText: string;
-    /**
-     * The response body as parsed JSON or XML
-     */
-    parsedBody: SignedIdentifierModel[];
+    _response: HttpResponse & {
+      /**
+       * The parsed HTTP response headers.
+       */
+      parsedHeaders: ContainerGetAccessPolicyHeaders;
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: SignedIdentifierModel[];
+    };
   };
-};
 
 /**
  * Options to configure {@link ContainerClient.setAccessPolicy} operation.
@@ -740,7 +740,7 @@ export class ContainerClient extends StorageClient {
     } catch (e) {
       if (e.details?.errorCode === "ContainerAlreadyExists") {
         span.setStatus({
-          code: CanonicalCode.ALREADY_EXISTS,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when creating a container only if it does not already exist."
         });
         return {
@@ -780,7 +780,7 @@ export class ContainerClient extends StorageClient {
     } catch (e) {
       if (e.statusCode === 404) {
         span.setStatus({
-          code: CanonicalCode.NOT_FOUND,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when checking container existence"
         });
         return false;
@@ -943,7 +943,7 @@ export class ContainerClient extends StorageClient {
     } catch (e) {
       if (e.details?.errorCode === "ContainerNotFound") {
         span.setStatus({
-          code: CanonicalCode.NOT_FOUND,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when deleting a container only if it exists."
         });
         return {

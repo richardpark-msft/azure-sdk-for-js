@@ -65,7 +65,14 @@ export function nodeConfig(test = false) {
             "notDeepEqual",
             "notDeepStrictEqual"
           ],
-          "@opentelemetry/api": ["SpanStatusCode", "SpanKind", "TraceFlags", "setSpan", "getSpan"]
+          "@opentelemetry/api": [
+            "SpanStatusCode",
+            "SpanKind",
+            "TraceFlags",
+            "setSpan",
+            "getSpan",
+            "getSpanContext"
+          ]
         }
       })
     ],
@@ -159,7 +166,14 @@ export function browserConfig(test = false) {
             "notDeepEqual",
             "notDeepStrictEqual"
           ],
-          "@opentelemetry/api": ["SpanStatusCode", "SpanKind", "TraceFlags", "setSpan", "getSpan"]
+          "@opentelemetry/api": [
+            "SpanStatusCode",
+            "SpanKind",
+            "TraceFlags",
+            "setSpan",
+            "getSpan",
+            "getSpanContext"
+          ]
         }
       })
     ],

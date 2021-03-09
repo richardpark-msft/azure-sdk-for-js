@@ -338,24 +338,24 @@ export interface SignedIdentifier {
 export declare type ShareGetAccessPolicyResponse = {
   signedIdentifiers: SignedIdentifier[];
 } & ShareGetAccessPolicyHeaders & {
-  /**
-   * The underlying HTTP response.
-   */
-  _response: HttpResponse & {
     /**
-     * The parsed HTTP response headers.
+     * The underlying HTTP response.
      */
-    parsedHeaders: ShareGetAccessPolicyHeaders;
-    /**
-     * The response body as text (string format)
-     */
-    bodyAsText: string;
-    /**
-     * The response body as parsed JSON or XML
-     */
-    parsedBody: SignedIdentifierModel[];
+    _response: HttpResponse & {
+      /**
+       * The parsed HTTP response headers.
+       */
+      parsedHeaders: ShareGetAccessPolicyHeaders;
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: SignedIdentifierModel[];
+    };
   };
-};
 
 /**
  * Options to configure the {@link ShareClient.createSnapshot} operation.
@@ -683,7 +683,7 @@ export class ShareClient extends StorageClient {
     } catch (e) {
       if (e.details?.errorCode === "ShareAlreadyExists") {
         span.setStatus({
-          code: CanonicalCode.ALREADY_EXISTS,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when creating a share only if it doesn't already exist."
         });
         return {
@@ -879,7 +879,7 @@ export class ShareClient extends StorageClient {
     } catch (e) {
       if (e.statusCode === 404) {
         span.setStatus({
-          code: CanonicalCode.NOT_FOUND,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when checking share existence"
         });
         return false;
@@ -977,7 +977,7 @@ export class ShareClient extends StorageClient {
     } catch (e) {
       if (e.details?.errorCode === "ShareNotFound") {
         span.setStatus({
-          code: CanonicalCode.NOT_FOUND,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when deleting a share only if it exists."
         });
         return {
@@ -1374,7 +1374,7 @@ export interface DirectoryCreateOptions extends FileAndDirectoryCreateCommonOpti
 
 export interface DirectoryProperties
   extends FileAndDirectorySetPropertiesCommonOptions,
-  CommonOptions {
+    CommonOptions {
   /**
    * An implementation of the `AbortSignalLike` interface to signal the request to cancel the operation.
    * For example, use the &commat;azure/abort-controller to create an `AbortSignal`.
@@ -1755,7 +1755,7 @@ export class ShareDirectoryClient extends StorageClient {
     } catch (e) {
       if (e.details?.errorCode === "ResourceAlreadyExists") {
         span.setStatus({
-          code: CanonicalCode.ALREADY_EXISTS,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when creating a directory only if it does not already exist."
         });
         return {
@@ -2013,7 +2013,7 @@ export class ShareDirectoryClient extends StorageClient {
     } catch (e) {
       if (e.statusCode === 404) {
         span.setStatus({
-          code: CanonicalCode.NOT_FOUND,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when checking directory existence"
         });
         return false;
@@ -2106,7 +2106,7 @@ export class ShareDirectoryClient extends StorageClient {
         e.details?.errorCode === "ParentNotFound"
       ) {
         span.setStatus({
-          code: CanonicalCode.NOT_FOUND,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when deleting a directory only if it exists."
         });
         return {
@@ -2729,7 +2729,7 @@ export interface FileProperties extends FileAndDirectorySetPropertiesCommonOptio
   leaseAccessConditions?: LeaseAccessConditions;
 }
 
-export interface SetPropertiesResponse extends FileSetHTTPHeadersResponse { }
+export interface SetPropertiesResponse extends FileSetHTTPHeadersResponse {}
 
 /**
  * Options to configure the {@link ShareFileClient.delete} operation.
@@ -3000,7 +3000,7 @@ export interface FileSetMetadataOptions extends CommonOptions {
  */
 export interface FileSetHttpHeadersOptions
   extends FileAndDirectorySetPropertiesCommonOptions,
-  CommonOptions {
+    CommonOptions {
   /**
    * An implementation of the `AbortSignalLike` interface to signal the request to cancel the operation.
    * For example, use the &commat;azure/abort-controller to create an `AbortSignal`.
@@ -3032,7 +3032,7 @@ export interface FileAbortCopyFromURLOptions extends CommonOptions {
  */
 export interface FileResizeOptions
   extends FileAndDirectorySetPropertiesCommonOptions,
-  CommonOptions {
+    CommonOptions {
   /**
    * An implementation of the `AbortSignalLike` interface to signal the request to cancel the operation.
    * For example, use the &commat;azure/abort-controller to create an `AbortSignal`.
@@ -3628,7 +3628,7 @@ export class ShareFileClient extends StorageClient {
     } catch (e) {
       if (e.statusCode === 404) {
         span.setStatus({
-          code: CanonicalCode.NOT_FOUND,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when checking file existence"
         });
         return false;
@@ -3780,7 +3780,7 @@ export class ShareFileClient extends StorageClient {
         e.details?.errorCode === "ParentNotFound"
       ) {
         span.setStatus({
-          code: CanonicalCode.NOT_FOUND,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when deleting a file only if it exists."
         });
         return {
@@ -4558,8 +4558,8 @@ export class ShareFileClient extends StorageClient {
         } catch (error) {
           throw new Error(
             `Unable to allocate a buffer of size: ${count} bytes. Please try passing your own Buffer to ` +
-            'the "downloadToBuffer method or try using other methods like "download" or "downloadToFile".' +
-            `\t ${error.message}`
+              'the "downloadToBuffer method or try using other methods like "download" or "downloadToFile".' +
+              `\t ${error.message}`
           );
         }
       }
@@ -4669,7 +4669,7 @@ export class ShareFileClient extends StorageClient {
           if (transferProgress + buffer.length > size) {
             throw new RangeError(
               `Stream size is larger than file size ${size} bytes, uploading failed. ` +
-              `Please make sure stream length is less or equal than file size.`
+                `Please make sure stream length is less or equal than file size.`
             );
           }
 

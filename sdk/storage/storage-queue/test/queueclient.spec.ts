@@ -9,6 +9,7 @@ import { TestTracer, setTracer, SpanGraph } from "@azure/core-tracing";
 import { URLBuilder, RestError } from "@azure/core-http";
 import { Recorder, record } from "@azure/test-utils-recorder";
 import { recorderEnvSetup } from "./utils/testutils.common";
+import { setSpan, context } from "@opentelemetry/api";
 dotenv.config();
 
 describe("QueueClient", () => {
@@ -201,7 +202,9 @@ describe("QueueClient", () => {
     setTracer(tracer);
     const rootSpan = tracer.startSpan("root");
     await queueClient.getProperties({
-      tracingOptions: { spanOptions: { parent: rootSpan.context() } }
+      tracingOptions: {
+        context: setSpan(context.active(), rootSpan)
+      }
     });
     rootSpan.end();
 

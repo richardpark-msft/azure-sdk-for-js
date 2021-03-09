@@ -160,7 +160,7 @@ export interface BlobBeginCopyFromURLOptions extends BlobStartCopyFromURLOptions
 /**
  * Contains response data for the {@link BlobClient.beginCopyFromURL} operation.
  */
-export interface BlobBeginCopyFromURLResponse extends BlobStartCopyFromURLResponse { }
+export interface BlobBeginCopyFromURLResponse extends BlobStartCopyFromURLResponse {}
 
 /**
  * Options to configure the {@link BlobClient.download} operation.
@@ -374,26 +374,26 @@ export interface BlobGetTagsOptions extends CommonOptions {
  * Contains response data for the {@link BlobClient.getTags} operation.
  */
 export type BlobGetTagsResponse = { tags: Tags } & BlobGetTagsHeaders & {
-  /**
-   * The underlying HTTP response.
-   */
-  _response: HttpResponse & {
     /**
-     * The parsed HTTP response headers.
+     * The underlying HTTP response.
      */
-    parsedHeaders: BlobGetTagsHeaders;
+    _response: HttpResponse & {
+      /**
+       * The parsed HTTP response headers.
+       */
+      parsedHeaders: BlobGetTagsHeaders;
 
-    /**
-     * The response body as text (string format)
-     */
-    bodyAsText: string;
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
 
-    /**
-     * The response body as parsed JSON or XML
-     */
-    parsedBody: BlobTags;
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: BlobTags;
+    };
   };
-};
 
 /**
  * Options to configure Blob - Acquire Lease operation.
@@ -1188,7 +1188,7 @@ export class BlobClient extends StorageClient {
     } catch (e) {
       if (e.statusCode === 404) {
         span.setStatus({
-          code: CanonicalCode.NOT_FOUND,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when checking blob existence"
         });
         return false;
@@ -1307,7 +1307,7 @@ export class BlobClient extends StorageClient {
     } catch (e) {
       if (e.details?.errorCode === "BlobNotFound") {
         span.setStatus({
-          code: CanonicalCode.NOT_FOUND,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when deleting a blob or snapshot only if it exists."
         });
         return {
@@ -2544,7 +2544,7 @@ export class AppendBlobClient extends BlobClient {
     } catch (e) {
       if (e.details?.errorCode === "BlobAlreadyExists") {
         span.setStatus({
-          code: CanonicalCode.ALREADY_EXISTS,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when creating a blob only if it does not already exist."
         });
         return {
@@ -2924,9 +2924,9 @@ export interface BlockBlobQueryOptions extends CommonOptions {
    * Configurations for the query output.
    */
   outputTextConfiguration?:
-  | BlobQueryJsonTextConfiguration
-  | BlobQueryCsvTextConfiguration
-  | BlobQueryArrowConfiguration;
+    | BlobQueryJsonTextConfiguration
+    | BlobQueryCsvTextConfiguration
+    | BlobQueryArrowConfiguration;
   /**
    * Callback to receive events on the progress of query operation.
    */
@@ -3951,7 +3951,7 @@ export class BlockBlobClient extends BlobClient {
       if (numBlocks > BLOCK_BLOB_MAX_BLOCKS) {
         throw new RangeError(
           `The buffer's size is too big or the BlockSize is too small;` +
-          `the number of blocks must be <= ${BLOCK_BLOB_MAX_BLOCKS}`
+            `the number of blocks must be <= ${BLOCK_BLOB_MAX_BLOCKS}`
         );
       }
 
@@ -4670,7 +4670,7 @@ export class PageBlobClient extends BlobClient {
     } catch (e) {
       if (e.details?.errorCode === "BlobAlreadyExists") {
         span.setStatus({
-          code: CanonicalCode.ALREADY_EXISTS,
+          code: SpanStatusCode.ERROR,
           message: "Expected exception when creating a blob only if it does not already exist."
         });
         return {

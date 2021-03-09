@@ -25,6 +25,8 @@ import {
 } from "../src";
 import { Test_CPK_INFO } from "./utils/constants";
 import { base64encode } from "../src/utils/utils.common";
+import { setSpan, context } from "@opentelemetry/api";
+
 dotenv.config();
 
 describe("BlobClient", () => {
@@ -710,7 +712,7 @@ describe("BlobClient", () => {
 
     const result = await blobClient.download(undefined, undefined, {
       tracingOptions: {
-        spanOptions: { parent: rootSpan.context() }
+        context: setSpan(context.active(), rootSpan)
       }
     });
     assert.deepStrictEqual(await bodyToString(result, content.length), content);

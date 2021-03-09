@@ -8,6 +8,7 @@ import replace from "@rollup/plugin-replace";
 import { terser } from "rollup-plugin-terser";
 import sourcemaps from "rollup-plugin-sourcemaps";
 import shim from "rollup-plugin-shim";
+import * as path from "path";
 // import visualizer from "rollup-plugin-visualizer";
 
 const version = require("./package.json").version;
@@ -115,11 +116,26 @@ export function browserConfig(test = false) {
       cjs({
         namedExports: {
           assert: ["ok", "deepEqual", "equal", "fail", "deepStrictEqual", "strictEqual"],
-          "@opentelemetry/api": ["SpanStatusCode", "SpanKind", "TraceFlags", "setSpan", "getSpan"]
+          "@opentelemetry/api": [
+            "SpanStatusCode",
+            "SpanKind",
+            "TraceFlags",
+            "setSpan",
+            "getSpan",
+            "getSpanContext"
+          ]
         }
       })
     ],
     onwarn(warning, warn) {
+      if (
+        warning.code === "CIRCULAR_DEPENDENCY" &&
+        warning.importer.indexOf(path.normalize("node_modules/@opentelemetry/api") === 0)
+      ) {
+        warn(warning);
+        return;
+      }
+
       if (
         warning.code === "CIRCULAR_DEPENDENCY" ||
         warning.code === "UNRESOLVED_IMPORT"
@@ -128,6 +144,7 @@ export function browserConfig(test = false) {
       ) {
         throw new Error(warning.message);
       }
+
       warn(warning);
     }
   };

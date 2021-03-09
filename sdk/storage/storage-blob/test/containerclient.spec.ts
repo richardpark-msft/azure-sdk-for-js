@@ -20,6 +20,8 @@ import {
   BlobServiceClient
 } from "../src";
 import { Test_CPK_INFO } from "./utils/constants";
+import { setSpan, context } from "@opentelemetry/api";
+
 dotenv.config();
 
 describe("ContainerClient", () => {
@@ -698,7 +700,7 @@ describe("ContainerClient", () => {
       blobHTTPHeaders: options,
       metadata: options.metadata,
       tracingOptions: {
-        spanOptions: { parent: rootSpan.context() }
+        context: setSpan(context.active(), rootSpan)
       }
     });
 
