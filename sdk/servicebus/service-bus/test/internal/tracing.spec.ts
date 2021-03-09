@@ -51,7 +51,7 @@ function modernOptionsWithAccidentalParentSpanSet(rootSpan: TestSpan): TryAddOpt
   modernOptions,
   modernOptionsWithAccidentalParentSpanSet
 ].forEach((optionFn) => {
-  describe.only(`Tracing for send (${optionFn.name})`, function(): void {
+  describe(`Tracing for send (${optionFn.name})`, function(): void {
     let sbClient: ServiceBusClientForTests;
     let sender: ServiceBusSender;
     let entityName: EntityName;
