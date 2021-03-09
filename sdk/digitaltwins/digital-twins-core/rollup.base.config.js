@@ -102,7 +102,14 @@ export function browserConfig(test = false) {
           chai: ["assert", "expect", "use"],
           assert: ["ok", "equal", "strictEqual", "deepEqual", "fail", "throws", "notEqual"],
           events: ["EventEmitter"],
-          "@opentelemetry/api": ["SpanStatusCode", "SpanKind", "TraceFlags", "setSpan", "getSpan"]
+          "@opentelemetry/api": [
+            "SpanStatusCode",
+            "SpanKind",
+            "TraceFlags",
+            "setSpan",
+            "getSpan",
+            "getSpanContext"
+          ]
         }
       }),
 

@@ -101,7 +101,14 @@ export function browserConfig(test = false) {
       cjs({
         namedExports: {
           chai: ["assert"],
-          "@opentelemetry/api": ["SpanStatusCode", "SpanKind", "TraceFlags", "setSpan", "getSpan"]
+          "@opentelemetry/api": [
+            "SpanKind",
+            "TraceFlags",
+            "getSpan",
+            "setSpan",
+            "SpanStatusCode",
+            "getSpanContext"
+          ]
         }
       }),
       viz({ filename: "dist-browser/browser-stats.html", sourcemap: false })

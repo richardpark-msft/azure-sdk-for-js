@@ -96,7 +96,14 @@ export function browserConfig(test = false) {
       cjs({
         namedExports: {
           chai: ["assert"],
-          "@opentelemetry/api": ["SpanStatusCode", "SpanKind", "TraceFlags", "setSpan", "getSpan"]
+          "@opentelemetry/api": [
+            "SpanStatusCode",
+            "SpanKind",
+            "TraceFlags",
+            "setSpan",
+            "getSpan",
+            "getSpanContext"
+          ]
         }
       }),
       // disable the plugin in the rollup config to cut-out errors

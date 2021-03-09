@@ -107,7 +107,14 @@ export function browserConfig(test = false, production = false) {
       cjs({
         namedExports: {
           chai: ["assert", "expect", "use"],
-          "@opentelemetry/api": ["SpanStatusCode", "SpanKind", "TraceFlags", "setSpan", "getSpan"]
+          "@opentelemetry/api": [
+            "SpanStatusCode",
+            "SpanKind",
+            "TraceFlags",
+            "setSpan",
+            "getSpan",
+            "getSpanContext"
+          ]
         }
       }),
       inject({

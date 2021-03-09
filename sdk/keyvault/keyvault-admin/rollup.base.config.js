@@ -120,7 +120,14 @@ export function browserConfig(test = false) {
         namedExports: {
           chai: ["assert", "use"],
           assert: ["ok", "equal", "strictEqual", "deepEqual", "isRejected"],
-          "@opentelemetry/api": ["SpanStatusCode", "SpanKind", "TraceFlags", "setSpan", "getSpan"]
+          "@opentelemetry/api": [
+            "SpanStatusCode",
+            "SpanKind",
+            "TraceFlags",
+            "setSpan",
+            "getSpan",
+            "getSpanContext"
+          ]
         }
       })
     ]
