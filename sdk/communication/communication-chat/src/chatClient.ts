@@ -29,7 +29,7 @@ import {
 } from "@azure/core-http";
 import "@azure/core-paging";
 import { PagedAsyncIterableIterator } from "@azure/core-paging";
-import { CanonicalCode } from "@opentelemetry/api";
+import { SpanStatusCode } from "@azure/core-tracing";
 import { createSpan } from "./tracing";
 import { ChatThreadClient } from "./chatThreadClient";
 import {
@@ -142,7 +142,36 @@ export class ChatClient {
       return mapToCreateChatThreadResultSdkModel(result);
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
+        message: e.message
+      });
+      throw e;
+    } finally {
+      span.end();
+    }
+  }
+
+  /**
+   * Gets a chat thread.
+   * Returns the chat thread.
+   * @param threadId - The ID of the thread to get.
+   * @param options -  Operation options.
+   */
+  public async getChatThread(
+    threadId: string,
+    options: GetChatThreadOptions = {}
+  ): Promise<ChatThread> {
+    const { span, updatedOptions } = createSpan("ChatClient-GetChatThread", options);
+
+    try {
+      const { _response, ...result } = await this.client.chat.getChatThread(
+        threadId,
+        operationOptionsToRequestOptionsBase(updatedOptions)
+      );
+      return mapToChatThreadSdkModel(result);
+    } catch (e) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -209,7 +238,7 @@ export class ChatClient {
       };
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;
@@ -236,7 +265,7 @@ export class ChatClient {
       );
     } catch (e) {
       span.setStatus({
-        code: CanonicalCode.UNKNOWN,
+        code: SpanStatusCode.ERROR,
         message: e.message
       });
       throw e;

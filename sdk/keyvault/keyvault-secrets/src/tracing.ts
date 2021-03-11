@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { createSpanFunction, OperationTracingOptions } from "@azure/core-tracing";
-import { Span } from "@opentelemetry/api";
+import { Span } from "@azure/core-tracing";
 
 /*
  * @internal

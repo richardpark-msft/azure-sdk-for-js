@@ -17,6 +17,7 @@ import {
 } from "../src/eventGridClient";
 import { FullOperationResponse } from "@azure/core-client";
 import { RestError } from "@azure/core-rest-pipeline";
+import { setSpan, context } from "@azure/core-tracing";
 
 describe("EventGridPublisherClient", /** @this Mocha.Context */ function() {
   let recorder: Recorder;
@@ -229,9 +230,7 @@ describe("EventGridPublisherClient", /** @this Mocha.Context */ function() {
         ],
         {
           tracingOptions: {
-            spanOptions: {
-              parent: rootSpan.context()
-            }
+            tracingContext: setSpan(context.active(), rootSpan)
           },
           onResponse: (response) => (res = response)
         }
