@@ -830,6 +830,37 @@ export class MessageSession extends LinkEntity<Receiver> {
     });
   }
 
+  async onDetached(error?: AmqpError | Error): Promise<void> {
+    // if there is an active subscribe() call we need to give them an error
+    // indicating the connection has been recycled (since the connection
+    // will not reconnect)
+    const translatedError = error ? translateServiceBusError(error) : error;
+
+    logger.error(
+      translatedError,
+      `${this.logPrefix} onDetached: closing link (session receiver will not reconnect)`
+    );
+
+    this._notifyError({
+      error: translatedError || new Error("Connection was reset, session link will not be reestablished."),
+      errorSource: "receive",
+      entityPath: this.entityPath,
+      fullyQualifiedNamespace: this._context.config.host
+    });
+
+    try {
+      // Clears the token renewal timer. Closes the link and its session if they are open.
+      // Removes the link and its session if they are present in rhea's cache.
+      //await this.closeLink();
+      await this.close();
+    } catch (err) {
+      logger.verbose(
+        `${this.logPrefix} onDetached: Encountered an error when closing the previous link: `,
+        err
+      );
+    }
+  }
+
   /**
    * Creates a new instance of the MessageSession based on the provided parameters.
    * @param context - The client entity context

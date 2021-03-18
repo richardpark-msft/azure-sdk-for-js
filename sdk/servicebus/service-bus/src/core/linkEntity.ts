@@ -5,6 +5,7 @@ import { Constants, TokenType, defaultLock, RequestResponseLink } from "@azure/c
 import { AccessToken } from "@azure/core-auth";
 import { ConnectionContext } from "../connectionContext";
 import {
+  AmqpError,
   AwaitableSender,
   AwaitableSenderOptions,
   generate_uuid,
@@ -298,6 +299,13 @@ export abstract class LinkEntity<LinkT extends Receiver | AwaitableSender | Requ
     await this.closeLink();
     this._logger.verbose(`${this.logPrefix} permanently closed this link.`);
   }
+
+  /**
+   * React to receiver being detached due to given error.
+   * You may want to set up retries to recover the broken link and/or report error to user.
+   * @param error - The error accompanying the receiver/session error or connection disconnected events
+   */
+  abstract onDetached(error?: AmqpError | Error): Promise<void>;
 
   /**
    * NOTE: This method should be implemented by any child classes to actually create the underlying

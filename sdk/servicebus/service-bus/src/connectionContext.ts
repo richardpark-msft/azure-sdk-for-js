@@ -25,7 +25,7 @@ import { ManagementClient } from "./core/managementClient";
 import { formatUserAgentPrefix } from "./util/utils";
 import { getRuntimeInfo } from "./util/runtimeInfo";
 import { SharedKeyCredential } from "./servicebusSharedKeyCredential";
-import { ReceiverType } from "./core/linkEntity";
+import { LinkEntity, ReceiverType } from "./core/linkEntity";
 
 /**
  * @internal
@@ -167,6 +167,37 @@ async function callOnDetachedOnReceivers(
   }
 
   return Promise.all(detachCalls);
+}
+
+function detach(
+  connectionId: string,
+  error: Error | ConnectionError | AmqpError | undefined,
+  detachables: Record<string, Pick<LinkEntity<any>, "onDetached"> | undefined>
+): Promise<void>[] {
+  const all: ReturnType<LinkEntity<any>['onDetached']>[] = [];
+
+  for (const detachableName of Object.keys(detachables)) {
+    logger.verbose("[%s] calling detached on receiver '%s'.", connectionId, detachableName);
+
+    const detachable = detachables[detachableName];
+
+    if (!detachable) {
+      continue;
+    }
+
+    all.push(
+      detachable.onDetached(error).catch((err) => {
+        logger.logError(
+          err,
+          "[%s] An error occurred while calling onDetached() on receiver '%s'",
+          connectionId,
+          detachableName
+        );
+      })
+    );
+  }
+
+  return all;
 }
 
 /**
@@ -431,6 +462,14 @@ export namespace ConnectionContext {
         //  `callOnDetachedOnReceivers` handles "connectionContext.messageReceivers".
         //  ...What to do for sessions (connectionContext.messageSessions) ??
       }
+
+      await Promise.all(
+        detach(
+          connectionContext.connection.id,
+          connectionError || contextError,
+          connectionContext.messageSessions
+        )
+      );
 
       await refreshConnection();
       waitForConnectionRefreshResolve();

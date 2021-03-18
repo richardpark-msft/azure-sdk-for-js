@@ -5,7 +5,7 @@ import { AbortSignalLike } from "@azure/abort-controller";
 import { defaultLock } from "@azure/core-amqp";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { Receiver, ReceiverOptions } from "rhea-promise";
+import { AmqpError, Receiver, ReceiverOptions } from "rhea-promise";
 import sinon from "sinon";
 import { ConnectionContext } from "../../../src/connectionContext";
 import { LinkEntity } from "../../../src/core/linkEntity";
@@ -17,6 +17,10 @@ const assert = chai.assert;
 
 describe("LinkEntity unit tests", () => {
   class LinkForTests extends LinkEntity<Receiver> {
+    onDetached(_error?: AmqpError | Error): Promise<void> {
+      throw new Error("Method not implemented.");
+    }
+
     async createRheaLink(options: ReceiverOptions): Promise<Receiver> {
       return createRheaReceiverForTests(options);
     }

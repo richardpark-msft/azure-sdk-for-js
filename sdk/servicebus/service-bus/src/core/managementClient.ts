@@ -12,7 +12,8 @@ import {
   types,
   Typed,
   ReceiverEvents,
-  Message as RheaMessage
+  Message as RheaMessage,
+  AmqpError
 } from "rhea-promise";
 import {
   ConditionErrorNameMapper,
@@ -1321,4 +1322,6 @@ export class ManagementClient extends LinkEntity<RequestResponseLink> {
       throw error;
     }
   }
+
+  async onDetached(_error?: AmqpError | Error): Promise<void> {}
 }
