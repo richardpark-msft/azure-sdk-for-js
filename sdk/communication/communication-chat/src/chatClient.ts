@@ -151,35 +151,6 @@ export class ChatClient {
     }
   }
 
-  /**
-   * Gets a chat thread.
-   * Returns the chat thread.
-   * @param threadId - The ID of the thread to get.
-   * @param options -  Operation options.
-   */
-  public async getChatThread(
-    threadId: string,
-    options: GetChatThreadOptions = {}
-  ): Promise<ChatThread> {
-    const { span, updatedOptions } = createSpan("ChatClient-GetChatThread", options);
-
-    try {
-      const { _response, ...result } = await this.client.chat.getChatThread(
-        threadId,
-        operationOptionsToRequestOptionsBase(updatedOptions)
-      );
-      return mapToChatThreadSdkModel(result);
-    } catch (e) {
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-        message: e.message
-      });
-      throw e;
-    } finally {
-      span.end();
-    }
-  }
-
   private async *listChatThreadsPage(
     continuationState: ListPageSettings,
     options: ListChatThreadsOptions = {}
