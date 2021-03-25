@@ -107,7 +107,7 @@ describe("EnvironmentCredential", function() {
   it(
     "supports tracing with environment client secret",
     testTracing({
-      test: async (spanOptions) => {
+      test: async (tracingOptions) => {
         // The following environment variables must be set for this to work.
         // On TEST_MODE="playback", the recorder automatically fills them with stubbed values.
         process.env.AZURE_TENANT_ID = cachedValues.AZURE_TENANT_ID;
@@ -117,9 +117,7 @@ describe("EnvironmentCredential", function() {
         const credential = new EnvironmentCredential();
 
         await credential.getToken(scope, {
-          tracingOptions: {
-            spanOptions
-          }
+          tracingOptions
         });
       },
       children: [
@@ -144,7 +142,7 @@ describe("EnvironmentCredential", function() {
       this.skip();
     }
     await testTracing({
-      test: async (spanOptions) => {
+      test: async (tracingOptions) => {
         // The following environment variables must be set for this to work.
         // On TEST_MODE="playback", the recorder automatically fills them with stubbed values.
         process.env.AZURE_TENANT_ID = cachedValues.AZURE_TENANT_ID;
@@ -154,9 +152,7 @@ describe("EnvironmentCredential", function() {
         const credential = new EnvironmentCredential();
 
         await credential.getToken(scope, {
-          tracingOptions: {
-            spanOptions
-          }
+          tracingOptions
         });
       },
       children: [
@@ -176,7 +172,7 @@ describe("EnvironmentCredential", function() {
   it(
     "supports tracing with environment username/password",
     testTracing({
-      test: async (spanOptions) => {
+      test: async (tracingOptions) => {
         // The following environment variables must be set for this to work.
         // On TEST_MODE="playback", the recorder automatically fills them with stubbed values.
         process.env.AZURE_TENANT_ID = cachedValues.AZURE_TENANT_ID;
@@ -188,9 +184,7 @@ describe("EnvironmentCredential", function() {
 
         try {
           await credential.getToken(scope, {
-            tracingOptions: {
-              spanOptions
-            }
+            tracingOptions
           });
         } catch (e) {
           // To avoid having to store passwords anywhere, this getToken request will fail.
