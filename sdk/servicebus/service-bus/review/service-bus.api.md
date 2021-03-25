@@ -27,6 +27,7 @@ export interface AmqpAnnotatedMessage {
         [key: string]: any;
     };
     body: any;
+    bodyType: "value" | "sequence" | "data";
     deliveryAnnotations?: {
         [key: string]: any;
     };
@@ -362,6 +363,7 @@ export interface ServiceBusClientOptions {
 // @public
 export interface ServiceBusMessage {
     body: any;
+    bodyType?: "value" | "sequence" | "data";
     contentType?: string;
     correlationId?: string | number | Buffer;
     label?: string;
@@ -392,6 +394,7 @@ export interface ServiceBusMessageBatch {
 // @public
 export interface ServiceBusReceivedMessage extends ServiceBusMessage {
     readonly _amqpAnnotatedMessage: AmqpAnnotatedMessage;
+    readonly bodyType: "value" | "sequence" | "data";
     readonly deadLetterErrorDescription?: string;
     readonly deadLetterReason?: string;
     readonly deadLetterSource?: string;

@@ -130,6 +130,11 @@ export interface ServiceBusMessage {
    */
   body: any;
   /**
+   * The type of the body, which tells us where we can send it.
+   * Defaults to 'data'.
+   */
+  bodyType?: "value" | "sequence" | "data";
+  /**
    * @property The message identifier is an
    * application-defined value that uniquely identifies the message and its payload.
    *
@@ -265,6 +270,10 @@ export interface AmqpAnnotatedMessage {
    * The message body.
    */
   body: any;
+  /**
+   * The type of the body, which tells us where we can send it.
+   */
+  bodyType: "value" | "sequence" | "data";
 }
 
 /**
@@ -538,6 +547,10 @@ export function toAmqpMessage(msg: ServiceBusMessage | AmqpAnnotatedMessage): Am
  */
 export interface ServiceBusReceivedMessage extends ServiceBusMessage {
   /**
+   * The body type for the message.
+   */
+  readonly bodyType: "value" | "sequence" | "data";
+  /**
    * @property The reason for deadlettering the message.
    * @readonly
    */
@@ -756,7 +769,8 @@ export function fromAmqpMessage(
     };
   }
   const sbmsg: ServiceBusMessage = {
-    body: msg.body
+    body: msg.body,
+    bodyType: "data" // TODO:for now
   };
 
   if (msg.application_properties != null) {
@@ -872,7 +886,8 @@ export function toAmqpAnnotatedMessage(msg: AmqpMessage): AmqpAnnotatedMessage {
     deliveryAnnotations: msg.delivery_annotations,
     applicationProperties: msg.application_properties,
     properties: MessageProperties.fromAmqpMessageProperties(msg),
-    body: msg.body
+    body: msg.body,
+    bodyType: "data" // TODO: for now
   };
 }
 
@@ -912,6 +927,11 @@ export class ServiceBusMessageImpl implements ServiceBusReceivedMessageWithLock 
    * @property The message body that needs to be sent or is received.
    */
   body: any;
+  /**
+   * The type of the body, which tells us where we can send it.
+   * Defaults to 'data'.
+   */
+  bodyType: "value" | "sequence" | "data";
   /**
    * @property The application specific properties.
    */
@@ -1115,9 +1135,12 @@ export class ServiceBusMessageImpl implements ServiceBusReceivedMessageWithLock 
     if (receiveMode === InternalReceiveMode.receiveAndDelete) {
       this.lockToken = undefined;
     }
+
     if (msg.body) {
       this.body = this._context.dataTransformer.decode(msg.body);
     }
+    this.bodyType = "data"; // TODO: should be updated to get it from the right spot (decoder should return it?)
+
     this._amqpAnnotatedMessage = toAmqpAnnotatedMessage(msg);
     this.delivery = delivery;
   }
@@ -1245,6 +1268,7 @@ export class ServiceBusMessageImpl implements ServiceBusReceivedMessageWithLock 
     // We are returning a ServiceBusMessage object because that object can then be sent to Service Bus
     const clone: ServiceBusMessage = {
       body: this.body,
+      bodyType: this.bodyType,
       contentType: this.contentType,
       correlationId: this.correlationId,
       label: this.label,
