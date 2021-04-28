@@ -19,6 +19,8 @@ spec:
             secretKeyRef:
               name: "${K8S_SECRET_NAME}"
               key: APPINSIGHTS_INSTRUMENTATIONKEY
+        - name: DEBUG
+          value: "azure:service-bus:error,azure:core-amqp:error,rhea-promise:error,rhea:events,rhea:frames,rhea:io,rhea:flow"
       command:
         - node
         - /src/dist/${SCENARIO_JS_BASE_NAME}.js
