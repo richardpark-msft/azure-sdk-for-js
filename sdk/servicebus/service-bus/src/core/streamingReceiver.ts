@@ -396,7 +396,6 @@ export class StreamingReceiver extends MessageReceiver {
 
       try {
         await this._retry<void>(config);
-        break;
       } catch (err) {
         // we only report the error here - this avoids spamming the user with too many
         // redundant reports of errors while still providing them incremental status on failures.
