@@ -462,7 +462,7 @@ export class ServiceBusStressTester {
     const elapsedTimeInSeconds = (new Date().valueOf() - this.startedAt.valueOf()) / 1000;
 
     eventProperties["elapsedTimeInSeconds"] = elapsedTimeInSeconds;
-    eventProperties["messsages.sent"] = this.messagesSent.length;
+    eventProperties["messages.sent"] = this.messagesSent.length;
     eventProperties["messages.received"] = this.messagesReceived.length;
 
     if (this.snapshotOptions.snapshotFocus?.includes("send-info")) {
